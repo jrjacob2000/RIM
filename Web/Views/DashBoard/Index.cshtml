@@ -1,0 +1,81 @@
+﻿
+
+<h2>CURRENT STATUS</h2>
+<h4>INVENTORY</h4>(base on expected date)
+<hr />
+@*<div class="jumbotron">
+    <h1>@ViewBag.Title</h1>
+    <p class="lead">ASP.NET is a free web framework for building great Web sites and Web applications using HTML, CSS, and JavaScript.</p>
+    <p><a href="http://asp.net" class="btn btn-primary btn-lg">Learn more &raquo;</a></p>
+</div>*@
+<div class="row">
+    <div class="col-md-4 ">
+        <div class="inventory-box">
+            <h1 class="inventory-font">@ViewBag.InventoryOnHand</h1>
+            <h5>INVENTORY ON HAND</h5>
+        </div>     
+    </div>
+    <div class="col-md-4 " >
+        <div class="inventory-box">
+            <h1 class="inventory-font">@ViewBag.InventoryToCome</h1>
+            <h5>INVENTORY TO COME</h5>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="inventory-box">
+            <h1 class="inventory-font">@ViewBag.InventoryToGo</h1>
+            <h5>INVENTORY TO GO</h5>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-4 " >
+        <div class="inventory-box">
+            <h1 class="inventory-font">@ViewBag.ProductToReOrder</h1>
+            <h5>PRODUCT TO RE-ORDER</h5>
+        </div>
+    </div>
+    <div class="col-md-4 " >
+        <div class="inventory-box">
+            <h1 class="inventory-font">@ViewBag.ProductInStock</h1>
+            <h5>PRODUCT IN STOCK</h5>
+        </div>
+    </div>
+    <div class="col-md-4 " >
+        <div class="inventory-box">
+            <h1 class="inventory-font">@ViewBag.InventoryValue</h1>
+            <h5 >INVENTORY VALUE</h5>
+        </div>
+    </div>
+</div>
+
+
+<style type="text/css">
+    .inventory-box {
+        border-width:thin;
+        border-style: solid;
+        border-radius: 10px;
+        border-color:orange;
+        /*width: 31%;*/
+        /*margin: 13Px;*/
+        /*background-color:green;*/ 
+        color:orangered;
+        height:132px;
+        text-align: center;
+        /*padding:1px;*/
+        margin-top:8px;
+         margin-bottom:8px;
+        margin-left:-8px;
+        margin-right:-8px
+        
+    }
+
+    .inventory-font {
+        /*text-align: center;*/
+    }
+
+    .inventory-box p{
+        /*font-weight:bold; 
+        font-size:24px;*/
+    }
+</style>

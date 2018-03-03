@@ -1,0 +1,173 @@
+﻿@model IEnumerable<Web.Models.OrderDetail>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+
+@{
+    string showDetail = "hidden";
+    string showGenerateButton = "hidden";
+    string showPrintButton = "hidden";
+    if (Model.FirstOrDefault() != null)
+    {
+        showDetail = Model.FirstOrDefault().Order.InvoiceNumber != null ? "visible" : "hidden";
+        showGenerateButton = Model.FirstOrDefault().Order.InvoiceNumber == null ? "visible" : "hidden";
+        showPrintButton = showDetail;
+    }
+}
+<h2>Invoice</h2>
+@if (ViewBag.Message != null)
+{
+    <div class="alert alert-danger">
+        <strong>Error!</strong> @ViewBag.Message.
+    </div>
+}
+
+<form asp-action="Index" method="get">
+    <h5>Search order number:</h5>
+    <div class="form-actions no-color">
+        <p>
+            Order Number: <input type="text" name="SearchString" value="@ViewData["currentFilter"]" />
+            <input type="submit" value="Search" class="btn btn-default" /> 
+        </p>
+    </div>
+    <div class=@showGenerateButton>
+        <input type="submit" name="GenerateInvoice" value="Create Invoice" class="btn btn-primary" />
+    </div>
+    <hr />  
+    <div class=@showPrintButton style="width:100%; height:20px">
+        <input style="float:right" type="button" value="Print" onclick="printdiv()" class="btn btn-primary " />
+    </div>
+</form>
+  
+    @if (Model.FirstOrDefault() == null && @ViewData["currentFilter"] != null)
+    {
+        <div class="alert alert-info">
+            <span>No item found in sales order.</span>
+        </div>
+    }
+    <div id="printarea" class=@showDetail>
+        <div style="text-align:center">
+            <h3>INVOICE</h3>
+            <h4>@ViewBag.BusinessName</h4>
+        </div>
+        
+         <table style="width:100%">
+                <tr>
+                    <td>
+                        <h4>Customer</h4>
+                        <table>
+                            <tr>
+                                <td>@Html.DisplayFor(model => model.FirstOrDefault().Order.Partner.Name)</td>
+                            </tr>
+                            <tr>
+                                <td>@Html.DisplayFor(model => model.FirstOrDefault().Order.Partner.ShippingAddress)</td>
+                            </tr>
+                        </table>
+                    </td>
+                    <td>
+                        <table style="float:right">
+                            <tr>
+                                <th style="text-align:right">@Html.DisplayNameFor(model => model.FirstOrDefault().Order.OrderDate):</th>
+                                <td>@Html.DisplayFor(model => model.FirstOrDefault().Order.OrderDate)</td>
+                            </tr>
+                            <tr>
+                                <th style="text-align:right">@Html.DisplayNameFor(model => model.FirstOrDefault().Order.InvoiceNumber):</th>
+                                <td>@Html.DisplayFor(model => model.FirstOrDefault().Order.InvoiceNumber)</td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+          
+       
+    <br />
+    <br />
+    <br />
+
+    <table class="table table-bordered">
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Product.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Quantity)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Product.Unit)
+            </th>
+            <th>
+                @Html.DisplayName("Unit Price")
+            </th>
+            <th>
+                @Html.DisplayName("Amount")
+            </th>
+
+        </tr>
+
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Product.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Quantity)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Product.Unit)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ProductPrice.SelesPrice)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.AmountAfterTax)
+                </td>
+            </tr>
+        }
+        <tr>
+            <td colspan="3"></td>
+            <th style="text-align:center">Total</th>
+            <th>@ViewBag.Total</th>
+        </tr>
+    </table>
+</div>
+
+<script type="text/javascript">
+
+    function printdiv() {
+        //window.print();
+        var toPrint = document.getElementById('printarea');
+
+        var popupWin = window.open('', '_blank', 'width=1000,height=600,location=no,left=200');
+        popupWin.document.open();
+        popupWin.document.write('<html><title></title>')
+        popupWin.document.write('<link rel="stylesheet" type="text/css" href="Content/bootstrap.css" />')
+        popupWin.document.write('<link rel="stylesheet" type="text/css" href="Content/Print.css" />');
+        popupWin.document.write('</head><body onload="window.print()">')
+        popupWin.document.write(toPrint.innerHTML);
+        popupWin.document.write('</html>');
+        popupWin.document.close();
+
+        //var mywindow = window.open('', 'PRINT', 'height=400,width=600');
+
+        //mywindow.document.write('<html><head><title></title>');
+        //mywindow.document.write('<link  type="text/css" href="Content/bootstrap.css" rel="stylesheet"/>');
+        ////mywindow.document.write('<link  rel="stylesheet" type="text/css" href="Content/site.css" rel="stylesheet"/>');
+        ////mywindow.document.write('<link  rel="stylesheet" type="text/css" href="Content/print.css" rel="stylesheet">');
+        //mywindow.document.write('</head><body >');
+        //mywindow.document.write(document.getElementById("printarea").innerHTML);
+        //mywindow.document.write('</body></html>');
+
+        //mywindow.document.close(); // necessary for IE >= 10
+        //mywindow.focus(); // necessary for IE >= 10*/
+
+        //mywindow.print();
+        //mywindow.close();
+
+        //return true;
+    }
+
+</script>
+

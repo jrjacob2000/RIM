@@ -1,0 +1,111 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - My ASP.NET Application</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+    @Scripts.Render("~/bundles/jquery")
+    @RenderSection("scripts", required: false)
+
+</head>
+<body>
+    <div class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                @Html.ActionLink((string)ViewBag.ApplicationName, "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
+            </div>
+            <div class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    @*<li>@Html.ActionLink("Home", "Index", "Home")</li>*@
+                    <li>@Html.ActionLink("DashBoard", "Index", "DashBoard")</li>
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Inventory<span class="caret"></span></a>
+                        <ul class="dropdown-menu" role="menu">
+                            @*<li class="dropdown-header">Order</li>*@
+                            <li >@Html.ActionLink("Order", "Index", "Orders", new { area = "" }, null)</li>
+                            @*<li style="padding-left:20px">@Html.ActionLink("New Order", "Create", "Orders", new { area = "" }, null)</li>*@
+                            @*<li class="dropdown-header">Product</li>*@
+                            <li>@Html.ActionLink("Products", "Index", "Products", new { area = "" }, null)</li>
+                            @*<li>@Html.ActionLink("New Product", "Create", "Products", new { area = "" }, null)</li>
+        <li class="divider"></li>
+        <li class="dropdown-header">Prices</li>*@
+                            <li>@Html.ActionLink("Price List", "Index", "ProductPrices", new { area = "" }, null)</li>
+                            @*<li>@Html.ActionLink("New Price", "Create", "ProductPrices", new { area = "" }, null)</li>
+        <li class="divider"></li>
+        <li class="dropdown-header">Category</li>*@
+                            <li>@Html.ActionLink("Category", "Index", "Categories", new { area = "" }, null)</li>
+                            @*<li>@Html.ActionLink("New Category", "Create", "Categories", new { area = "" }, null)</li>
+        <li class="divider"></li>
+        <li class="dropdown-header">Partner</li>*@
+                            <li>@Html.ActionLink("Partners", "Index", "Partners", new { area = "" }, null)</li>
+                            @*<li>@Html.ActionLink("New Partner", "Create", "Partners", new { area = "" }, null)</li>*@
+                        </ul>
+                    </li>
+
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Financial<span class="caret"></span></a>
+                        <ul class="dropdown-menu" role="menu">
+                           
+                            @*<li class="divider"></li>*@
+                            @*<li class="dropdown-header">Payments</li>*@
+                            <li >@Html.ActionLink("Payments", "Index", "Payments", new { area = "" }, null)</li>
+                            @*<li style="padding-left:20px">@Html.ActionLink("Recieve Payment", "Create", "Payments", new { area = "" }, null)</li>*@
+                            @*<li class="divider"></li>*@
+                            <li>@Html.ActionLink("Invoice", "Index", "Invoice", new { area = "" }, null)</li>
+                            @*<li class="divider"></li>*@
+                            <li>@Html.ActionLink("Cash Injection", "Index", "CashInjections", new { area = "" }, null)</li>
+                        </ul>
+                    </li>
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Reports<span class="caret"></span></a>
+                        <ul class="dropdown-menu" role="menu">
+                            <li>@Html.ActionLink("Sales vs Purchase", "SalesAndPurchase", "Report", new { area = "" }, null)</li>
+                            <li>@Html.ActionLink("Cash Flow", "CashFlow", "Report", new { area = "" }, null)</li>
+                        </ul>
+                    </li>
+                    <li>@Html.ActionLink("About", "About", "Home")</li>
+                    <li>@Html.ActionLink("Contact", "Contact", "Home")</li>
+                </ul>
+                @Html.Partial("_LoginPartial")
+            </div>
+        </div>
+    </div>
+    <div class="container body-content">
+        @RenderBody()
+        <hr />
+        <footer>
+            <p>&copy; @DateTime.Now.Year - Jacob Retail Inventory System</p>
+        </footer>
+    </div>
+
+
+    @Scripts.Render("~/bundles/bootstrap")
+    <link rel="stylesheet" type="text/css" href="/Content/Custom.css" />
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/css/bootstrap-select.min.css">
+
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/js/bootstrap-select.min.js"></script>
+
+    <style type="text/css">
+        .navbar-nav .dropdown .dropdown-menu li a {
+            line-height: 22px;
+        }
+
+        .navbar-nav .dropdown .dropdown-menu .dropdown-header {
+            font-size: 15px;
+            cursor: default;
+            color: #000000;
+            font-weight: bold;
+            line-height: 25px;
+        }
+    </style>
+</body>
+</html>

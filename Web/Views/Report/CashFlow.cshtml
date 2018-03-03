@@ -1,0 +1,49 @@
+﻿@model IEnumerable<Web.Models.CashFlow>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Index</h2>
+<br />
+
+<div class="col-md-3" style="background-color:green; color:white;  border-width:thin;border-style:solid; border-radius:5px; margin-bottom:30px">
+    Available Cash on Hand:
+    <p style="font-weight:bold; font-size:24px; text-align:center">@ViewBag.AvailableCashOnHand</p>
+</div>
+
+
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.FirstOrDefault().Particulars)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.FirstOrDefault().CashIn)
+         </th>
+        <th>
+            @Html.DisplayNameFor(model => model.FirstOrDefault().CashOut)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.FirstOrDefault().Date)
+        </th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.Particulars)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.CashIn)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.CashOut)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Date)
+        </td>
+    </tr>
+}
+
+</table>

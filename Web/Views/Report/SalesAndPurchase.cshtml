@@ -1,0 +1,149 @@
+﻿@model Web.Models.SalesAndPurchase
+
+<h2>REPORT</h2>
+<h4>Sales vs Purchases</h4>
+<hr />
+<table style="table-layout: fixed; width:100%">
+    <thead>
+        <tr>
+            <td style="width:20%"></td>
+            <td style="text-align:center;  margin-right:13px; width:300px">
+                <h4 style="font-weight:bolder">SALES</h4>
+            </td>
+            <td style="text-align:center; margin-left:13px; width:300px">
+                <h4 style="font-weight:bolder">PURCHASE</h4>
+            </td>
+            <td style="width:20%"></td>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td></td>
+            <td>
+                <div class="SalesPurchase-box saleColColor">
+                    Sales Qty
+                    <p style="font-size:large; font-weight:500; text-align:center">@Model.Sales.Quantity</p>
+                </div>
+            </td>
+            <td >
+                <div class="SalesPurchase-box purchaseColColor">
+                    Purchase Qty
+                    <p style="font-size:large; font-weight:500 ;text-align:center">@Model.Purchase.Quantity</p>
+                </div>
+            </td>
+            <td></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td >
+                <div class="SalesPurchase-box saleColColor">
+                    Sales Amount (exclude tax)
+                    <p style="font-size:large; font-weight:500; text-align:center">@Model.Sales.Amount</p>
+                </div>
+            </td>
+            <td >
+                <div class="SalesPurchase-box purchaseColColor">
+                    Purchase Amount (exclude tax)
+                    <p style="font-size:large; font-weight:500 ;text-align:center">@Model.Purchase.Amount</p>
+                </div>
+            </td>
+            <td></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td>
+                <div class="SalesPurchase-box saleColColor">
+                    Sales Tax
+                    <p style="font-size:large; font-weight:500; text-align:center">@Model.Sales.Tax</p>
+                </div></td>
+            <td>
+                <div class="SalesPurchase-box purchaseColColor">
+                    Tax
+                    <p style="font-size:large; font-weight:500 ;text-align:center">@Model.Purchase.Tax</p>
+                </div></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td>
+                <div class="SalesPurchase-box saleColColor">
+                    Qty Return by Customer
+                    <p style="font-size:large; font-weight:500; text-align:center">@Model.Sales.QuantityReturn</p>
+                </div>
+            </td>
+            <td>
+                <div class="SalesPurchase-box purchaseColColor">
+                    Qty Return to Supplier
+                    <p style="font-size:large; font-weight:500 ;text-align:center">@Model.Purchase.QuantityReturn</p>
+                </div>
+            </td>
+            <td></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td>
+                <div class="SalesPurchase-box saleColColor">
+                    Discount
+                    <p style="font-size:large; font-weight:500; text-align:center">@Model.Sales.Discount</p>
+                </div>
+            </td>
+            <td style=" height:57px; border-width:thin; border-radius:5px; margin-left:13px "></td>
+            <td></td>
+        </tr>
+
+        <tr>
+            <td></td>
+            <td>
+                <div class="SalesPurchase-box saleColColor">
+                    Other Charges
+                    <p style="font-size:large; font-weight:500; text-align:center">@Model.Sales.OtherCharges</p>
+                </div>
+            </td>
+            <td>
+                <div class="SalesPurchase-box purchaseColColor">
+                    Other Charges
+                    <p style="font-size:large; font-weight:500 ;text-align:center">@Model.Purchase.OtherCharges</p>
+                </div>
+            </td>
+            <td></td>
+        </tr>
+    </tbody>
+    <tfoot style="margin-top:10px">
+        <tr>
+            <td></td>
+            <td colspan="2" class="col-md-12" style=" background-color:green; color:white; border-width:thin;border-style:solid; border-radius:5px; margin-right:1px">
+                Gross Profit
+                <p style="font-size:large; font-weight:500; text-align:center">@(Model.Sales.Amount - Model.Purchase.Amount)</p>
+            </td>
+            <td></td>
+        </tr>
+    </tfoot>
+</table>
+<style type="text/css">
+    .SalesPurchase-box {
+        border-width:thin;
+        border-style:solid; 
+        border-radius:2px; 
+        padding-left:15px;
+        padding-right:15px;
+        /*margin-right:13px;*/
+    }
+
+    .inventory-font {
+        font-size: large;
+        font-weight: 500;
+        text-align: center;
+    }
+
+    .saleColColor {
+        background-color:darkgrey;
+        color:white
+
+    }
+    .purchaseColColor {
+        background-color:dimgrey;
+         color:white
+    }
+</style>
+
+
