@@ -236,6 +236,14 @@
     <Compile Include="Migrations\201803021216495_updateSettingTable.Designer.cs">
       <DependentUpon>201803021216495_updateSettingTable.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201803040245045_addFieldsSetting.cs" />
+    <Compile Include="Migrations\201803040245045_addFieldsSetting.Designer.cs">
+      <DependentUpon>201803040245045_addFieldsSetting.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201803080223110_ordernumberUniqeConstraint.cs" />
+    <Compile Include="Migrations\201803080223110_ordernumberUniqeConstraint.Designer.cs">
+      <DependentUpon>201803080223110_ordernumberUniqeConstraint.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\CashFlow.cs" />
@@ -350,11 +358,6 @@
     <Content Include="Views\Partners\Details.cshtml" />
     <Content Include="Views\Partners\Edit.cshtml" />
     <Content Include="Views\Partners\Index.cshtml" />
-    <Content Include="Views\ProductItems\Create.cshtml" />
-    <Content Include="Views\ProductItems\Delete.cshtml" />
-    <Content Include="Views\ProductItems\Details.cshtml" />
-    <Content Include="Views\ProductItems\Edit.cshtml" />
-    <Content Include="Views\ProductItems\Index.cshtml" />
     <Content Include="Views\ProductPrices\Create.cshtml" />
     <Content Include="Views\ProductPrices\Delete.cshtml" />
     <Content Include="Views\ProductPrices\Details.cshtml" />
@@ -435,6 +438,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201803021216495_updateSettingTable.resx">
       <DependentUpon>201803021216495_updateSettingTable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201803040245045_addFieldsSetting.resx">
+      <DependentUpon>201803040245045_addFieldsSetting.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201803080223110_ordernumberUniqeConstraint.resx">
+      <DependentUpon>201803080223110_ordernumberUniqeConstraint.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

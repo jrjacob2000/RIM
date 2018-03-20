@@ -48,6 +48,8 @@
     <Content Include="ChangeScript\1.1\1_AddUserSettingModel.sql" />
     <Content Include="ChangeScript\1.1\2_UpdateUserSettingModel.sql" />
     <Content Include="ChangeScript\1.1\3_UpdateUserSetting.sql" />
+    <Content Include="ChangeScript\1.1\4_addFieldSetting.sql" />
+    <Content Include="ChangeScript\1.1\5_ordernumberUniqeConstraint.sql" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

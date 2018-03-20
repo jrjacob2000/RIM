@@ -1,6 +1,7 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@ViewBag.Title - My ASP.NET Application</title>
@@ -29,7 +30,7 @@
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">Inventory<span class="caret"></span></a>
                         <ul class="dropdown-menu" role="menu">
                             @*<li class="dropdown-header">Order</li>*@
-                            <li >@Html.ActionLink("Order", "Index", "Orders", new { area = "" }, null)</li>
+                            <li >@Html.ActionLink("Orders", "Index", "Orders", new { area = "" }, null)</li>
                             @*<li style="padding-left:20px">@Html.ActionLink("New Order", "Create", "Orders", new { area = "" }, null)</li>*@
                             @*<li class="dropdown-header">Product</li>*@
                             <li>@Html.ActionLink("Products", "Index", "Products", new { area = "" }, null)</li>

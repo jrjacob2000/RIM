@@ -29,7 +29,7 @@
     <div class="form-actions no-color">
         <p>
             Order Number: <input type="text" name="SearchString" value="@ViewData["currentFilter"]" />
-            <input type="submit" value="Search" class="btn btn-default" /> 
+            <input type="submit" value="Search" class="btn btn-primary" /> 
         </p>
     </div>
     <div class=@showGenerateButton>
@@ -51,6 +51,11 @@
         <div style="text-align:center">
             <h3>INVOICE</h3>
             <h4>@ViewBag.BusinessName</h4>
+            <h6>@ViewBag.BillingAddress</h6>
+            @if(@ViewBag.ContactNumber != null)
+            { 
+            <span class="glyphicon glyphicon-phone-alt" style="font-size:12px;">@ViewBag.ContactNumber</span>
+            }
         </div>
         
          <table style="width:100%">

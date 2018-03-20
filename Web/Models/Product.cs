@@ -45,7 +45,15 @@ namespace Web.Models
                                 .Where(x => x.Order.ExpectedDate <= DateTime.Now && x.Order.OrderType == Web.Controllers.Helper.Constants.OrderType.ADJUST)
                                 .Select(s => s.Quantity).Sum();
 
-                    return StartingInventory + purchased - (sold + adjust);
+                    var custReturn = OrderDetails
+                                .Where(x => x.Order.ExpectedDate <= DateTime.Now && x.Order.OrderType == Web.Controllers.Helper.Constants.OrderType.CUSTOMER_RETURN)
+                                .Select(s => s.Quantity).Sum();
+
+                    var suppReturn = OrderDetails
+                                .Where(x => x.Order.ExpectedDate <= DateTime.Now && x.Order.OrderType == Web.Controllers.Helper.Constants.OrderType.SUPPLIER_RETURN)
+                                .Select(s => s.Quantity).Sum();
+
+                    return (StartingInventory + purchased + custReturn) - (sold + adjust + suppReturn);
                 }
                 else
                     return 0;

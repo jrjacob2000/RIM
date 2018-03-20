@@ -13,6 +13,8 @@ namespace Web.Models
 
         [Required]
         [Display(Name = "Order Number")]
+        [Index(IsUnique = true)]
+        [MaxLength(250)]
         public string OrderNumber {get;set;}
 
         [Required]
@@ -44,8 +46,18 @@ namespace Web.Models
         public decimal OrderDiscount {get;set;}
 
         [DisplayFormat(DataFormatString = "{0:P2}")]
-        [Display(Name = "Tax Rate")]
+        [Display(Name = "Tax Rate (%)")]
         public decimal TaxRate {get;set;}
+
+        public decimal TaxRateToDecimal
+        {
+            get {
+                if (TaxRate > 0)
+                    return TaxRate / 100;
+                else
+                    return 0;
+            }
+        }
 
         [Display(Name = "Order Notes")]
         public string OrderNotes {get;set;}

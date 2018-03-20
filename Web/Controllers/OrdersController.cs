@@ -40,14 +40,7 @@ namespace Web.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-
-            //Order order = await db.Orders
-            //    .Include("OrderDetails")
-            //    .Include("OrderDetails.Product")
-            //    .Include("OrderDetails.ProductPrice")
-            //    .Include("Partner")
-            //    .FirstOrDefaultAsync(x => x.Id == id);
-
+                      
             Order order = GetOrderById(id.Value);
                        
 
@@ -56,14 +49,21 @@ namespace Web.Controllers
                 return HttpNotFound();
             }
 
-            
+            //return RedirectToAction("Details",
+            //        new { returnUrl = Request.UrlReferrer.ToString() });
                        
             return View(order);
         }
 
         // GET: Orders/Create
-        public ActionResult Create(string OrderType)
+        //public ActionResult Create(Guid IdToCopy)
+        //{
+        //    return Create(null, IdToCopy.ToString());
+        //}
+
+        public ActionResult Create(string OrderType, string IdToCopy)
         {
+            ViewBag.IdToCopy = IdToCopy;
             ViewBag.OrderTypes = Helper.Constants.OrderTypeList();
             //ViewBag.Partners = db.Partners.Select(x => new SelectListItem() { Value = x.Id.ToString(), Text = x.Name }).ToList();
             ViewBag.Partners = GetPartnerList().Select(x => new SelectListItem() { Value = x.Id.ToString(), Text = x.Name }).ToList();
@@ -93,51 +93,110 @@ namespace Web.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Create([Bind(Include = "Id,OrderNumber,OrderDate,ExpectedDate,OrderType,OtherCharges,OrderDiscount,TaxRate,OrderNotes,Partner_Id")] Order order)
+        public async Task<ActionResult> Create([Bind(Include = "Id,OrderNumber,OrderDate,ExpectedDate,OrderType,OtherCharges,OrderDiscount,TaxRate,OrderNotes,Partner_Id")] Order order,Guid IdToCopy)
         {
-            ViewBag.OrderTypes = Helper.Constants.OrderTypeList();
-            //ViewBag.Partners = db.Partners.Select(x => new SelectListItem() { Value = x.Id.ToString(), Text = x.Name }).ToList();
-            ViewBag.Partners = GetPartnerList().Select(x => new SelectListItem() { Value = x.Id.ToString(), Text = x.Name }).ToList();
-
-            var setting = GetSetting();
-            if (order.OrderType == Helper.Constants.OrderType.PURCHASE && !string.IsNullOrEmpty(setting.PurchaseNumber))
+            try
             {
-                order.OrderNumber = string.Format("{0}-{1}", setting.PurchasePrefix, setting.PurchaseNumber);
+                ViewBag.OrderTypes = Helper.Constants.OrderTypeList();
+                //ViewBag.Partners = db.Partners.Select(x => new SelectListItem() { Value = x.Id.ToString(), Text = x.Name }).ToList();
+                ViewBag.Partners = GetPartnerList().Select(x => new SelectListItem() { Value = x.Id.ToString(), Text = x.Name }).ToList();
 
-                var length = setting.PurchaseNumber.Length;
-                var newValue = int.Parse(setting.PurchaseNumber) + 1;
+                var setting = GetSetting();
+                if (setting != null)
+                {
+                    if (order.OrderType == Helper.Constants.OrderType.PURCHASE && !string.IsNullOrEmpty(setting.PurchaseNumber))
+                    {
+                        order.OrderNumber = string.Format("{0}-{1}", setting.PurchasePrefix, setting.PurchaseNumber);
 
-                setting.PurchaseNumber = newValue.ToString().PadLeft(length, '0'); ;
+                        var length = setting.PurchaseNumber.Length;
+                        var newValue = int.Parse(setting.PurchaseNumber) + 1;
 
-            }
-            if (order.OrderType == Helper.Constants.OrderType.SALE && !string.IsNullOrEmpty(setting.SalesNumber))
-            {
-                order.OrderNumber = string.Format("{0}-{1}", setting.SalesPrefix, setting.SalesNumber);
+                        setting.PurchaseNumber = newValue.ToString().PadLeft(length, '0'); ;
 
-                var length = setting.SalesNumber.Length;
-                var newValue = int.Parse(setting.SalesNumber) + 1;
+                    }
+                    if (order.OrderType == Helper.Constants.OrderType.SALE && !string.IsNullOrEmpty(setting.SalesNumber))
+                    {
+                        order.OrderNumber = string.Format("{0}-{1}", setting.SalesPrefix, setting.SalesNumber);
 
-                setting.SalesNumber = newValue.ToString().PadLeft(length, '0');
-                
-            }
+                        var length = setting.SalesNumber.Length;
+                        var newValue = int.Parse(setting.SalesNumber) + 1;
 
-            if (ModelState.IsValid)
-            {
+                        setting.SalesNumber = newValue.ToString().PadLeft(length, '0');
+
+                    }
+                }
+
+                var orderDetails= new List<OrderDetail>();
+                if (IdToCopy != null && IdToCopy != Guid.Empty)
+                {
+                    var orderToCopy = GetOrderById(IdToCopy);
+
+                    foreach (OrderDetail od in orderToCopy.OrderDetails)
+                    {
+                        var newOd = new OrderDetail
+                        {
+                            Id = Guid.NewGuid(),
+                            Order = order,
+                            Order_Id = order.Id,
+                            Product = od.Product,
+                            Product_Id = od.Product_Id,
+                            ProductPrice = od.ProductPrice,
+                            ProductPrice_Id = od.ProductPrice_Id,
+                            Quantity = od.Quantity,
+                            UnitDiscount = od.UnitDiscount,
+                            CreatedBy = od.CreatedBy
+                        };
+                       orderDetails.Add(newOd);
+                    }
+                }
+
                 order.Id = Guid.NewGuid();
                 order.CreatedBy = UserId;
-                //order.Partner_Id = order.Partner.Id;
-                //order.Partner = db.Partners.Find(order.Partner.Id);
-                db.Orders.Add(order);
-                await db.SaveChangesAsync();
+                if (order.TaxRate > 0)
+                    order.TaxRate = order.TaxRateToDecimal;
 
-                return RedirectToAction("Details", new { id = order.Id });
+                if (ModelState.IsValid)
+                {    
+                    if (orderDetails.Count > 0)
+                        order.OrderDetails = orderDetails ;
+
+                    db.Orders.Add(order);
+                    
+                    await db.SaveChangesAsync();
+
+                    return RedirectToAction("Details", new { id = order.Id });
+                }
+
+                //return View(order);
+            }
+            catch(Exception ex)
+            {
+                 if(ex.InnerException == null)
+                {                    
+                    ModelState.AddModelError(string.Empty, ex.Message);               
+                }
+
+                var sqlException = ex.InnerException.InnerException as SqlException;
+
+                if (sqlException != null && sqlException.Errors.OfType<SqlError>()
+                    .Any(se => se.Number == 547/*DELETE statement conflicted */))
+                {
+                    ModelState.AddModelError(string.Empty, "Can't delete this order, because its containing details or used in payment");
+
+                }
+                else if (sqlException != null && sqlException.Errors.OfType<SqlError>()
+                    .Any(se => se.Number == 2601 /*uniqe index constraint */)) 
+                {                   
+                    ModelState.AddModelError(string.Empty, "Cannot Create duplicate Order Number");
+                    
+                }
             }
 
             return View(order);
         }
 
         // GET: Orders/Edit/5
-        public ActionResult Edit(Guid? id)
+        public ActionResult Edit(Guid? id, string returnUrl)
         {
             if (id == null)
             {
@@ -146,6 +205,8 @@ namespace Web.Controllers
             
             //Order order = await db.Orders.FindAsync(id);
             Order order = GetOrderById(id.Value);
+
+            order.TaxRate = order.TaxRate * 100;
 
             if (order == null)
             {
@@ -156,6 +217,16 @@ namespace Web.Controllers
             //ViewBag.Partners = db.Partners.Select(x => new SelectListItem() { Value = x.Id.ToString(), Text = x.Name }).ToList();
             ViewBag.Partners = GetPartnerList().Select(x => new SelectListItem() { Value = x.Id.ToString(), Text = x.Name }).ToList();
 
+            // If no return url supplied, use referrer url.
+            // Protect against endless loop by checking for empty referrer.
+            if (String.IsNullOrEmpty(returnUrl)
+                && Request.UrlReferrer != null
+                && Request.UrlReferrer.ToString().Length > 0)
+            {
+                return RedirectToAction("Edit",
+                    new { returnUrl = Request.UrlReferrer.ToString() });
+            }
+
             return View(order);
         }
 
@@ -164,7 +235,7 @@ namespace Web.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Edit([Bind(Include = "Id,OrderNumber,OrderDate,ExpectedDate,OrderType,OtherCharges,OrderDiscount,TaxRate,OrderNotes,Partner_Id")] Order order)
+        public async Task<ActionResult> Edit(Order order, string returnUrl)
         {
             ViewBag.OrderTypes = Helper.Constants.OrderTypeList();
             //ViewBag.Partners = db.Partners.Select(x => new SelectListItem() { Value = x.Id.ToString(), Text = x.Name }).ToList();
@@ -172,12 +243,19 @@ namespace Web.Controllers
 
             var dbOrder = GetOrderById(order.Id, true);
             order.CreatedBy = dbOrder.CreatedBy;
-            
+            order.TaxRate = order.TaxRateToDecimal;
+
             if (ModelState.IsValid)
             {
                 db.Entry(order).State = EntityState.Modified;
                 await db.SaveChangesAsync();
-                return RedirectToAction("Index");
+
+                // If redirect supplied, then do it, otherwise use a default
+                if (!String.IsNullOrEmpty(returnUrl))
+                    return Redirect(returnUrl);
+                else
+                    return RedirectToAction("Index");
+                
             }
             return View(order);
         }

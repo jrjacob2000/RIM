@@ -13,6 +13,12 @@ namespace Web.Models
         public Guid UserId { get; set; }
         [Display(Name="Business Name")]
         public string BusinessName { get; set; }
+        [Display(Name = "Billing Address")]
+        public string BillingAddress { get; set; }
+        [Display(Name = "Shipping Address")]
+        public string ShippingAddress { get; set; }
+        [Display(Name = "Contact Number")]
+        public string BusinessContactNumber { get; set; }
         [Display(Name = "Prefix")]
         public string InvoicePrefix { get; set; }
         [Display(Name = "Invoice Number")]

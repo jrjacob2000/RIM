@@ -41,7 +41,16 @@ namespace Web.Models
         {
             get {
                 if (OrderDetails.Count() > 0)
-                    return OrderDetails.Sum(x => x.Order.OrderType == Helper.Constants.OrderType.SALE ? x.AmountBeforeTax : x.AmountPurchase);
+                {
+                    var amount = OrderDetails.Sum(x => x.Order.OrderType == Helper.Constants.OrderType.SALE ? x.AmountBeforeTax : 
+                        x.Order.OrderType == Helper.Constants.OrderType.PURCHASE ? x.AmountPurchase : 0);
+
+                    var custReturn = OrderDetails.Sum(x => x.Order.OrderType == Helper.Constants.OrderType.CUSTOMER_RETURN ? x.AmountBeforeTax :
+                        x.Order.OrderType == Helper.Constants.OrderType.SUPPLIER_RETURN ? x.AmountPurchase : 0);
+
+                    
+                    return amount - custReturn ;
+                }
                 else
                     return 0;
             }
@@ -51,7 +60,8 @@ namespace Web.Models
             get
             {
                 if (OrderDetails.Count() > 0)
-                    return OrderDetails.Sum(x => x.Tax);
+                    return OrderDetails.Where(x => x.Order.OrderType == Helper.Constants.OrderType.SALE ||
+                        x.Order.OrderType == Helper.Constants.OrderType.PURCHASE).Sum(x => x.Tax);
                 else
                     return 0;
             }
@@ -61,7 +71,8 @@ namespace Web.Models
             get
             {
                 if (OrderDetails.Count() > 0)
-                    return OrderDetails.Where(x => x.Quantity < 0).Sum(x => x.Quantity);
+                    return OrderDetails.Where(x => x.Order.OrderType == Helper.Constants.OrderType.CUSTOMER_RETURN
+                         || x.Order.OrderType == Helper.Constants.OrderType.SUPPLIER_RETURN).Sum(x => x.Quantity);
                 else
                     return 0;
             }

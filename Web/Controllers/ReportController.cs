@@ -16,17 +16,9 @@ namespace Web.Controllers
         // GET: Report
         public ActionResult SalesAndPurchase()
         {
-            //var sales = db.OrderDetails
-            //    .Include("ProductPrice")
-            //    .Include("Product")
-            //    .Include("Order").Where(x => x.Order.OrderType == Helper.Constants.OrderType.SALE).ToList();
-            var sales = GetOrderDetailList().Where(x => x.Order.OrderType == Helper.Constants.OrderType.SALE).ToList();
-            
-            //var purchases = db.OrderDetails
-            //    .Include("ProductPrice")
-            //    .Include("Product")
-            //    .Include("Order").Where(x => x.Order.OrderType == Helper.Constants.OrderType.PURCHASE).ToList();
-            var purchases = GetOrderDetailList().Where(x => x.Order.OrderType == Helper.Constants.OrderType.PURCHASE || x.Order.OrderType == Helper.Constants.OrderType.ADJUST).ToList();
+            var sales = GetOrderDetailList().Where(x => x.Order.OrderType == Helper.Constants.OrderType.SALE || x.Order.OrderType == Helper.Constants.OrderType.CUSTOMER_RETURN).ToList();
+
+            var purchases = GetOrderDetailList().Where(x => x.Order.OrderType == Helper.Constants.OrderType.PURCHASE || x.Order.OrderType == Helper.Constants.OrderType.SUPPLIER_RETURN || x.Order.OrderType == Helper.Constants.OrderType.ADJUST).ToList();
 
             var sp = new SalesAndPurchase();
             sp.Sales = new OrderReport(sales);
@@ -52,6 +44,7 @@ namespace Web.Controllers
                 });
             });
 
+            //cash Injection
             list.AddRange(GetCashInjectionList().Select(x => 
                 new CashFlow()
                 {
@@ -70,6 +63,8 @@ namespace Web.Controllers
                        Date = x.Date
                    }
                   ));
+
+            ///TODO: handle refund
 
             var totalCashIn = list.Sum(x => x.CashIn);
             var totalCashOut = list.Sum(x => x.CashOut);

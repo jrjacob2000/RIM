@@ -21,15 +21,9 @@ namespace Web.Controllers
         // GET: OrderDetails
         public ActionResult Index(string SearchString, string GenerateInvoice)
         {
-            //ViewBag.Orders = db.Orders.Where(x => x.OrderType == Helper.Constants.OrderType.SALE 
-            //    && x.CreatedBy == UserId).Select(x => new SelectListItem() { Value = x.Id.ToString(), Text = x.OrderNumber }).ToList();
-
+           
             ViewBag.Orders = GetOrderList().Where(x => x.OrderType == Helper.Constants.OrderType.SALE).Select(x => new SelectListItem() { Value = x.Id.ToString(), Text = x.OrderNumber }).ToList();
-
-            //var order = db.Orders.Where(x => x.OrderNumber == SearchString
-            //    && x.CreatedBy == UserId).FirstOrDefault();
-            //ViewData["currentFilter"] = SearchString;
-
+            
             var order = GetOrderList().Where(x => x.OrderNumber == SearchString).FirstOrDefault();
             ViewData["currentFilter"] = SearchString;
 
@@ -48,8 +42,15 @@ namespace Web.Controllers
                     .OrderBy(o => o.Product.Name).ToList();
             }
             ViewBag.Total = list.Sum(x => x.AmountAfterTax);
+
             var setting = GetSetting();
-            ViewBag.BusinessName = setting.BusinessName;
+            if (setting != null)
+            {
+                ViewBag.BusinessName = setting.BusinessName;
+                ViewBag.BillingAddress = setting.BillingAddress;
+                ViewBag.ContactNumber = setting.BusinessContactNumber;
+            }
+
             return View(list);
         }
 

@@ -18,7 +18,9 @@ namespace Web.Controllers
                 new SelectListItem(){Value = OrderType.PURCHASE, Text="Purchase"},
                 new SelectListItem(){Value = OrderType.SALE, Text="Sale"},
                 new SelectListItem(){Value = OrderType.QOUTE, Text="Qoute"},
-                new SelectListItem(){Value = OrderType.ADJUST, Text="Adjust"}
+                new SelectListItem(){Value = OrderType.ADJUST, Text="Adjust"},
+                new SelectListItem(){Value = OrderType.CUSTOMER_RETURN, Text="Return by Customer"},
+                new SelectListItem(){Value = OrderType.SUPPLIER_RETURN, Text="Return to Supplier"}
                 };
             }
 
@@ -39,6 +41,8 @@ namespace Web.Controllers
                 public const string SALE = "SALE";
                 public const string QOUTE = "QOUTE";
                 public const string ADJUST = "ADJUST";
+                public const string CUSTOMER_RETURN = "CUSTOMER_RETURN";
+                public const string SUPPLIER_RETURN = "SUPPLIER_RETURN";
             }
 
             public static class Unit

@@ -34,6 +34,7 @@ namespace Web.Models
 
         public Guid CreatedBy { get; set; }
 
+        [DisplayFormat(DataFormatString = "{0:0,0.0000}")]
         [Display(Name = "Amount Before Tax")]
         public decimal AmountBeforeTax { 
             get 
@@ -45,6 +46,7 @@ namespace Web.Models
             }
         }
 
+        [DisplayFormat(DataFormatString = "{0:00.0000}")]
         [Display(Name = "Tax")]
         public decimal Tax
         {
@@ -61,6 +63,7 @@ namespace Web.Models
             }
         }
 
+        [DisplayFormat(DataFormatString = "{0:0,0.0000}")]
         [Display(Name = "Amount After Tax")]
         public decimal AmountAfterTax
         {

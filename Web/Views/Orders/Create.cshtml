@@ -20,7 +20,9 @@
         <div class="form-group">
             @Html.LabelFor(model => model.OrderType, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.DropDownListFor(model => model.OrderType, new SelectList(ViewBag.OrderTypes, "Value", "Text"), "- Please Select -", new { @class = "form-control", @onchange = "document.location.href = '/Orders/Create?orderType=' + this.options[this.selectedIndex].value;" })
+                @*var action = Url.Action("Create", "Order", new { Id = this.options[this.selectedIndex].value,IdToCopy=true });*@
+                @*@Html.DropDownListFor(model => model.OrderType, new SelectList(ViewBag.OrderTypes, "Value", "Text"), "- Please Select -", new { @class = "form-control", @onchange = "document.location.href = '/Orders/Create?IdToCopy=" + ViewBag.IdToCopy.ToString() + "&orderType=' + this.options[this.selectedIndex].value;" })*@
+                @Html.DropDownListFor(model => model.OrderType, new SelectList(ViewBag.OrderTypes, "Value", "Text"), "- Please Select -", new { @class = "form-control", @onchange = "OrderTypeChange(this.value)" })
                 @Html.ValidationMessageFor(model => model.OrderType, "", new { @class = "text-danger" })
             </div>
         </div>
@@ -91,7 +93,7 @@
 
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Create" class="btn btn-default" />
+                <input type="submit" value="Create" class="btn btn-primary" />
             </div>
         </div>
     </div>
@@ -107,20 +109,25 @@
 
 <script type="text/javascript">
 
-    function GetOrderType()
-    {
+    function GetOrderType() {
         if ($('#OrderType').val() != "") {
-            $.ajax({               
+            $.ajax({
                 type: 'GET',
                 url: "@Url.Action("Create", Url.RequestContext.RouteData.Values)" + "?orderType=" + $("#OrderType").val(),
                 data: "{}",
                 success: function (view) {
                     $('#OrderNumber').val(view);
+                    alert('');
                 },
                 error: function () {
                     alert("error");
                 }
-            });;
+            });
+        }
     }
+
+    function OrderTypeChange(value) {
+        var url = '/Orders/Create?IdToCopy=@ViewBag.IdToCopy&orderType='+ value;
+        document.location.href = url;
     }
 </script>

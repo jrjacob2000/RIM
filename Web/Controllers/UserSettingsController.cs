@@ -79,7 +79,7 @@ namespace Web.Controllers
             UserSetting userSetting = db.UserSettings.Find(UserId);
             if (userSetting == null)
             {
-                return View();
+                return View(new UserSetting());
                 //return HttpNotFound();
             }
             return View(userSetting);
@@ -90,7 +90,7 @@ namespace Web.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "UserId,BusinessName,InvoicePrefix,InvoiceNumber,PurchasePrefix,PurchaseNumber,SalesPrefix,SalesNumber")] UserSetting userSetting)
+        public ActionResult Edit( UserSetting userSetting)
         {
             var userId = new Guid( User.Identity.GetUserId());
 
@@ -102,6 +102,9 @@ namespace Web.Controllers
             else
             {
                 dbUserSetting.BusinessName = userSetting.BusinessName;
+                dbUserSetting.BillingAddress = userSetting.BillingAddress;
+                dbUserSetting.ShippingAddress = userSetting.ShippingAddress;
+                dbUserSetting.BusinessContactNumber = userSetting.BusinessContactNumber;
                 dbUserSetting.InvoicePrefix = userSetting.InvoicePrefix;
                 dbUserSetting.InvoiceNumber = userSetting.InvoiceNumber;
                 dbUserSetting.SalesPrefix = userSetting.SalesPrefix;

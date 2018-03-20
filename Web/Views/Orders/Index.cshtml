@@ -24,6 +24,7 @@
     <p>
         @Html.ActionLink("Create New", "Create")
     </p>
+<div style="overflow:auto">
     <table class="table">
         <tr>
             <th>
@@ -49,6 +50,9 @@
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.TaxRate)
+            </th>
+            <th>
+                Amount
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.InvoiceNumber)
@@ -84,6 +88,9 @@
                     @Html.DisplayFor(modelItem => item.TaxRate)
                 </td>
                 <td>
+                    @Html.DisplayFor(modelItem => item.Amount)
+                </td>
+                <td>
                     @if (item.InvoiceNumber == null && item.OrderType == Web.Controllers.Helper.Constants.OrderType.SALE)
                     {
                         @Html.ActionLink("Create Invoice", "Index", "Invoice", new { searchString = item.OrderNumber }, null)
@@ -98,15 +105,16 @@
                     }
                 </td>
                 <td>
-                    @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
+                    <span style="white-space:nowrap">@Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
                     @Html.ActionLink("Details", "Details", new { id = item.Id }) |
-                    @Html.ActionLink("Delete", "Delete", new { id = item.Id })
+                    @Html.ActionLink("Delete", "Delete", new { id = item.Id })</span>
+                                       
                 </td>
             </tr>
         }
 
     </table>
-
+</div>
     <script type="text/javascript">
         var token = sessionStorage.getItem("tokenKey");
         var headers = {};
