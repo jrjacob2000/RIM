@@ -36,6 +36,8 @@ namespace Web.Models
             }
         }
 
+        public string Type { get; set; }
+
         public bool Deleted { get; set; }
 
         public Guid CreatedBy { get; set; }

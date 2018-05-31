@@ -60,24 +60,26 @@ namespace Web.Controllers
                 return RedirectToAction("Index");
             }
 
-            ViewBag.Order_Id = new SelectList(GetOrderList(), "Id", "OrderNumber", paymentDetail.Order_Id);
+            //ViewBag.Order_Id = new SelectList(GetOrderList(), "Id", "OrderNumber", paymentDetail.Order_Id);
             return View(paymentDetail);
         }
 
         // GET: PaymentDetails/Edit/5
         public ActionResult Edit(Guid? id)
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            PaymentDetail paymentDetail = GetPaymentDetailById(id.Value); //db.PaymentDetails.Find(id);
-            if (paymentDetail == null)
-            {
-                return HttpNotFound();
-            }
-            ViewBag.Order_Id = new SelectList(GetOrderList(), "Id", "OrderNumber", paymentDetail.Order_Id);
-            return View(paymentDetail);
+            //if (id == null)
+            //{
+            //    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            //}
+            //PaymentDetail paymentDetail = GetPaymentDetailById(id.Value); //db.PaymentDetails.Find(id);
+            //if (paymentDetail == null)
+            //{
+            //    return HttpNotFound();
+            //}
+            //ViewBag.Order_Id = new SelectList(GetOrderList(), "Id", "OrderNumber", paymentDetail.Order_Id);
+            //return View(paymentDetail);
+
+            return View();
         }
 
         // POST: PaymentDetails/Edit/5
@@ -87,17 +89,19 @@ namespace Web.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Edit([Bind(Include = "Id,Amount,Order_Id")] PaymentDetail paymentDetail)
         {
-            var dbPaymentDetail = GetPaymentDetailById(paymentDetail.Id, true);
-            paymentDetail.CreatedBy = dbPaymentDetail.CreatedBy;
+            //var dbPaymentDetail = GetPaymentDetailById(paymentDetail.Id, true);
+            //paymentDetail.CreatedBy = dbPaymentDetail.CreatedBy;
 
-            if (ModelState.IsValid)
-            {
-                db.Entry(paymentDetail).State = EntityState.Modified;
-                db.SaveChanges();
-                return RedirectToAction("Index");
-            }
-            ViewBag.Order_Id = new SelectList(GetOrderList(), "Id", "OrderNumber", paymentDetail.Order_Id);
-            return View(paymentDetail);
+            //if (ModelState.IsValid)
+            //{
+            //    db.Entry(paymentDetail).State = EntityState.Modified;
+            //    db.SaveChanges();
+            //    return RedirectToAction("Index");
+            //}
+            //ViewBag.Order_Id = new SelectList(GetOrderList(), "Id", "OrderNumber", paymentDetail.Order_Id);
+            //return View(paymentDetail);
+
+            return View();
         }
 
         // GET: PaymentDetails/Delete/5

@@ -50,7 +50,17 @@
     <Content Include="ChangeScript\1.1\3_UpdateUserSetting.sql" />
     <Content Include="ChangeScript\1.1\4_addFieldSetting.sql" />
     <Content Include="ChangeScript\1.1\5_ordernumberUniqeConstraint.sql" />
+    <Content Include="ChangeScript\1.1\6_addColumn_Paymen.sql" />
+    <Content Include="ChangeScript\1.2\201803230136087_update_orderTable.sql" />
+    <Content Include="ChangeScript\1.2\201803240336546_alterUserSetting.sql" />
+    <Content Include="ChangeScript\1.2\201803240931358_createInvoice.sql" />
+    <Content Include="ChangeScript\1.2\201803251451283_alter_paymentdetail.sql" />
+    <Content Include="ChangeScript\1.2\201803251532444__Alter_paymentdetail_deleteOrderId.sql" />
+    <Content Include="ChangeScript\1.2\201803281258178_addStatusColumn_Invoice.sql" />
+    <Content Include="ChangeScript\1.2\201803291322286_addTypecolumn_invoice.sql" />
+    <Content Include="ChangeScript\1.2\201804040040154_newCreditTable.sql" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

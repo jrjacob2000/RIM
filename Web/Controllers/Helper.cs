@@ -19,8 +19,7 @@ namespace Web.Controllers
                 new SelectListItem(){Value = OrderType.SALE, Text="Sale"},
                 new SelectListItem(){Value = OrderType.QOUTE, Text="Qoute"},
                 new SelectListItem(){Value = OrderType.ADJUST, Text="Adjust"},
-                new SelectListItem(){Value = OrderType.CUSTOMER_RETURN, Text="Return by Customer"},
-                new SelectListItem(){Value = OrderType.SUPPLIER_RETURN, Text="Return to Supplier"}
+                new SelectListItem(){Value = OrderType.CUSTOMER_RETURN, Text="Return by Customer"}
                 };
             }
 
@@ -52,6 +51,28 @@ namespace Web.Controllers
                 public const string BOX = "BOX";
                 public const string BOTTLE = "BOTTLE";
                 public const string SACKS = "BOTTLE";
+            }
+
+            public static class PaymentType
+            {
+                public const string REFUND = "REFUND";
+                public const string RECIEVE = "RECIEVE";
+            }
+
+            public static class InvoiceStatus
+            {
+                public const string PAID = "PAID";
+                public const string PARTIALPAID = "PARTIAL PAID";
+                public const string DRAFT = "DRAFT";
+                public const string OVERDUE = "OVERDUE";
+            }
+
+            public static class InvoiceType
+            {
+                public const string INVOICE = "INVOICE";
+                public const string BILL = "BILL";
+                public const string CustomerCredit = "CUST_CREDIT";
+                public const string SupplierCredit = "SUPP_CREDIT";
             }
 
         }

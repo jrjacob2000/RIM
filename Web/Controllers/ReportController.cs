@@ -54,7 +54,7 @@ namespace Web.Controllers
                 }
                 ));
 
-             list.AddRange(GetPaymentList().ToList()
+             list.AddRange(GetPaymentList().Where(x => x.Type == Helper.Constants.PaymentType.RECIEVE).ToList()
                  .Select(x =>
                    new CashFlow()
                    {
@@ -64,7 +64,16 @@ namespace Web.Controllers
                    }
                   ));
 
-            ///TODO: handle refund
+            ///handle refund
+             list.AddRange(GetPaymentList().Where(x => x.Type == Helper.Constants.PaymentType.REFUND).ToList()
+                 .Select(x =>
+                   new CashFlow()
+                   {
+                       Particulars = string.Format("Refund to {0}", x.Partner.Name),
+                       CashOut = x.Amount,
+                       Date = x.Date
+                   }
+                  ));
 
             var totalCashIn = list.Sum(x => x.CashIn);
             var totalCashOut = list.Sum(x => x.CashOut);

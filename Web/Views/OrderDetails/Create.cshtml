@@ -2,9 +2,18 @@
 
 @{
     ViewBag.Title = "Create";
+    var ordType = "";
+    if (Model.Order.OrderType == Web.Controllers.Helper.Constants.OrderType.ADJUST)
+    {
+        ordType = "adjusment";
+    }
+    else
+    {
+        ordType = "order";
+    }
 }
 
-<h2>Create</h2>
+<h2>Add Item for @ordType  @Model.Order.OrderNumber</h2>
 
 
 @using (Html.BeginForm()) 
@@ -12,7 +21,6 @@
     @Html.AntiForgeryToken()
     
     <div class="form-horizontal">
-        <h4>Order Item</h4>
         <hr />
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
 
@@ -24,7 +32,7 @@
                 @Html.ValidationMessageFor(model => model.Product_Id, "", new { @class = "text-danger" })
             </div>
         </div>
-
+       
         <div class="form-group">
             @Html.LabelFor(model => model.Quantity, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
@@ -32,7 +40,8 @@
                 @Html.ValidationMessageFor(model => model.Quantity, "", new { @class = "text-danger" })
             </div>
         </div>
-
+        @if(Model.Order.OrderType != Web.Controllers.Helper.Constants.OrderType.ADJUST)
+        { 
         <div class="form-group">
             @Html.LabelFor(model => model.UnitDiscount, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
@@ -40,17 +49,26 @@
                 @Html.ValidationMessageFor(model => model.UnitDiscount, "", new { @class = "text-danger" })
             </div>
         </div>
-
+        }
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Create" class="btn btn-primary" />
+                <input type="submit" value="Save" class="btn btn-primary" />
             </div>
         </div>
     </div>
 }
 
 <div>
-    @Html.ActionLink("Back to List", "Details","Orders", new { Id = Model.Order_Id }, null)
+    @if (Model.Order.OrderType == Web.Controllers.Helper.Constants.OrderType.ADJUST)
+    {
+        @Html.ActionLink("Back to List", "AdjustDetails", "Orders", new { Id = Model.Order.Id }, null)
+    }
+    else
+    {
+       @Html.ActionLink("Back to List", "Details", "Orders", new { Id = Model.Order_Id }, null)
+    }
+
+    
 </div>
 
 @section Scripts {

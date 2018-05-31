@@ -3,3 +3,14 @@
 .custom-bootstrap-select{
     max-width: 350px;
 }
+
+.custom-header-div{
+    text-align:right !important; 
+    margin-top:-10px;
+}
+
+.custom-header-hr{
+    margin-top:5px;
+    height: 3px;
+    background-color:grey
+}

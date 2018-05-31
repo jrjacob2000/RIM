@@ -4,7 +4,28 @@
     ViewBag.Title = "Edit";
 }
 
-<h2>Edit</h2>
+@if (Model.OrderType == Web.Controllers.Helper.Constants.OrderType.PURCHASE)
+{
+    <h2>Edit Purchase Order -  @Model.OrderNumber</h2>
+}
+else if (Model.OrderType == Web.Controllers.Helper.Constants.OrderType.SALE)
+{
+    <h2>Edit Sales Order -  @Model.OrderNumber</h2>
+}
+else if (Model.OrderType == Web.Controllers.Helper.Constants.OrderType.ADJUST)
+{
+    <h2>Edit Adjustment -  @Model.OrderNumber</h2>
+    <p>Adjust item quantity for any damages or lost</p>
+    
+}
+else if (Model.OrderType == Web.Controllers.Helper.Constants.OrderType.CUSTOMER_RETURN)
+{
+    <h2>Edit Return -  @Model.OrderNumber</h2>
+}
+else if (Model.OrderType == Web.Controllers.Helper.Constants.OrderType.SUPPLIER_RETURN)
+{
+    <h2>Edit Return -  @Model.OrderNumber</h2>
+}
 
 
 @using (Html.BeginForm())
@@ -12,23 +33,30 @@
     @Html.AntiForgeryToken()
     
     <div class="form-horizontal">
-        <h4>Order</h4>
+       
         <hr />
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
         @Html.HiddenFor(model => model.Id)
         @Html.HiddenFor(model => model.OrderType)
         @Html.HiddenFor(model => model.OrderNumber)
 
-        <div class="form-group">
+        @*<div class="form-group">
             @Html.LabelFor(model => model.OrderType, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
                 @Html.DropDownListFor(model => model.OrderType, new SelectList(ViewBag.OrderTypes, "Value", "Text"), "- Please Select -", new { @class = "form-control", @disabled = "disabled" })
                 @Html.ValidationMessageFor(model => model.OrderType, "", new { @class = "text-danger" })
             </div>
-        </div>
+        </div>*@
 
         <div class="form-group">
-            @Html.LabelFor(model => model.OrderNumber, htmlAttributes: new { @class = "control-label col-md-2" })
+            @if (Model.OrderType == Web.Controllers.Helper.Constants.OrderType.ADJUST)
+            {
+                @Html.Label("Adjust Number", htmlAttributes: new { @class = "control-label col-md-2" })
+            }           
+            else
+            {
+                @Html.LabelFor(model => model.OrderNumber, htmlAttributes: new { @class = "control-label col-md-2" })
+            }
             <div class="col-md-10">
                 @Html.EditorFor(model => model.OrderNumber, new { htmlAttributes = new { @class = "form-control", @disabled = "disabled" } })
                 @Html.ValidationMessageFor(model => model.OrderNumber, "", new { @class = "text-danger" })
@@ -36,13 +64,22 @@
         </div>
 
         <div class="form-group">
-            @Html.LabelFor(model => model.OrderDate, htmlAttributes: new { @class = "control-label col-md-2" })
+            @if (Model.OrderType == Web.Controllers.Helper.Constants.OrderType.ADJUST)
+             {
+                @Html.Label("Adjust Date", htmlAttributes: new { @class = "control-label col-md-2" })
+             }
+            else
+            {
+                @Html.LabelFor(model => model.OrderDate, htmlAttributes: new { @class = "control-label col-md-2" })
+            }
             <div class="col-md-10">
                 @Html.EditorFor(model => model.OrderDate, new { htmlAttributes = new { @class = "form-control" } })
                 @Html.ValidationMessageFor(model => model.OrderDate, "", new { @class = "text-danger" })
             </div>
         </div>
 
+        @if (Model.OrderType != Web.Controllers.Helper.Constants.OrderType.ADJUST)
+        {
         <div class="form-group">
             @Html.LabelFor(model => model.ExpectedDate, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
@@ -82,9 +119,16 @@
                 @Html.ValidationMessageFor(model => model.TaxRate, "", new { @class = "text-danger" })
             </div>
         </div>
-
+        }
         <div class="form-group">
-            @Html.LabelFor(model => model.OrderNotes, htmlAttributes: new { @class = "control-label col-md-2" })
+            @if (Model.OrderType == Web.Controllers.Helper.Constants.OrderType.ADJUST)
+            {
+                @Html.Label("Adjust Reason", htmlAttributes: new { @class = "control-label col-md-2" })
+            }
+            else
+            {
+                @Html.LabelFor(model => model.OrderNotes, htmlAttributes: new { @class = "control-label col-md-2" })
+            }
             <div class="col-md-10">
                 @Html.EditorFor(model => model.OrderNotes, new { htmlAttributes = new { @class = "form-control" } })
                 @Html.ValidationMessageFor(model => model.OrderNotes, "", new { @class = "text-danger" })
@@ -100,7 +144,7 @@
 }
 
 <div>
-    @Html.ActionLink("Back to List", "Index")
+    @Html.ActionLink("Back to List", "Index", new { orderType = @Model.OrderType })
 </div>
 
 @section Scripts {

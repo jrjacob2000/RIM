@@ -18,7 +18,7 @@ namespace Web.Models
         public string OrderNumber {get;set;}
 
         [Required]
-        [Display(Name = "Order Date")]
+        [Display(Name = "Date")]
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public DateTime OrderDate {get;set;}
@@ -31,13 +31,15 @@ namespace Web.Models
         [Required]
         [Display(Name = "Order Type")]
         public string OrderType {get;set;}
-
+      
         [Display(Name = "Partner")]
-        public Guid Partner_Id { get; set; }
+        public Guid? Partner_Id { get; set; }
 
         [ForeignKey("Partner_Id")]
         [Display(Name = "Partner")]
         public Partner Partner {get;set;}
+
+       
         
         [Display(Name = "Other Charges")]
         public decimal OtherCharges {get;set;}
@@ -69,8 +71,18 @@ namespace Web.Models
 
         public Guid CreatedBy { get; set; }
 
-        public decimal Amount {
-            get {
+        public List<Invoice>  Invoices { get; set; }
+
+        public List<PaymentDetail> PaymentDetails
+        {
+            get;
+            set;
+        }
+
+        public decimal Amount
+        {
+            get
+            {
                 if (OrderDetails != null)
                 {
                     var sum = OrderDetails.Sum(x => x.AmountAfterTax);
@@ -79,12 +91,6 @@ namespace Web.Models
                 else
                     return 0;
             }
-        }
-
-        public List<PaymentDetail> PaymentDetails
-        {
-            get;
-            set;
         }
 
         public decimal PaidAmount {
@@ -105,5 +111,7 @@ namespace Web.Models
                 return Amount - PaidAmount;
             }
         }
+
+        
     }
 }

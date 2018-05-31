@@ -26,10 +26,14 @@ namespace Web.Controllers
             ViewBag.OrderTypes = list;
             ViewData["orderType"] = orderType;
             
-            //return View(await db.Orders.Include("Partner").Where(x => x.OrderType == orderType || string.IsNullOrEmpty(orderType)).ToListAsync());
             var orders = GetOrderList()
                 .Where(x => x.OrderType == orderType || string.IsNullOrEmpty(orderType))
                 .OrderByDescending(o => o.OrderDate).ToList();
+            
+            orders.ForEach(x =>
+                    x.Invoices = GetInvoiceByOrderId(x.Id).ToList()
+                );
+
             return View(orders);
         }
 
@@ -42,6 +46,7 @@ namespace Web.Controllers
             }
                       
             Order order = GetOrderById(id.Value);
+            order.Invoices = GetInvoiceByOrderId(order.Id).ToList();
                        
 
             if (order == null)
@@ -49,10 +54,35 @@ namespace Web.Controllers
                 return HttpNotFound();
             }
 
-            //return RedirectToAction("Details",
-            //        new { returnUrl = Request.UrlReferrer.ToString() });
                        
             return View(order);
+        }
+
+
+        public ActionResult AdjustDetails(Guid? id)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
+            var adjust = new Adjust();
+            Order order = GetOrderById(id.Value);
+            adjust.Id = order.Id;
+            adjust.OrderNumber = order.OrderNumber;
+            adjust.OrderDate = order.OrderDate;
+            adjust.OrderDetails = order.OrderDetails;
+            adjust.OrderNotes = order.OrderNotes;
+            adjust.OrderType = order.OrderType;
+
+
+            if (order == null)
+            {
+                return HttpNotFound();
+            }
+
+
+            return View(adjust);
         }
 
         // GET: Orders/Create
@@ -78,9 +108,18 @@ namespace Web.Controllers
 
                 if (!string.IsNullOrEmpty(setting.SalesNumber) && OrderType == Helper.Constants.OrderType.SALE)
                     order.OrderNumber = string.Format("{0}-{1}", setting.SalesPrefix, setting.SalesNumber);
+
+                if (!string.IsNullOrEmpty(setting.CustomerReturnNumber) && OrderType == Helper.Constants.OrderType.CUSTOMER_RETURN)
+                    order.OrderNumber = string.Format("{0}-{1}", setting.CustomerReturnPrefix, setting.CustomerReturnNumber);
+
+                if (!string.IsNullOrEmpty(setting.SupplierReturnNumber) && OrderType == Helper.Constants.OrderType.SUPPLIER_RETURN)
+                    order.OrderNumber = string.Format("{0}-{1}", setting.SupplierReturnPrefix, setting.SupplierReturnNumber);
+
+                if (!string.IsNullOrEmpty(setting.AdjustNumber) && OrderType == Helper.Constants.OrderType.ADJUST)
+                    order.OrderNumber = string.Format("{0}-{1}", setting.AdjustPrefix, setting.AdjustNumber);
             }
 
-            
+            order.OrderType = OrderType;
             order.ExpectedDate = DateTime.Now;
             order.OrderDate = DateTime.Now;
             order.CreatedBy = UserId;
@@ -93,7 +132,7 @@ namespace Web.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Create([Bind(Include = "Id,OrderNumber,OrderDate,ExpectedDate,OrderType,OtherCharges,OrderDiscount,TaxRate,OrderNotes,Partner_Id")] Order order,Guid IdToCopy)
+        public async Task<ActionResult> Create([Bind(Include = "Id,OrderNumber,OrderDate,ExpectedDate,OrderType,OtherCharges,OrderDiscount,TaxRate,OrderNotes,Partner_Id")] Order order,Guid? IdToCopy)
         {
             try
             {
@@ -111,8 +150,7 @@ namespace Web.Controllers
                         var length = setting.PurchaseNumber.Length;
                         var newValue = int.Parse(setting.PurchaseNumber) + 1;
 
-                        setting.PurchaseNumber = newValue.ToString().PadLeft(length, '0'); ;
-
+                        setting.PurchaseNumber = newValue.ToString().PadLeft(length, '0'); 
                     }
                     if (order.OrderType == Helper.Constants.OrderType.SALE && !string.IsNullOrEmpty(setting.SalesNumber))
                     {
@@ -122,14 +160,28 @@ namespace Web.Controllers
                         var newValue = int.Parse(setting.SalesNumber) + 1;
 
                         setting.SalesNumber = newValue.ToString().PadLeft(length, '0');
-
+                    }
+                    if (order.OrderType == Helper.Constants.OrderType.CUSTOMER_RETURN && !string.IsNullOrEmpty(setting.CustomerReturnNumber))
+                    {
+                        order.OrderNumber = string.Format("{0}-{1}", setting.CustomerReturnPrefix, setting.CustomerReturnNumber);
+                        setting.CustomerReturnNumber = GetNextNumber(setting.CustomerReturnNumber);
+                    }
+                    if (order.OrderType == Helper.Constants.OrderType.SUPPLIER_RETURN && !string.IsNullOrEmpty(setting.SupplierReturnNumber))
+                    {
+                        order.OrderNumber = string.Format("{0}-{1}", setting.SupplierReturnPrefix, setting.SupplierReturnNumber);
+                        setting.SupplierReturnNumber = GetNextNumber(setting.SupplierReturnNumber);
+                    }
+                    if (order.OrderType == Helper.Constants.OrderType.ADJUST && !string.IsNullOrEmpty(setting.AdjustNumber))
+                    {
+                        order.OrderNumber = string.Format("{0}-{1}", setting.AdjustPrefix, setting.AdjustNumber);
+                        setting.AdjustNumber = GetNextNumber(setting.AdjustNumber);
                     }
                 }
 
                 var orderDetails= new List<OrderDetail>();
                 if (IdToCopy != null && IdToCopy != Guid.Empty)
                 {
-                    var orderToCopy = GetOrderById(IdToCopy);
+                    var orderToCopy = GetOrderById(IdToCopy.Value);
 
                     foreach (OrderDetail od in orderToCopy.OrderDetails)
                     {
@@ -155,6 +207,18 @@ namespace Web.Controllers
                 if (order.TaxRate > 0)
                     order.TaxRate = order.TaxRateToDecimal;
 
+
+                if (order.OrderType == Helper.Constants.OrderType.ADJUST)
+                {
+                    order.ExpectedDate = order.OrderDate;
+                }
+                else
+                {
+                    if (order.Partner_Id == null)
+                        ModelState.AddModelError("","Partner is required");
+  
+                }
+
                 if (ModelState.IsValid)
                 {    
                     if (orderDetails.Count > 0)
@@ -164,7 +228,7 @@ namespace Web.Controllers
                     
                     await db.SaveChangesAsync();
 
-                    return RedirectToAction("Details", new { id = order.Id });
+                    return RedirectToAction(order.OrderType == Helper.Constants.OrderType.ADJUST ? "AdjustDetails":"Details", new { id = order.Id });
                 }
 
                 //return View(order);
@@ -237,16 +301,48 @@ namespace Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Edit(Order order, string returnUrl)
         {
-            ViewBag.OrderTypes = Helper.Constants.OrderTypeList();
-            //ViewBag.Partners = db.Partners.Select(x => new SelectListItem() { Value = x.Id.ToString(), Text = x.Name }).ToList();
+            ViewBag.OrderTypes = Helper.Constants.OrderTypeList();            
             ViewBag.Partners = GetPartnerList().Select(x => new SelectListItem() { Value = x.Id.ToString(), Text = x.Name }).ToList();
+
 
             var dbOrder = GetOrderById(order.Id, true);
             order.CreatedBy = dbOrder.CreatedBy;
             order.TaxRate = order.TaxRateToDecimal;
+           
+
+            var invoices = GetInvoiceByOrderId(order.Id).ToList();
+
+            foreach (Invoice inv in invoices)
+            {
+                var payments = GetPaymentDetailList().Where(x => x.Invoice_Id == inv.Id && !x.Payment.Deleted).ToList();
+                if (payments.Any())
+                {
+                    ModelState.AddModelError("", string.Format("Unable to edit an order that has {0} with payment/s made already.",order.OrderType == Helper.Constants.OrderType.SALE ? "Invoice" : "Bills"));
+                    break;
+                }
+            }
+            
+           
+
+            if (order.OrderType == Helper.Constants.OrderType.ADJUST)
+            {
+                order.ExpectedDate = order.OrderDate;
+            }
+            else
+            {
+                if (order.Partner_Id == null)
+                    ModelState.AddModelError("", "Partner is required");
+
+            }
 
             if (ModelState.IsValid)
             {
+                 foreach (Invoice inv in invoices)
+                 { 
+                    inv.Partner_Id = order.Partner_Id.Value;
+                    db.Entry(inv).State = EntityState.Modified;
+                 }              
+
                 db.Entry(order).State = EntityState.Modified;
                 await db.SaveChangesAsync();
 
@@ -254,7 +350,7 @@ namespace Web.Controllers
                 if (!String.IsNullOrEmpty(returnUrl))
                     return Redirect(returnUrl);
                 else
-                    return RedirectToAction("Index");
+                    return RedirectToAction("Index", new { orderType = order.OrderType });
                 
             }
             return View(order);
@@ -294,7 +390,8 @@ namespace Web.Controllers
             {                 
                 db.Orders.Remove(order);
                 db.SaveChanges();
-                return RedirectToAction("Index");
+                return RedirectToAction("Index", new { orderType = order.OrderType });
+                //return RedirectToAction(order.OrderType == Helper.Constants.OrderType.ADJUST ? "AdjustDetails" : "Details", new { id = order.Id });
             }
             catch (Exception ex)
             {
@@ -327,6 +424,15 @@ namespace Web.Controllers
                 db.Dispose();
             }
             base.Dispose(disposing);
+        }
+
+
+        private string GetNextNumber(string number)
+        {
+            var length = number.Length;
+            var newValue = int.Parse(number) + 1;
+
+            return newValue.ToString().PadLeft(length, '0');
         }
     }
 }

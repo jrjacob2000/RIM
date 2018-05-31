@@ -34,13 +34,15 @@ namespace Web.Models
 
         public Guid CreatedBy { get; set; }
 
-        [DisplayFormat(DataFormatString = "{0:0,0.0000}")]
+        [DisplayFormat(DataFormatString = "{0:0,0.00}")]
         [Display(Name = "Amount Before Tax")]
         public decimal AmountBeforeTax { 
             get 
             {
                 if (ProductPrice != null)
-                    return (Quantity * (Order.OrderType == Web.Controllers.Helper.Constants.OrderType.SALE? ProductPrice.SelesPrice : ProductPrice.PurchasePrice) - UnitDiscount);
+                    return (Quantity * ((Order.OrderType == Web.Controllers.Helper.Constants.OrderType.SALE 
+                                        || Order.OrderType == Web.Controllers.Helper.Constants.OrderType.CUSTOMER_RETURN)
+                                        ? ProductPrice.SelesPrice : ProductPrice.PurchasePrice) - UnitDiscount);
                 else
                     return 0;
             }
@@ -63,7 +65,7 @@ namespace Web.Models
             }
         }
 
-        [DisplayFormat(DataFormatString = "{0:0,0.0000}")]
+        [DisplayFormat(DataFormatString = "{0:0,0.00}")]
         [Display(Name = "Amount After Tax")]
         public decimal AmountAfterTax
         {

@@ -27,7 +27,8 @@
         <dd>
             @Html.DisplayFor(model => model.Quantity)
         </dd>
-
+        @if(Model.Order.OrderType != Web.Controllers.Helper.Constants.OrderType.ADJUST)
+        { 
         <dt>
             @Html.DisplayNameFor(model => model.ProductPrice.SelesPrice)
         </dt>
@@ -43,6 +44,7 @@
         <dd>
             @Html.DisplayFor(model => model.UnitDiscount)
         </dd>
+        }
 
     </dl>
 
@@ -51,7 +53,15 @@
 
         <div class="form-actions no-color">
             <input type="submit" value="Delete" class="btn btn-primary" /> |
-            @Html.ActionLink("Back to List", "Details","Orders", new { Id = Model.Order.Id }, null)
+            @if (Model.Order.OrderType == Web.Controllers.Helper.Constants.OrderType.ADJUST)
+            {
+                @Html.ActionLink("Back to List", "AdjustDetails", "Orders", new { Id = Model.Order.Id }, null)
+            }
+            else
+            {
+                @Html.ActionLink("Back to List", "Details", "Orders", new { Id = Model.Order.Id }, null)
+            }
+           
         </div>
     }
 </div>

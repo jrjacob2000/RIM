@@ -30,12 +30,10 @@ namespace Web.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            //OrderDetail orderDetail = await db.OrderDetails
-            //    .Include("Order")
-            //    .Include("Product")
-            //    .Include("ProductPrice").FirstOrDefaultAsync(x => x.Id == id && x.CreatedBy == UserId);
+            
 
             OrderDetail orderDetail = GetOrderDetailById(id.Value);
+            orderDetail.Order = GetOrderById(orderDetail.Order_Id, true);
             if (orderDetail == null)
             {
                 return HttpNotFound();
@@ -50,6 +48,8 @@ namespace Web.Controllers
             var od = new OrderDetail();
             od.Product = new Product();
             od.Order_Id = Order_Id;
+            od.Order = GetOrderById(Order_Id, true);
+
 
             List<SelectListItem> productItems = new List<SelectListItem>();
             //productItems = db.ProductItems.Where(x => x.CreatedBy == UserId).ToList().Select(x => new SelectListItem() { Value = x.Id.ToString(), Text = x.Name }).ToList();
@@ -105,7 +105,7 @@ namespace Web.Controllers
             {
                 db.Entry(orderDetail).State = EntityState.Added;
                 await db.SaveChangesAsync();
-                return RedirectToAction("Details", "Orders", new { Id = orderDetail.Order_Id });
+                return RedirectToAction(order.OrderType == Helper.Constants.OrderType.ADJUST? "AdjustDetails" : "Details", "Orders", new { Id = orderDetail.Order_Id });
             }
 
             return View(orderDetail);
@@ -127,8 +127,8 @@ namespace Web.Controllers
             //    .Include("ProductPrice")
             //    .FirstOrDefaultAsync(x => x.Id == id);
 
-             OrderDetail orderDetail = GetOrderDetailById(id.Value);            
-                
+             OrderDetail orderDetail = GetOrderDetailById(id.Value);
+             orderDetail.Order = GetOrderById(orderDetail.Order_Id, true);   
 
             if (orderDetail == null)
             {
@@ -189,7 +189,7 @@ namespace Web.Controllers
             {
                 db.Entry(dbOrderDetail).State = EntityState.Modified;
                 await db.SaveChangesAsync();
-                return RedirectToAction("Details", "Orders", new { Id = orderDetail.Order.Id });
+                return RedirectToAction(order.OrderType == Helper.Constants.OrderType.ADJUST ? "AdjustDetails" : "Details", "Orders", new { Id = orderDetail.Order.Id });
                 //return RedirectToAction("Index");
             }
             return View(orderDetail);
@@ -223,9 +223,10 @@ namespace Web.Controllers
         {
             //OrderDetail orderDetail = db.OrderDetails.Find(id);
             OrderDetail orderDetail = GetOrderDetailById(id);
+            var order = GetOrderById(orderDetail.Order_Id);
             db.OrderDetails.Remove(orderDetail);
             db.SaveChanges();
-            return RedirectToAction("Details", "Orders", new { Id = orderDetail.Order_Id });
+            return RedirectToAction(order.OrderType == Helper.Constants.OrderType.ADJUST ? "AdjustDetails" : "Details", "Orders", new { Id = orderDetail.Order_Id });
             //return RedirectToAction("Index");
         }
 

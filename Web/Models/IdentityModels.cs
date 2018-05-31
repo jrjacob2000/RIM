@@ -30,6 +30,7 @@ namespace Web.Models
         {
             modelBuilder.Conventions.Remove<OneToManyCascadeDeleteConvention>();
             modelBuilder.Conventions.Remove<ManyToManyCascadeDeleteConvention>();
+
             base.OnModelCreating(modelBuilder);
         }
 
@@ -57,5 +58,11 @@ namespace Web.Models
         public System.Data.Entity.DbSet<Web.Models.CashInjection> CashInjections { get; set; }
 
         public System.Data.Entity.DbSet<Web.Models.UserSetting> UserSettings { get; set; }
+
+        public System.Data.Entity.DbSet<Web.Models.Invoice> Invoices { get; set; }
+
+        public System.Data.Entity.DbSet<Web.Models.Credit> Credits { get; set; }
+
+        public System.Data.Entity.DbSet<Web.Models.CreditInvoice> CreditInvoice { get; set; }
     }
 }

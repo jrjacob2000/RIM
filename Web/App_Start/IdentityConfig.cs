@@ -10,6 +10,8 @@ using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin;
 using Microsoft.Owin.Security;
+using System.Net;
+using System.Net.Mail;
 using Web.Models;
 
 namespace Web
@@ -18,8 +20,20 @@ namespace Web
     {
         public Task SendAsync(IdentityMessage message)
         {
+            SmtpClient client = new SmtpClient();
+            client.DeliveryMethod = SmtpDeliveryMethod.Network;
+            client.UseDefaultCredentials = true;
+            client.EnableSsl = true;
+            client.Host = "smtp.gmail.com";
+            client.Port = 587; 
+            client.Credentials = new NetworkCredential("jrjacob2000@gmail.com", "Ilovelord2");
+
+            return client.SendMailAsync("jrjacob2000@gmail.com",//ConfigurationManager.AppSettings["SupportEmailAddr"],
+                                        message.Destination,
+                                        message.Subject,
+                                        message.Body);
             // Plug in your email service here to send an email.
-            return Task.FromResult(0);
+            //return Task.FromResult(0);
         }
     }
 

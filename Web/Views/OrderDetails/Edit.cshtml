@@ -2,9 +2,18 @@
 
 @{
     ViewBag.Title = "Edit";
+    var ordType = "";
+    if (Model.Order.OrderType == Web.Controllers.Helper.Constants.OrderType.ADJUST)
+    {
+        ordType = "adjusment";
+    }
+    else
+    {
+        ordType = "order";
+    }
 }
 
-<h2>Edit</h2>
+<h2>Edit @ordType for Item @Model.Product.Name</h2>
 
 
 @using (Html.BeginForm())
@@ -12,7 +21,6 @@
     @Html.AntiForgeryToken()
     
     <div class="form-horizontal">
-        <h4>Order Item</h4>
         <hr />
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
         @Html.HiddenFor(model => model.Id)
@@ -35,7 +43,8 @@
                 @Html.ValidationMessageFor(model => model.Quantity, "", new { @class = "text-danger" })
             </div>
         </div>
-
+        @if(Model.Order.OrderType != Web.Controllers.Helper.Constants.OrderType.ADJUST)
+        {
         <div class="form-group">
             @Html.LabelFor(model => model.ProductPrice.SelesPrice, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
@@ -51,7 +60,7 @@
                 @Html.ValidationMessageFor(model => model.UnitDiscount, "", new { @class = "text-danger" })
             </div>
         </div>
-
+        }
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
                 <input type="submit" value="Save" class="btn btn-primary" />
@@ -63,7 +72,16 @@
 }
 
 <div>
-    @Html.ActionLink("Back to List", "Details", "Orders", new { Id = Model.Order.Id }, null)
+    @if (Model.Order.OrderType == Web.Controllers.Helper.Constants.OrderType.ADJUST)
+    {
+        @Html.ActionLink("Back to List", "AdjustDetails", "Orders", new { Id = Model.Order.Id }, null)
+    }
+    else
+    {
+        @Html.ActionLink("Back to List", "Details", "Orders", new { Id = Model.Order.Id }, null)
+    }
+
+    
 </div>
 
 

@@ -227,7 +227,8 @@ namespace Web.Controllers
         public IQueryable<PaymentDetail> GetPaymentDetailList()
         {
             return db.PaymentDetails
-                .Include("Order")
+                .Include("Invoice")
+                .Include("Invoice.Order")
                 .Include("Payment")
                 .Where(x => x.CreatedBy == UserId);
         }
@@ -235,7 +236,8 @@ namespace Web.Controllers
         //Payment
         public Payment GetPaymentById(Guid Id, bool detach = false)
         {
-            var payment = db.Payments.Include("Partner").Where(x => x.CreatedBy == UserId && !x.Deleted && x.Id == Id).FirstOrDefault();
+            var payment = db.Payments              
+                .Include("Partner").Where(x => x.CreatedBy == UserId && !x.Deleted && x.Id == Id).FirstOrDefault();
 
             if (payment == null)
                 return null;
@@ -287,10 +289,33 @@ namespace Web.Controllers
 
         public IQueryable<Category> GetCategoryList()
         {
-            return db.CategoryItems.Where(x => x.CreatedBy == UserId );
+            return db.CategoryItems.Where(x => x.CreatedBy == UserId ).OrderBy(o => o.Name);
         }
 
+        //Invoice
+        public Invoice GetInvoiceById(Guid Id, bool detach = false)
+        {
+            var invoice = db.Invoices
+                   .Include("Order")
+                   .Include("Order.OrderDetails")
+                   .Include("Order.OrderDetails.Product")
+                   .Include("Order.OrderDetails.ProductPrice")
+                   .Include("Partner")
+                   .Where(x => x.CreatedBy == UserId && x.Id == Id).FirstOrDefault();
 
+            if (detach)
+                db.Entry(invoice).State = EntityState.Detached;
+
+            return invoice;
+        }
+
+        public IQueryable<Invoice> GetInvoiceByOrderId(Guid OrderId)
+        {
+            var invoices = db.Invoices                  
+                   .Where(x => x.CreatedBy == UserId && x.Order_Id == OrderId);
+                        
+            return invoices;
+        }
         
     }
 }

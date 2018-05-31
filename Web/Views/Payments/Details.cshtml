@@ -37,14 +37,14 @@
     </dl>
 </div>
 <br />
-<h4>Allotment</h4>
+<h4>Payment for</h4>
 <table class="table">
     <tr>
         <th>
-            @Html.DisplayNameFor(model => model.PaymentDetails.First().Order.OrderNumber)
+            @Html.DisplayNameFor(model => model.PaymentDetails.First().Invoice.Order.OrderNumber)
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.PaymentDetails.First().Order.InvoiceNumber)
+            @Html.DisplayNameFor(model => model.PaymentDetails.First().Invoice.Order.InvoiceNumber)
         </th>
         <th>
             @Html.DisplayNameFor(model => model.Amount)
@@ -56,10 +56,10 @@
     {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.Order.OrderNumber)
+                @Html.DisplayFor(modelItem => item.Invoice.Order.OrderNumber)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Order.InvoiceNumber)
+                @Html.DisplayFor(modelItem => item.Invoice.InvoiceNumber)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Amount)

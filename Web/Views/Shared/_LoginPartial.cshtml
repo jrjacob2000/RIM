@@ -8,12 +8,14 @@
     <ul class="nav navbar-nav navbar-right">
         @*<li>
             @Html.ActionLink("Hello " + User.Identity.GetUserName() + "!", "Index", "Manage", routeValues: null, htmlAttributes: new { title = "Manage" })
-        </li*@>
+        </li>*@
         <li class="dropdown">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown">Hello @User.Identity.GetUserName()!<span class="caret"></span></a>
             <ul class="dropdown-menu" role="menu">
                 <li>@Html.ActionLink("Manage Account", "Index", "Manage", new { area = "" }, null)</li>
                 <li>@Html.ActionLink("Application Setting", "Edit", "UserSettings", new { area = "" }, null)</li>
+                <li>@Html.ActionLink("About", "About", "Home")</li>
+                <li>@Html.ActionLink("Contact", "Contact", "Home")</li>
             </ul>
         </li>
 

@@ -145,6 +145,89 @@
                 </div>
             </div>
             <hr />
+
+            <div class="form-group">
+                <div class="row">
+                    @Html.LabelFor(model => model.CustomerReturnNumber, htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-4">@Html.RadioButton("CustomerReturnAuto", "true", true, new { htmlAttributes = new { @class = "form-control" } }) Continue auto-generating Customer return numbers</div>
+                    <div class="col-md-6"></div>
+                </div>
+                <div class="row">
+                    <div class="col-md-3">
+                    </div>
+                    <div class="col-md-1">
+                        <span>Prefix</span>
+                        @Html.EditorFor(model => model.CustomerReturnPrefix, Model.CustomerReturnAuto ? new { htmlAttributes = (object)new { @class = "form-control" } } : new { htmlAttributes = (object)new { @class = "form-control", @disabled = "disabled" } })
+                        @Html.ValidationMessageFor(model => model.CustomerReturnPrefix, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="col-md-6">
+                        <span>Next Number</span>
+                        @Html.EditorFor(model => model.CustomerReturnNumber, Model.CustomerReturnAuto ? new { htmlAttributes = (object)new { @class = "form-control" } } : new { htmlAttributes = (object)new { @class = "form-control", @disabled = "disabled" } })
+                        @Html.ValidationMessageFor(model => model.CustomerReturnNumber, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-2"></div>
+                    <div class="col-md-4">@Html.RadioButton("CustomerReturnAuto", "false") I will add them manually</div>
+                    <div class="col-md-6"></div>
+                </div>
+            </div>
+            <hr />
+
+            <div class="form-group">
+                <div class="row">
+                    @Html.LabelFor(model => model.SupplierReturnNumber, htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-4">@Html.RadioButton("SupplierReturnAuto", "true", true, new { htmlAttributes = new { @class = "form-control" } }) Continue auto-generating sales numbers</div>
+                    <div class="col-md-6"></div>
+                </div>
+                <div class="row">
+                    <div class="col-md-3">
+                    </div>
+                    <div class="col-md-1">
+                        <span>Prefix</span>
+                        @Html.EditorFor(model => model.SupplierReturnPrefix, Model.SupplierReturnAuto ? new { htmlAttributes = (object)new { @class = "form-control" } } : new { htmlAttributes = (object)new { @class = "form-control", @disabled = "disabled" } })
+                        @Html.ValidationMessageFor(model => model.SupplierReturnPrefix, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="col-md-6">
+                        <span>Next Number</span>
+                        @Html.EditorFor(model => model.SupplierReturnNumber, Model.SupplierReturnAuto ? new { htmlAttributes = (object)new { @class = "form-control" } } : new { htmlAttributes = (object)new { @class = "form-control", @disabled = "disabled" } })
+                        @Html.ValidationMessageFor(model => model.SupplierReturnNumber, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-2"></div>
+                    <div class="col-md-4">@Html.RadioButton("SupplierReturnAuto", "false") I will add them manually</div>
+                    <div class="col-md-6"></div>
+                </div>
+            </div>
+            <hr />
+            <div class="form-group">
+                <div class="row">
+                    @Html.LabelFor(model => model.AdjustNumber, htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-4">@Html.RadioButton("AdjustAuto", "true", true, new { htmlAttributes = new { @class = "form-control" } }) Continue auto-generating sales numbers</div>
+                    <div class="col-md-6"></div>
+                </div>
+                <div class="row">
+                    <div class="col-md-3">
+                    </div>
+                    <div class="col-md-1">
+                        <span>Prefix</span>
+                        @Html.EditorFor(model => model.AdjustPrefix, Model.AdjustAuto ? new { htmlAttributes = (object)new { @class = "form-control" } } : new { htmlAttributes = (object)new { @class = "form-control", @disabled = "disabled" } })
+                        @Html.ValidationMessageFor(model => model.AdjustPrefix, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="col-md-6">
+                        <span>Next Number</span>
+                        @Html.EditorFor(model => model.AdjustNumber, Model.AdjustAuto ? new { htmlAttributes = (object)new { @class = "form-control" } } : new { htmlAttributes = (object)new { @class = "form-control", @disabled = "disabled" } })
+                        @Html.ValidationMessageFor(model => model.AdjustNumber, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-2"></div>
+                    <div class="col-md-4">@Html.RadioButton("AdjustAuto", "false") I will add them manually</div>
+                    <div class="col-md-6"></div>
+                </div>
+            </div>
+            <hr />
         </section>
         <div class="form-group">
 
@@ -217,6 +300,51 @@
                 $('#SalesPrefix').attr("disabled", "true");;
                 $('#SalesNumber').val('');
                 $('#SalesNumber').attr("disabled", "true");
+            }
+        });
+
+        $(':radio[name=CustomerReturnAuto]').change(function () {
+            // read the value of the selected radio
+            var value = $(this).val();
+            if (value == 'true') {
+                $('#CustomerReturnPrefix').removeAttr("disabled");;
+                $('#CustomerReturnNumber').removeAttr("disabled");
+            }
+            else {
+                $('#CustomerReturnPrefix').val('');
+                $('#CustomerReturnPrefix').attr("disabled", "true");;
+                $('#CustomerReturnNumber').val('');
+                $('#CustomerReturnNumber').attr("disabled", "true");
+            }
+        });
+
+        $(':radio[name=SupplierReturnAuto]').change(function () {
+            // read the value of the selected radio
+            var value = $(this).val();
+            if (value == 'true') {
+                $('#SupplierReturnPrefix').removeAttr("disabled");;
+                $('#SupplierReturnNumber').removeAttr("disabled");
+            }
+            else {
+                $('#SupplierReturnPrefix').val('');
+                $('#SupplierReturnPrefix').attr("disabled", "true");;
+                $('#SupplierReturnNumber').val('');
+                $('#SupplierReturnNumber').attr("disabled", "true");
+            }
+        });
+
+        $(':radio[name=AdjustAuto]').change(function () {
+            // read the value of the selected radio
+            var value = $(this).val();
+            if (value == 'true') {
+                $('#AdjustPrefix').removeAttr("disabled");;
+                $('#AdjustNumber').removeAttr("disabled");
+            }
+            else {
+                $('#AdjustPrefix').val('');
+                $('#AdjustPrefix').attr("disabled", "true");;
+                $('#AdjustNumber').val('');
+                $('#AdjustNumber').attr("disabled", "true");
             }
         });
     });

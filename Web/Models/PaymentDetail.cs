@@ -11,10 +11,14 @@ namespace Web.Models
     {
         public Guid Id { get; set; }
         public decimal Amount { get; set; }
-        public Guid Order_Id { get; set; }
+        //public Guid Order_Id { get; set; }
+        public Guid? Invoice_Id { get; set; }
 
-        [ForeignKey("Order_Id")]
-        public Order Order { get; set; }
+        //[ForeignKey("Order_Id")]
+        //public Order Order { get; set; }
+
+        [ForeignKey("Invoice_Id")]
+        public Invoice Invoice { get; set; }
 
         [Column("Payment_Id")]
         public Guid Payment_Id { get; set; }

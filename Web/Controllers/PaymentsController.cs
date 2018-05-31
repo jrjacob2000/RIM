@@ -25,7 +25,7 @@ namespace Web.Controllers
 
        
         // GET: Payments/Details/5
-        public ActionResult Details(Guid? id)
+        public ActionResult Details(Guid? id, string type)
         {
             ViewBag.Partners = GetPartnerList().Select(x => new SelectListItem() { Value = x.Id.ToString(), Text = x.Name }).ToList();
 
@@ -39,6 +39,7 @@ namespace Web.Controllers
             //                        .Include("Order")
             //                        .Where(x => x.Payment_Id == payment.Id).ToList();
 
+            payment.Type = type;
             payment.PaymentDetails = GetPaymentDetailList().Where(x => x.Payment_Id == payment.Id).ToList();
             if (payment == null)
             {
@@ -47,34 +48,80 @@ namespace Web.Controllers
             return View(payment);
         }
 
-        public ActionResult Create(Guid? Partner_Id)
+        public ActionResult Create(Guid? Partner_Id, string type)
         {
             ViewBag.Partners = GetPartnerList().Select(x => new SelectListItem() { Value = x.Id.ToString(), Text = x.Name }).ToList();
-            var salesOrderList = new List<Order>();
+
+            var invoicelist = new List<Invoice>();
             var paymentDetails = new List<PaymentDetail>();
             if (Partner_Id != null)
             {
-                //salesOrderList = db.Orders
-                //    .Include("OrderDetails")
-                //    .Include("OrderDetails.ProductPrice")
-                //    .Where(x => x.Partner_Id == Partner_Id && x.OrderType == Helper.Constants.OrderType.SALE).ToList();
-                salesOrderList = GetOrderList().Where(x => x.Partner_Id == Partner_Id && x.OrderType == Helper.Constants.OrderType.SALE).ToList();
+                invoicelist = db.Invoices
+                    .Include("Order")
+                    .Include("Order.OrderDetails")
+                    .Include("Order.OrderDetails.Product")
+                    .Include("Order.OrderDetails.ProductPrice")
+                    .Include("Partner")
+                    .Where(x => x.CreatedBy == UserId && x.Partner_Id == Partner_Id && x.Type == (type == Helper.Constants.PaymentType.RECIEVE ? Helper.Constants.InvoiceType.INVOICE : Helper.Constants.InvoiceType.BILL)).ToList();
             }
 
-            salesOrderList.ForEach(x =>
-            {
-                //x.PaymentDetails = db.PaymentDetails.Include("Payment").Where(p => p.Order_Id == x.Id && !p.Payment.Deleted).ToList();
-                x.PaymentDetails = GetPaymentDetailList().Where(p => p.Order_Id == x.Id && !p.Payment.Deleted).ToList();
-                if(x.Balance > 0)
-                    paymentDetails.Add(new PaymentDetail() { Id = Guid.NewGuid(), Order = x, Order_Id = x.Id });
+            //Populating paymentdetails 
+            invoicelist.ForEach(x =>
+            {                
+                x.PaymentDetails = GetPaymentDetailList().Where(p => p.Invoice_Id == x.Id && !p.Payment.Deleted).ToList();
+                //if Invoice has balance include in the list
+                if (x.Balance > 0)
+                    paymentDetails.Add(new PaymentDetail() { Id = Guid.NewGuid(), Invoice = x, Invoice_Id = x.Id });
             });
 
             var payment = new Payment();
-            payment.PaymentDetails = paymentDetails.OrderBy(o => o.Order.OrderDate).ToList();
+            payment.PaymentDetails = paymentDetails.OrderBy(o => o.Invoice.InvoiceDate).ToList();
             payment.Date = DateTime.Now;
+            payment.Type = type;
 
             if (paymentDetails.Count == 0 && Partner_Id != null)
-                ViewBag.Message = "The customer has no outstanding dues.";
+            {
+                if(type == Helper.Constants.PaymentType.RECIEVE)
+                    ViewBag.Message = "The customer has no outstanding dues.";
+                else if(type == Helper.Constants.PaymentType.REFUND)
+                    ViewBag.Message = "No items to refund.";
+            }
+ 
+
+            //var orderList = new List<Order>();
+            //var paymentDetails = new List<PaymentDetail>();
+            //if (Partner_Id != null)
+            //{
+            //    if (type == Helper.Constants.PaymentType.RECIEVE)
+            //        orderList = GetOrderList().Where(x => x.Partner_Id == Partner_Id && x.OrderType == Helper.Constants.OrderType.SALE).ToList();
+            //    else if (type == Helper.Constants.PaymentType.REFUND)
+            //        orderList = GetOrderList().Where(x => x.Partner_Id == Partner_Id && x.OrderType == Helper.Constants.OrderType.CUSTOMER_RETURN).ToList();
+            //    else
+            //    {
+            //        ModelState.AddModelError(string.Empty, "Unrecognized transaction");
+            //    }
+            //}
+
+            //orderList.ForEach(x =>
+            //{
+            //    //x.PaymentDetails = db.PaymentDetails.Include("Payment").Where(p => p.Order_Id == x.Id && !p.Payment.Deleted).ToList();
+            //    x.PaymentDetails = GetPaymentDetailList().Where(p => p.Order_Id == x.Id && !p.Payment.Deleted).ToList();
+            //    if(x.Balance > 0)
+            //        paymentDetails.Add(new PaymentDetail() { Id = Guid.NewGuid(), Order = x, Order_Id = x.Id });
+            //});
+
+            //var payment = new Payment();
+            //payment.PaymentDetails = paymentDetails.OrderBy(o => o.Order.OrderDate).ToList();
+            //payment.Date = DateTime.Now;
+            //payment.Type = type;
+
+            //if (paymentDetails.Count == 0 && Partner_Id != null)
+            //{
+            //    if(type == Helper.Constants.PaymentType.RECIEVE)
+            //        ViewBag.Message = "The customer has no outstanding dues.";
+            //    else if(type == Helper.Constants.PaymentType.REFUND)
+            //        ViewBag.Message = "No items to refund.";
+            //}
  
             return View(payment);
         }
@@ -87,6 +134,8 @@ namespace Web.Controllers
         public ActionResult Create( Payment payment)
         {
             ViewBag.Partners = GetPartnerList().Select(x => new SelectListItem() { Value = x.Id.ToString(), Text = x.Name }).ToList();
+            if (payment.Amount == 0)
+                ModelState.AddModelError(string.Empty, "Payment amount cannot be zero");
 
             if (payment.PaymentDetails.Sum(x => x.Amount) > payment.Amount)
                 ModelState.AddModelError(string.Empty, "Payment allocated is greater than payment received.");
@@ -97,22 +146,19 @@ namespace Web.Controllers
             payment.PaymentDetails = payment.PaymentDetails.Where(x => x.Amount > 0).ToList();
             payment.PaymentDetails.ForEach(x =>
             {
-                x.Id = Guid.NewGuid();
+                x.Id = Guid.NewGuid();                
                 
-                //x.Order = db.Orders.Include("OrderDetails")
-                //    .Include("OrderDetails.ProductPrice")
-                //    .FirstOrDefault(o => o.Id == x.Order_Id);
-                x.Order = GetOrderById(x.Order_Id);
+                x.Invoice = GetInvoiceById(x.Invoice_Id.Value);
+                x.Invoice.PaymentDetails = GetPaymentDetailList().Where(p => p.Invoice_Id == x.Invoice_Id && !p.Payment.Deleted).ToList();
 
-                //x.Order.PaymentDetails = db.PaymentDetails.Include("Payment").Where(p => p.Order_Id == x.Order_Id && !p.Payment.Deleted).ToList();
-                x.Order.PaymentDetails = GetPaymentDetailList().Where(p => p.Order_Id == x.Order_Id && !p.Payment.Deleted).ToList();
+                if (x.Invoice.Balance < x.Amount)
+                     ModelState.AddModelError(string.Empty,string.Format("Invoice {0} alloted amount is greater than the Outstanding",x.Invoice.InvoiceNumber));
+
+                if (x.Invoice.Balance == x.Amount)
+                    x.Invoice.Status = Helper.Constants.InvoiceStatus.PAID;
+                else
+                    x.Invoice.Status = Helper.Constants.InvoiceStatus.PARTIALPAID;
                 
-                if(x.Order.Balance < x.Amount)
-                     ModelState.AddModelError(string.Empty,string.Format("Order {0} alloted amount is greater than the Outstanding",x.Order.OrderNumber));
-               
-                if(x.Order.InvoiceNumber == null)
-                    ModelState.AddModelError(string.Empty, string.Format("You cannot allocate payment to order {0}, because is not yet invoiced", x.Order.OrderNumber));
-
                 x.CreatedBy = UserId;
             });
 
@@ -126,52 +172,53 @@ namespace Web.Controllers
                 return RedirectToAction("Index");
             }
             else
-                return Create(payment.Partner_Id);
+                return Create(payment.Partner_Id, payment.Type);
 
         }
 
         // GET: Payments/Edit/5
         public ActionResult Edit(Guid? id)
         {
-            //edit is disable
-            //reason to disable: the system will not be able to recalculate the remaining balance of the customer
-            //and will prone to data discrepancy
-            return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            ////edit is disable
+            ////reason to disable: the system will not be able to recalculate the remaining balance of the customer
+            ////and will prone to data discrepancy
+            //return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            ViewBag.Partners = GetPartnerList().Select(x => new SelectListItem() { Value = x.Id.ToString(), Text = x.Name }).ToList();
+            //if (id == null)
+            //{
+            //    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            //}
+            //ViewBag.Partners = GetPartnerList().Select(x => new SelectListItem() { Value = x.Id.ToString(), Text = x.Name }).ToList();
             
-            Payment payment = GetPaymentById(id.Value);
+            //Payment payment = GetPaymentById(id.Value);
 
-            //////////////////////////////////////////////
-            var salesOrderList = new List<Order>();
-            var paymentDetails = new List<PaymentDetail>();
+            ////////////////////////////////////////////////
+            //var salesOrderList = new List<Order>();
+            //var paymentDetails = new List<PaymentDetail>();
             
-            salesOrderList = GetOrderList().Where(x => x.Partner_Id == payment.Partner_Id && x.OrderType == Helper.Constants.OrderType.SALE).ToList();
+            //salesOrderList = GetOrderList().Where(x => x.Partner_Id == payment.Partner_Id && x.OrderType == Helper.Constants.OrderType.SALE).ToList();
 
-            salesOrderList.ForEach(x =>
-            {
-                //x.PaymentDetails = db.PaymentDetails.Include("Payment").Where(p => p.Order_Id == x.Id && !p.Payment.Deleted).ToList();
-                x.PaymentDetails = GetPaymentDetailList().Where(p => p.Order_Id == x.Id && !p.Payment.Deleted).ToList();
-                if (x.Balance > 0)
-                    paymentDetails.Add(new PaymentDetail() { Id = Guid.NewGuid(), Order = x, Order_Id = x.Id });
-            });
+            //salesOrderList.ForEach(x =>
+            //{
+            //    //x.PaymentDetails = db.PaymentDetails.Include("Payment").Where(p => p.Order_Id == x.Id && !p.Payment.Deleted).ToList();
+            //    x.PaymentDetails = GetPaymentDetailList().Where(p => p.Order_Id == x.Id && !p.Payment.Deleted).ToList();
+            //    if (x.Balance > 0)
+            //        paymentDetails.Add(new PaymentDetail() { Id = Guid.NewGuid(), Order = x, Order_Id = x.Id });
+            //});
 
-            //var payment = new Payment();
-            payment.PaymentDetails = paymentDetails.OrderBy(o => o.Order.OrderDate).ToList();
+            ////var payment = new Payment();
+            //payment.PaymentDetails = paymentDetails.OrderBy(o => o.Order.OrderDate).ToList();
 
-            ////////////////////////
+            //////////////////////////
 
 
             
-            if (payment == null)
-            {
-                return HttpNotFound();
-            }
-            return View(payment);
+            //if (payment == null)
+            //{
+            //    return HttpNotFound();
+            //}
+            //return View(payment);
+            return View();
         }
 
         // POST: Payments/Edit/5
@@ -224,8 +271,10 @@ namespace Web.Controllers
             Payment payment = GetPaymentById(id);
             try
             {
-                payment.Deleted = true;
-                //db.Payments.Remove(payment);
+                var paymentdetais = GetPaymentDetailList().Where(x => x.Payment_Id == id).ToList();                
+                //payment.Deleted = true;
+                db.PaymentDetails.RemoveRange(payment.PaymentDetails);
+                db.Payments.Remove(payment);
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }

@@ -1,0 +1,139 @@
+﻿@model Web.Models.Adjust
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>Details</h2>
+
+<div>
+    <div class="row">
+        <div class="col-xs-6">
+
+        </div>
+        <div class="col-xs-6" style="text-align:right; margin-top:10px">   
+                @Html.ActionLink("Edit", "Edit", new { id = Model.Id, returnUrl = Request.Url }) |
+                
+                @Html.ActionLink("Back to List", "Index")         
+        </div>
+    </div>
+   
+    <hr style="margin-top:0;margin-bottom:0" />
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+    <table style="min-width:340px">
+        <tr>
+            <td>
+                <dl class="dl-horizontal">
+                    <dt>
+                        @Html.DisplayNameFor(model => model.OrderNumber)
+                    </dt>
+
+                    <dd>
+                        @Html.DisplayFor(model => model.OrderNumber)
+                    </dd>
+
+                    <dt>
+                        @Html.DisplayNameFor(model => model.OrderDate)
+                    </dt>
+
+                    <dd>
+                        @Html.DisplayFor(model => model.OrderDate)
+                    </dd>
+
+                    
+                    
+                </dl>
+            </td>
+            <td style="vertical-align:top">
+                <dl class="dl-horizontal">
+                    <dt>
+                        @Html.DisplayNameFor(model => model.OrderType)
+                    </dt>
+
+                    <dd>
+                        @Html.DisplayFor(model => model.OrderType)
+                    </dd>
+
+                    <dt>
+                        Reason
+                    </dt>
+
+                    <dd>
+                        @Html.DisplayFor(model => model.OrderNotes)
+                    </dd>
+                                       
+                </dl>
+            </td>
+        </tr>
+    </table>
+        
+</div>
+
+
+<br />
+<h4>Products</h4>
+
+<div>
+    <p>
+        @Html.ActionLink("Add Item", "Create", "OrderDetails", new { Order_Id = Model.Id }, null)
+    </p>    
+    
+</div>
+<div style="overflow:auto">
+    <table class="table">
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.OrderDetails.First().Product)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.OrderDetails.First().Quantity)
+            </th>
+           
+            <th>
+                @Html.DisplayNameFor(model => model.OrderDetails.First().ProductPrice)
+            </th>
+            <th>
+                Total Amount               
+            </th>
+           
+            <th></th>
+        </tr>
+
+        @foreach (var item in Model.OrderDetails)
+    {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Product.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Quantity)
+                </td>
+               <td>
+                   @Html.DisplayFor(modelItem => item.ProductPrice.PurchasePrice)
+               </td>     
+                <td>
+                    @Html.DisplayFor(modelItem => item.AmountBeforeTax)
+                </td>
+                
+               
+              
+                <td>
+                    <span style="white-space:nowrap">
+                        @Html.ActionLink("Edit", "Edit", "OrderDetails", new { id = item.Id }, null) |                 
+                        @Html.ActionLink("Details", "Details", "OrderDetails", new { id = item.Id }, null) |
+                        @Html.ActionLink("Delete", "Delete", "OrderDetails", new { id = item.Id }, null)</span>
+                </td>
+            </tr>
+    }
+    </table>
+
+   
+</div>
+
+
+<div class="row">
+    <div class="col-xs-12" style="text-align:end; margin-top:40px">
+        @Html.ActionLink("Edit", "Edit", new { id = Model.Id, returnUrl = Request.Url }) |
+        @Html.ActionLink("Back to List", "Index")
+    </div>
+</div>

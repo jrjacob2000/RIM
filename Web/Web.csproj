@@ -171,6 +171,8 @@
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\CreditsController.cs" />
+    <Compile Include="Controllers\BillsController.cs" />
     <Compile Include="Controllers\CashInjectionsController.cs" />
     <Compile Include="Controllers\CategoriesController.cs" />
     <Compile Include="Controllers\ControllerBase.cs" />
@@ -178,6 +180,7 @@
     <Compile Include="Controllers\Helper.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\InvoiceController.cs" />
+    <Compile Include="Controllers\InvoicesController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Controllers\OrderDetailsController.cs" />
     <Compile Include="Controllers\OrdersController.cs" />
@@ -244,15 +247,54 @@
     <Compile Include="Migrations\201803080223110_ordernumberUniqeConstraint.Designer.cs">
       <DependentUpon>201803080223110_ordernumberUniqeConstraint.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201803202330089_addColumn_Payment.cs" />
+    <Compile Include="Migrations\201803202330089_addColumn_Payment.Designer.cs">
+      <DependentUpon>201803202330089_addColumn_Payment.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201803230136087_update_orderTable.cs" />
+    <Compile Include="Migrations\201803230136087_update_orderTable.Designer.cs">
+      <DependentUpon>201803230136087_update_orderTable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201803240336546_alterUserSetting.cs" />
+    <Compile Include="Migrations\201803240336546_alterUserSetting.Designer.cs">
+      <DependentUpon>201803240336546_alterUserSetting.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201803240931358_createInvoice.cs" />
+    <Compile Include="Migrations\201803240931358_createInvoice.Designer.cs">
+      <DependentUpon>201803240931358_createInvoice.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201803251451283_alter_paymentdetail.cs" />
+    <Compile Include="Migrations\201803251451283_alter_paymentdetail.Designer.cs">
+      <DependentUpon>201803251451283_alter_paymentdetail.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201803251532444__Alter_paymentdetail_deleteOrderId.cs" />
+    <Compile Include="Migrations\201803251532444__Alter_paymentdetail_deleteOrderId.Designer.cs">
+      <DependentUpon>201803251532444__Alter_paymentdetail_deleteOrderId.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201803281258178_addStatusColumn_Invoice.cs" />
+    <Compile Include="Migrations\201803281258178_addStatusColumn_Invoice.Designer.cs">
+      <DependentUpon>201803281258178_addStatusColumn_Invoice.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201803291322286_addTypecolumn_invoice.cs" />
+    <Compile Include="Migrations\201803291322286_addTypecolumn_invoice.Designer.cs">
+      <DependentUpon>201803291322286_addTypecolumn_invoice.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201804040040154_newCreditTable.cs" />
+    <Compile Include="Migrations\201804040040154_newCreditTable.Designer.cs">
+      <DependentUpon>201804040040154_newCreditTable.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\CashFlow.cs" />
     <Compile Include="Models\CashInjection.cs" />
     <Compile Include="Models\Category.cs" />
-    <Compile Include="Models\CategoryItem.cs" />
+    <Compile Include="Models\CreditInvoice.cs" />
     <Compile Include="Models\IdentityModels.cs" />
+    <Compile Include="Models\Credit.cs" />
+    <Compile Include="Models\Invoice.cs" />
     <Compile Include="Models\Login.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
+    <Compile Include="Models\Adjust.cs" />
     <Compile Include="Models\Order.cs" />
     <Compile Include="Models\OrderDetail.cs" />
     <Compile Include="Models\Partner.cs" />
@@ -394,6 +436,22 @@
     <Content Include="Views\DashBoard\Index.cshtml">
       <SubType>Code</SubType>
     </Content>
+    <Content Include="Views\Orders\AdjustDetails.cshtml" />
+    <Content Include="Views\Invoices\Create.cshtml" />
+    <Content Include="Views\Invoices\Delete.cshtml" />
+    <Content Include="Views\Invoices\Details.cshtml" />
+    <Content Include="Views\Invoices\Edit.cshtml" />
+    <Content Include="Views\Invoices\Index.cshtml" />
+    <Content Include="Views\Bills\Create.cshtml" />
+    <Content Include="Views\Bills\Edit.cshtml" />
+    <Content Include="Views\Bills\Details.cshtml" />
+    <Content Include="Views\Bills\Index.cshtml" />
+    <Content Include="Views\Bills\Delete.cshtml" />
+    <Content Include="Views\Credits\Create.cshtml" />
+    <Content Include="Views\Credits\Delete.cshtml" />
+    <Content Include="Views\Credits\Details.cshtml" />
+    <Content Include="Views\Credits\Edit.cshtml" />
+    <Content Include="Views\Credits\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -444,6 +502,33 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201803080223110_ordernumberUniqeConstraint.resx">
       <DependentUpon>201803080223110_ordernumberUniqeConstraint.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201803202330089_addColumn_Payment.resx">
+      <DependentUpon>201803202330089_addColumn_Payment.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201803230136087_update_orderTable.resx">
+      <DependentUpon>201803230136087_update_orderTable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201803240336546_alterUserSetting.resx">
+      <DependentUpon>201803240336546_alterUserSetting.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201803240931358_createInvoice.resx">
+      <DependentUpon>201803240931358_createInvoice.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201803251451283_alter_paymentdetail.resx">
+      <DependentUpon>201803251451283_alter_paymentdetail.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201803251532444__Alter_paymentdetail_deleteOrderId.resx">
+      <DependentUpon>201803251532444__Alter_paymentdetail_deleteOrderId.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201803281258178_addStatusColumn_Invoice.resx">
+      <DependentUpon>201803281258178_addStatusColumn_Invoice.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201803291322286_addTypecolumn_invoice.resx">
+      <DependentUpon>201803291322286_addTypecolumn_invoice.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201804040040154_newCreditTable.resx">
+      <DependentUpon>201804040040154_newCreditTable.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

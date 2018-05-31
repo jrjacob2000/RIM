@@ -1,0 +1,99 @@
+﻿@model IEnumerable<Web.Models.Credit>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+@if(Request.QueryString["type"] == Web.Controllers.Helper.Constants.InvoiceType.CustomerCredit)
+{ 
+    <h4>All Customer Credit</h4>
+}
+else if (Request.QueryString["type"] == Web.Controllers.Helper.Constants.InvoiceType.SupplierCredit)
+{
+    <h4>All Supplier Credit</h4>
+}
+else
+{
+    throw new Exception("Invalid Command");
+}
+<hr />
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+<table class="table">
+    <tr>
+        <th>
+            Bill Number
+            @*@Html.DisplayNameFor(model => model.InvoiceNumber)*@
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Order.OrderNumber)
+        </th>
+        <th>
+            <span>Customer</span>
+            @*@Html.DisplayNameFor(model => model.Partner.Name)*@
+        </th>
+       
+        <th>
+            @Html.DisplayNameFor(model => model.CreditDate)
+        </th>        
+        <th>
+            @Html.DisplayNameFor(model => model.DueDate)
+        </th>
+        <th>
+            Status
+        </th>
+        @*<th>
+            Amount
+        </th>
+        <th>Balance</th>*@
+       
+
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.CreditNumber)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Order.OrderNumber)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Partner.Name)
+        </td>
+        
+        <td>
+            @Html.DisplayFor(modelItem => item.CreditDate)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.DueDate)
+        </td>
+        <td>
+            @{
+                var color = item.Status == Web.Controllers.Helper.Constants.InvoiceStatus.PAID ? "green" : 
+                            item.Status == Web.Controllers.Helper.Constants.InvoiceStatus.OVERDUE? "Orange": "gray";
+            }
+            <span style="color:@color">
+                @Html.DisplayFor(modelItem => item.Status)
+            </span>
+           
+        </td>
+        @*<td>
+            @Html.DisplayFor(modelItem => item.Amount)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Balance)
+        </td>*@
+        
+
+        <td>
+            @Html.ActionLink("Edit", "Edit", new { id=item.Id }) |
+            @Html.ActionLink("Details", "Details", new { id=item.Id }) |
+            @Html.ActionLink("Delete", "Delete", new { id=item.Id })
+        </td>
+    </tr>
+}
+
+</table>

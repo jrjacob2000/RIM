@@ -32,6 +32,22 @@ namespace Web.Models
         [Display(Name = "Sale Order Number")]
         public string SalesNumber { get; set; }
 
+        [Display(Name = "Prefix")]
+        public string AdjustPrefix { get; set; }
+        [Display(Name = "Adjust Number")]
+        public string AdjustNumber { get; set; }
+
+        [Display(Name = "Prefix")]
+        public string CustomerReturnPrefix { get; set; }
+        [Display(Name = "Customer Return Number")]
+        public string CustomerReturnNumber { get; set; }
+
+        [Display(Name = "Prefix")]
+        public string SupplierReturnPrefix { get; set; }
+        [Display(Name = "Supplier Return Number")]
+        public string SupplierReturnNumber { get; set; }
+
+
         public bool InvoiceAuto
         {
             get { return !string.IsNullOrEmpty(InvoiceNumber); }
@@ -45,6 +61,21 @@ namespace Web.Models
         public bool SalesAuto
         {
             get { return !string.IsNullOrEmpty(SalesNumber); }
+        }
+
+        public bool AdjustAuto
+        {
+            get { return !string.IsNullOrEmpty(AdjustNumber); }
+        }
+
+        public bool CustomerReturnAuto
+        {
+            get { return !string.IsNullOrEmpty(CustomerReturnNumber); }
+        }
+
+        public bool SupplierReturnAuto
+        {
+            get { return !string.IsNullOrEmpty(SupplierReturnNumber); }
         }
     }
 }

@@ -7,19 +7,27 @@
 <h2>Payments</h2>
 
 <p>
-    @Html.ActionLink("Receive Payment", "Create")
+    @Html.ActionLink("Receive Payment", "Create", new {type="RECIEVE" }) | 
+    @Html.ActionLink("Pay Bills", "Create", new { type = "BILL" }) | 
+    @Html.ActionLink("Refund", "Create", new { type = "REFUND" })
 </p>
 <table class="table">
     <tr>
         <th>
-            @Html.DisplayNameFor(model => model.Partner_Id)
-        </th>    
-        <th>
-            @Html.DisplayNameFor(model => model.Amount)
-        </th>
-        <th>
             @Html.DisplayNameFor(model => model.Date)
         </th>
+       
+        <th>
+            @Html.DisplayNameFor(model => model.Partner_Id)
+        </th> 
+        <th>
+            Type
+        </th>   
+        <th>
+            Amount
+            @*@Html.DisplayNameFor(model => model.Amount)*@
+        </th>
+       
            
         <th></th>
     </tr>
@@ -27,14 +35,19 @@
 @foreach (var item in Model) {
     <tr>
         <td>
+            @Html.DisplayFor(modelItem => item.Date)
+        </td>
+       
+        <td>
             @Html.DisplayFor(modelItem => item.Partner.Name)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Type)
         </td>
         <td>
             @Html.DisplayFor(modelItem => item.Amount)
         </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Date)
-        </td>
+        
        
         <td>
             @*@Html.ActionLink("Edit", "Edit", new { id=item.Id }) |*@

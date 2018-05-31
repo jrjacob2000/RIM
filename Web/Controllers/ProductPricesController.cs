@@ -21,6 +21,7 @@ namespace Web.Controllers
             ViewBag.CategoryItems = GetCategoryList().ToList().Select(x => new SelectListItem() { Value = x.Id.ToString(), Text = x.Name }).ToList(); ;
             var list = GetPriceList()
                 .Where(x => (x.Product.Name.Contains(product) || string.IsNullOrEmpty(product)) && (x.Product.Category.Id == category || category == null))
+                .OrderBy(o => o.Product.Name)
                 .ToList(); 
             return View(list);
         }
