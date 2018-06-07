@@ -39,6 +39,7 @@ namespace Web.Controllers
                     Order = GetOrderById(s.Order_Id),
                     Partner = s.Partner,
                     PaymentDetails = db.PaymentDetails.Include("Payment").Where(p => p.Invoice_Id == s.Id && !p.Payment.Deleted).ToList(),
+                    Credits = GetCreditByPartnerId(s.Partner.Id).ToList(),
                     Status = GetStatus(s)
                 });
 
@@ -75,6 +76,8 @@ namespace Web.Controllers
                 Where(x => x.Id == id && x.CreatedBy == UserId).FirstOrDefault();
 
             invoice.PaymentDetails = GetPaymentDetailList().Where(x => x.Invoice_Id == id && !x.Payment.Deleted).ToList();
+            invoice.Credits = GetCreditByPartnerId(invoice.Partner_Id).ToList();//GetCreditByInvoiceId(invoice.Id).ToList();
+            //invoice.CreditsAvailable = GetCreditByPartnerId(invoice.Partner_Id).ToList();
             ViewBag.Total = invoice.Order.OrderDetails.Sum(x => x.AmountAfterTax);
 
             if (invoice == null)

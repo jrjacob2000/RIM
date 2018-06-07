@@ -2,30 +2,67 @@
 
 @{
     ViewBag.Title = "Details";
+    var CreditUsed = Model.Credits.Where(x => x.Invoice_Id == Model.Id);
 }
 
-<h2>Detail - @Model.InvoiceNumber</h2>
+<h3>Detail - @Model.InvoiceNumber</h3>
 <div class="row">
     <div class="custom-header-div">
         <input type="button" value="Print" onclick="printdiv()" class="btn btn-primary " />
         @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
         @Html.ActionLink("Back to List", "Index")
-    </div>
+    </div> 
 </div>
 <hr class="custom-header-hr"/>
+@if (@Model.CreditAmountAvailable > 0)
+{
+    <span>have <b>@Model.CreditAmountAvailable</b> Credits available to use. </span> <button>Use this Credits</button>
+}
+
+@if (CreditUsed.Count() > 0)
+{
+    <h4>Credit Used</h4>
+    <table class="table table-inverse table-bordered">
+    <thead >
+        <tr>
+            <th scope="col">
+                @Html.DisplayNameFor(model => model.Credits.First().CreditNumber)
+            </th>
+            <th scope="col" style="width:20%">
+                @Html.DisplayNameFor(model => model.Credits.First().Amount)
+            </th>
+
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in CreditUsed)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CreditNumber)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Amount)
+                </td>
+
+            </tr>
+        }
+    </tbody>
+    </table>
+}
 <h4>Payments Recieved</h4>
-<table class="table">
+<table class="table table-sm table-bordered">
     <tr>
         <th>
             @Html.DisplayNameFor(model => model.PaymentDetails.First().Invoice.Order.OrderNumber)
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.PaymentDetails.First().Invoice.Order.InvoiceNumber)
+            @Html.DisplayNameFor(model => model.PaymentDetails.First().Payment.Date)
         </th>
-        <th>
+        <th style="width:20%">
             @Html.DisplayNameFor(model => model.Amount)
         </th>
-        <th></th>
+
     </tr>
 
     @foreach (var item in Model.PaymentDetails)
@@ -35,7 +72,7 @@
                 @Html.DisplayFor(modelItem => item.Invoice.Order.OrderNumber)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Invoice.InvoiceNumber)
+                @Html.DisplayFor(modelItem => item.Payment.Date)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Amount)
@@ -146,7 +183,11 @@
                         </tr>
                         <tr>
                             <td style="text-align:left">DISCOUNT: </td>
-                            <td style="text-align:right; padding-right:10px"><span style="font-weight:bolder;text-align:right; ">@Html.DisplayFor(model => model.Order.OrderDiscount) </span></td>
+                            <td style="text-align:right; padding-right:10px"><span style="font-weight:bolder;text-align:right; ">-@Html.DisplayFor(model => model.Order.OrderDiscount) </span></td>
+                        </tr>
+                        <tr style="@(Model.CreditAmountUsed > 0 ? "":"Display:None")">
+                            <td style="max-width:150px; min-width:100px; text-align:left">CREDIT:</td>
+                            <td style="max-width:150px; min-width:100px; text-align:right; padding-right:10px"><span style="font-weight:bolder; text-align:right">-@Html.DisplayFor(model => model.CreditAmountUsed) </span></td>
                         </tr>
                         <tr>
                             <td style="text-align:left">TAX RATE:</td>
@@ -154,7 +195,7 @@
                         </tr>
                         <tr>
                             <td style="font-weight:bolder;text-align:left ; border-bottom:solid; border-top:solid; border-width:1px;">TOTAL:</td>
-                            <td style="text-align:right; border-bottom:solid; border-top:solid; border-width:1px; padding-right:10px ;max-width:150px; min-width:100px;"><span style="font-weight:bolder;text-align:right">@(((Model.Order.OtherCharges + Model.Order.Amount) - Model.Order.OrderDiscount).ToString("N2"))</span></td>
+                            <td style="text-align:right; border-bottom:solid; border-top:solid; border-width:1px; padding-right:10px ;max-width:150px; min-width:100px;"><span style="font-weight:bolder;text-align:right">@(Model.Amount.ToString("N2"))</span></td>
                         </tr>
                     </table>
 

@@ -47,6 +47,7 @@ namespace Web.Controllers
                       
             Order order = GetOrderById(id.Value);
             order.Invoices = GetInvoiceByOrderId(order.Id).ToList();
+            order.Credits = GetCreditByInvoiceId(order.Id).ToList();
                        
 
             if (order == null)

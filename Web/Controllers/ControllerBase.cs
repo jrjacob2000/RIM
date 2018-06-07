@@ -316,6 +316,31 @@ namespace Web.Controllers
                         
             return invoices;
         }
-        
+
+
+        public IQueryable<Credit> GetCreditByInvoiceId(Guid InvoiceId)
+        {
+            var credits = db.Credits
+                   .Include("Order")
+                   .Include("Order.OrderDetails")
+                   .Include("Order.OrderDetails.Product")
+                   .Include("Order.OrderDetails.ProductPrice")
+                   .Where(x => x.CreatedBy == UserId && x.Invoice_Id == InvoiceId);
+
+            return credits;
+        }
+
+        public IQueryable<Credit> GetCreditByPartnerId(Guid PartnerId)
+        {
+            var credits = db.Credits
+                .Include("Order")
+                .Include("Order.OrderDetails")
+                .Include("Order.OrderDetails.Product")
+                .Include("Order.OrderDetails.ProductPrice")
+                .Where(x => x.CreatedBy == UserId 
+                       && x.Partner_Id == PartnerId);
+
+            return credits;
+        }
     }
 }

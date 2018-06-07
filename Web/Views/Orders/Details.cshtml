@@ -44,9 +44,9 @@
                 }
                 else if (Model.OrderType == Web.Controllers.Helper.Constants.OrderType.SUPPLIER_RETURN || Model.OrderType == Web.Controllers.Helper.Constants.OrderType.CUSTOMER_RETURN)
                 {
-                    if (Model.Invoices.FirstOrDefault() != null)
+                    if (Model.Credits.FirstOrDefault() != null)
                     {
-                        @Html.ActionLink("Credit", "Details", "Credits", new { order_Id = Model.Id, Id = Model.Invoices.FirstOrDefault().Id }, null)
+                        @Html.ActionLink("Credit", "Details", "Credits", new { order_Id = Model.Id, Id = Model.Credits.FirstOrDefault().Id }, null)
                     }
                     else
                     {

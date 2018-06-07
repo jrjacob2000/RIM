@@ -216,12 +216,12 @@ namespace Web.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Invoice invoice = db.Invoices.Find(id);
-            if (invoice == null)
+            Credit credit = db.Credits.Find(id);
+            if (credit == null)
             {
                 return HttpNotFound();
             }
-            return View(invoice);
+            return View(credit);
         }
 
         // POST: Invoices/Delete/5
@@ -230,20 +230,12 @@ namespace Web.Controllers
         public ActionResult DeleteConfirmed(Guid id)
         {
 
-            Invoice invoice = db.Invoices.Find(id);
+            Credit credit = db.Credits.Find(id);
 
-            var payments = GetPaymentDetailList().Where(x => x.Invoice_Id == invoice.Id );
-
-            if (payments.Count() > 0)
-            {
-
-                ModelState.AddModelError(string.Empty, string.Format("Can't delete this {0}, because it has payment", invoice.Type));
-                return View(invoice);
-            }
-
+            
             try
             {
-                db.Invoices.Remove(invoice);
+                db.Credits.Remove(credit);
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
@@ -252,7 +244,7 @@ namespace Web.Controllers
                 if (ex.InnerException == null)
                 {
                     ModelState.AddModelError(string.Empty, ex.Message);
-                    return View(invoice);
+                    return View(credit);
                 }
 
                 var sqlException = ex.InnerException.InnerException as SqlException;
@@ -260,13 +252,13 @@ namespace Web.Controllers
                 if (sqlException != null && sqlException.Errors.OfType<SqlError>()
                     .Any(se => se.Number == 547/*DELETE statement conflicted */))
                 {
-                    ModelState.AddModelError(string.Empty, "Can't delete this order, because its containing details or used in payment");
-                    return View(invoice);
+                    ModelState.AddModelError(string.Empty, "Can't delete this, because its containing details or used in payment");
+                    return View(credit);
                 }
                 else
                 {
                     ModelState.AddModelError(string.Empty, ex.Message);
-                    return View(invoice);
+                    return View(credit);
                 }
             }
         }

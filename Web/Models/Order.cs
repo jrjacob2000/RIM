@@ -73,6 +73,8 @@ namespace Web.Models
 
         public List<Invoice>  Invoices { get; set; }
 
+        public List<Credit> Credits { get; set; }
+
         public List<PaymentDetail> PaymentDetails
         {
             get;

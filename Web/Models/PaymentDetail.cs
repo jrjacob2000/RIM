@@ -26,6 +26,7 @@ namespace Web.Models
         [ForeignKey("Payment_Id")]
         public Payment Payment { get; set; }
 
+
         public Guid CreatedBy { get; set; }
 
     }

@@ -55,6 +55,13 @@ namespace Web.Models
             get;
             set;
         }
+        public List<Credit> Credits
+        {
+            get;
+            set;
+        }
+
+       
 
         public decimal Amount
         {
@@ -63,6 +70,7 @@ namespace Web.Models
                 if (Order != null && Order.OrderDetails != null)
                 {
                     var sum = Order.OrderDetails.Sum(x => x.AmountAfterTax);
+                    sum = (sum + (OtherCharges.HasValue ? OtherCharges.Value : 0)) - ((OrderDiscount.HasValue ? OrderDiscount.Value : 0) + CreditAmountUsed);
                     return sum;
                 }
                 else
@@ -92,6 +100,28 @@ namespace Web.Models
                 return Amount - PaidAmount;
             }
         }
-         
+
+        public decimal CreditAmountUsed
+        {
+            get
+            {
+                if (Credits != null)
+                    return Credits.Where(x => x.Invoice_Id == this.Id).Sum(x => x.Amount);
+                else
+                    return 0;
+            }
+        }
+
+        public decimal CreditAmountAvailable
+        {
+            get
+            {
+                if (Credits != null)
+                    return Credits.Where(x => x.Invoice_Id == null).Sum(x => x.Amount);
+                else
+                    return 0;
+            }
+        }
+       
     }
 }

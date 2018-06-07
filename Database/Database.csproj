@@ -59,6 +59,7 @@
     <Content Include="ChangeScript\1.2\201803281258178_addStatusColumn_Invoice.sql" />
     <Content Include="ChangeScript\1.2\201803291322286_addTypecolumn_invoice.sql" />
     <Content Include="ChangeScript\1.2\201804040040154_newCreditTable.sql" />
+    <Content Include="ChangeScript\1.2\201806070527500_update.sql" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

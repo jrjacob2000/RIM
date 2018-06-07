@@ -11,6 +11,7 @@ namespace Web.Models
     {
         public Guid Id { get; set; }
         public Guid Partner_Id { get; set; }
+
         [Display(Name = "Credit Number")]
         public string CreditNumber { get; set; }
 
@@ -33,6 +34,11 @@ namespace Web.Models
         [ForeignKey("Order_Id")]
         [Display(Name = "Order")]
         public Order Order { get; set; }
+
+        public Guid? Invoice_Id { get; set; }
+
+        [ForeignKey("Invoice_Id")]
+        public Invoice Invoice { get; set; }
         
         public Guid CreatedBy { get; set; }
 
@@ -40,7 +46,12 @@ namespace Web.Models
 
         public string Type { get; set; }
 
-       
+        public decimal Amount
+        {
+            get {
+                return Order.OrderDetails.Sum(x => x.AmountAfterTax);
+            }
+        }
          
     }
 }
