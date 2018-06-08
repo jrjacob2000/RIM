@@ -179,7 +179,6 @@
     <Compile Include="Controllers\DashBoardController.cs" />
     <Compile Include="Controllers\Helper.cs" />
     <Compile Include="Controllers\HomeController.cs" />
-    <Compile Include="Controllers\InvoiceController.cs" />
     <Compile Include="Controllers\InvoicesController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Controllers\OrderDetailsController.cs" />
@@ -287,6 +286,10 @@
     <Compile Include="Migrations\201806070527500_update.Designer.cs">
       <DependentUpon>201806070527500_update.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201806080859540_updatePayment.cs" />
+    <Compile Include="Migrations\201806080859540_updatePayment.Designer.cs">
+      <DependentUpon>201806080859540_updatePayment.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\CashFlow.cs" />
@@ -388,7 +391,6 @@
     <Content Include="Views\CategoryItems\Details.cshtml" />
     <Content Include="Views\CategoryItems\Edit.cshtml" />
     <Content Include="Views\CategoryItems\Index.cshtml" />
-    <Content Include="Views\Invoice\Index.cshtml" />
     <Content Include="Views\OrderDetails\Create.cshtml" />
     <Content Include="Views\OrderDetails\Delete.cshtml" />
     <Content Include="Views\OrderDetails\Details.cshtml" />
@@ -536,6 +538,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201806070527500_update.resx">
       <DependentUpon>201806070527500_update.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201806080859540_updatePayment.resx">
+      <DependentUpon>201806080859540_updatePayment.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

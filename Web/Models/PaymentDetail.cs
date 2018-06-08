@@ -26,6 +26,16 @@ namespace Web.Models
         [ForeignKey("Payment_Id")]
         public Payment Payment { get; set; }
 
+        [Required]
+        [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
+        public DateTime Date { get; set; }
+
+        [Display(Name="Reference#")]
+        public string Reference { get; set; }
+
+        [DataType(DataType.MultilineText)]
+        public string Notes { get; set; }
 
         public Guid CreatedBy { get; set; }
 

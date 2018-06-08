@@ -67,23 +67,26 @@ namespace Web.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
+                      
             Invoice invoice = db.Invoices
                 .Include("Order")
                 .Include("Order.OrderDetails")
                 .Include("Order.OrderDetails.Product")
                 .Include("Order.OrderDetails.ProductPrice")
                 .Include("Partner").
-                Where(x => x.Id == id && x.CreatedBy == UserId).FirstOrDefault();
+                Where(x => x.Id == id && x.CreatedBy == UserId).FirstOrDefault();                  
 
             invoice.PaymentDetails = GetPaymentDetailList().Where(x => x.Invoice_Id == id && !x.Payment.Deleted).ToList();
-            invoice.Credits = GetCreditByPartnerId(invoice.Partner_Id).ToList();//GetCreditByInvoiceId(invoice.Id).ToList();
-            //invoice.CreditsAvailable = GetCreditByPartnerId(invoice.Partner_Id).ToList();
+            invoice.Credits = GetCreditByPartnerId(invoice.Partner_Id).ToList();
             ViewBag.Total = invoice.Order.OrderDetails.Sum(x => x.AmountAfterTax);
 
             if (invoice == null)
             {
                 return HttpNotFound();
             }
+            if (TempData.ContainsKey("ModelState"))
+                ModelState.Merge((ModelStateDictionary)TempData["ModelState"]);
+
             return View(invoice);
         }
 
@@ -264,6 +267,66 @@ namespace Web.Controllers
                     ModelState.AddModelError(string.Empty, ex.Message);
                     return View(invoice);
                 }
+            }
+        }
+
+        public ActionResult UseCredit(Guid id)
+        {
+            Invoice invoice = db.Invoices
+                .Include("Order")
+                .Include("Order.OrderDetails")
+                .Include("Order.OrderDetails.Product")
+                .Include("Order.OrderDetails.ProductPrice")
+                .Where(x => x.Id == id && x.CreatedBy == UserId).FirstOrDefault();
+            invoice.PaymentDetails = GetPaymentDetailList().Where(x => x.Invoice_Id == id && !x.Payment.Deleted).ToList();
+            invoice.Credits = GetCreditByPartnerId(invoice.Partner_Id).ToList();
+
+            var credits = GetCreditByPartnerId(invoice.Partner_Id).Where(x => x.Invoice_Id == null).ToList();
+
+            var creditsAmount = credits.Sum(x => x.Amount);
+
+            if (invoice.Amount < creditsAmount)
+            {
+                ModelState.AddModelError(string.Empty, "Total credits amount is greater than the invoice amount.");
+                TempData["ModelState"] = ModelState;//use tempdata To persist the model state across redirects. for error display purpose
+                return RedirectToAction("Details", new { id = invoice.Id });
+            }
+
+            foreach (Credit cr in credits)
+            {
+                cr.Invoice_Id = id;
+            }
+            db.SaveChanges();
+
+            return RedirectToAction("Details", new { id = invoice.Id });
+        }
+
+        public ActionResult DeleteCredit(Guid id)
+        {
+            var credit = db.Credits
+                .Where(x => x.Id == id && x.CreatedBy == UserId).FirstOrDefault();
+            if (credit == null || credit.Invoice_Id == null)
+            {
+                return HttpNotFound();
+            }
+            else
+            {
+                var invoice = db.Invoices
+                    .Where(x => x.Id == credit.Invoice_Id && x.CreatedBy == UserId).FirstOrDefault(); 
+                if (invoice == null)
+                    return HttpNotFound();
+
+                if (invoice.Status == Helper.Constants.InvoiceStatus.PAID)
+                {
+                    ModelState.AddModelError(string.Empty, "Can't remove this credit, invoice is already paid or completed");
+                    return RedirectToAction("Details", new { id = invoice.Id });
+                }
+                              
+               
+                credit.Invoice_Id = null;
+                db.SaveChanges();
+                return RedirectToAction("Details", new { id = invoice.Id });
+                
             }
         }
 
