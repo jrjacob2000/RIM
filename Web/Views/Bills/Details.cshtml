@@ -2,6 +2,7 @@
 
 @{
     ViewBag.Title = "Details";
+    var CreditUsed = Model.Credits.Where(x => x.Invoice_Id == Model.Id);
 }
 
 <h2>Detail - @Model.InvoiceNumber</h2>
@@ -9,24 +10,74 @@
     <div class="custom-header-div">
         <input type="button" value="Print" onclick="printdiv()" class="btn btn-primary " />
         @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
+        @Html.ActionLink("Record Payment", "Create", "PaymentDetails", new { Id = Model.Id,source="Bills" }, null) |
         @Html.ActionLink("Back to List", "Index")
     </div>
 </div>
 <hr class="custom-header-hr"/>
-<h4>Payments Made</h4>
-<table class="table">
-    <tr>
+@if (ViewData.ModelState[""] != null && ViewData.ModelState[""].Errors.Count() > 0)
+{
+    <div class="alert alert-danger">
+        <a class="close" data-dismiss="alert">×</a>
+        <h5 class="alert-heading">Encounter the following error:</h5>
+        @Html.ValidationSummary(true)
+    </div>
+}
+@if (@Model.CreditAmountAvailable > 0)
+{
+    <input type="hidden" name="useCr" value="1" />
+    <span>You have <b>@Model.CreditAmountAvailable</b> Credits available to use. </span> @Html.ActionLink("Apply credits", "UseCredit", new { id = @Model.Id }, new { onclick = "return confirm('Are you sure you want to use this credit?');" })
+}
+
+@if (CreditUsed.Count() > 0)
+{
+    <h4>Credit Used</h4>
+    <table class="table table-condensed table-striped" style="width:600px">
+        <thead>
+            <tr class="active">
+                <th scope="col">
+                    @Html.DisplayNameFor(model => model.Credits.First().CreditNumber)
+                </th>
+                <th scope="col" style="width:20%">
+                    @Html.DisplayNameFor(model => model.Credits.First().Amount)
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in CreditUsed)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.CreditNumber)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Amount)
+                    </td>
+                    <td style="width:50px">
+                        @Html.ActionLink(" ", "DeleteCredit", new { id = item.Id }, new { onclick = "return confirm('Are you sure you want to unuse this credit?');", @class = "glyphicon glyphicon-remove" })
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+<h4>Payments Recieved</h4>
+
+
+<table class="table table-condensed table-striped" style="width:600px">
+    <tr class="active">
         <th>
             @Html.DisplayNameFor(model => model.PaymentDetails.First().Invoice.Order.OrderNumber)
         </th>
         <th>
-            Bill Number
-            @*@Html.DisplayNameFor(model => model.PaymentDetails.First().Invoice.Order.InvoiceNumber)*@
+            @Html.DisplayNameFor(model => model.PaymentDetails.First().Payment.Date)
         </th>
-        <th>
+        <th style="width:20%">
             @Html.DisplayNameFor(model => model.Amount)
         </th>
         <th></th>
+
     </tr>
 
     @foreach (var item in Model.PaymentDetails)
@@ -36,15 +87,37 @@
                 @Html.DisplayFor(modelItem => item.Invoice.Order.OrderNumber)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Invoice.InvoiceNumber)
+                @Html.DisplayFor(modelItem => item.Payment.Date)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Amount)
             </td>
 
+            <td style="width:50px">
+
+                @using (Html.BeginForm("Delete", "PaymentDetails", new { id = item.Id, source = "Bills" }, FormMethod.Post))
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.ActionLink(" ", "Edit", "PaymentDetails", new { id = item.Id,source="Bills" }, new { @class = "glyphicon glyphicon-pencil", title = "Edit" })
+                    <button type="submit" style="background: transparent;border: 0px;padding: 0; outline: 0;" title="Delete" onclick="return confirm('Are you sure you want to delete this payment?')">
+                        <span style=" color:#428bca" class="glyphicon glyphicon-remove">
+                        </span>
+                    </button>
+
+                    @*@Html.ActionLink(" ", "Delete", "PaymentDetails", new { id = item.Id }, new { onclick = "return confirm('Are you sure you want to delete this payment?');", @class = "glyphicon glyphicon-remove", title = "Delete" })*@
+                }
+            </td>
+
+
         </tr>
     }
 </table>
+
+@if (Model.PaymentDetails == null || Model.PaymentDetails.Count() == 0)
+{
+    <div style="text-align:center; width:600px">No payments found</div>
+}
+
 <hr style="background-color:grey; height:4px" />
 <div style="margin:20px; padding-bottom:20px; margin-right:15px; border:solid; border-width:1px">
     <div id="printarea">
@@ -148,6 +221,10 @@
                         <tr>
                             <td style="text-align:left">DISCOUNT: </td>
                             <td style="text-align:right; padding-right:10px"><span style="font-weight:bolder;text-align:right; ">@Html.DisplayFor(model => model.Order.OrderDiscount) </span></td>
+                        </tr>
+                        <tr style="@(Model.CreditAmountUsed > 0 ? "":"Display:None")">
+                            <td style="max-width:150px; min-width:100px; text-align:left">CREDITS:</td>
+                            <td style="max-width:150px; min-width:100px; text-align:right; padding-right:10px"><span style="font-weight:bolder; text-align:right">-@Html.DisplayFor(model => model.CreditAmountUsed) </span></td>
                         </tr>
                         <tr>
                             <td style="text-align:left">TAX RATE:</td>

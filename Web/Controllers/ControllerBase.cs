@@ -213,7 +213,9 @@ namespace Web.Controllers
         //PaymentDetail
         public PaymentDetail GetPaymentDetailById(Guid Id, bool detach = false)
         {
-            var paymentDetail = db.PaymentDetails.Where(x => x.CreatedBy == UserId && x.Id == Id).FirstOrDefault();
+            var paymentDetail = db.PaymentDetails
+                .Include("Payment")
+                .Where(x => x.CreatedBy == UserId && x.Id == Id).FirstOrDefault();
 
             if (paymentDetail == null)
                 return null;

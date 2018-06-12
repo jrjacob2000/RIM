@@ -4,31 +4,23 @@
     ViewBag.Title = "Create";
 }
 
-@if (Model.Type == Web.Controllers.Helper.Constants.InvoiceType.CustomerCredit)
+<h3>New Credit Note</h3>
+
+@using (Html.BeginForm())
 {
-    <h2>New Customer Credits</h2>
-}
-else if (Model.Type == Web.Controllers.Helper.Constants.InvoiceType.SupplierCredit)
-{
-    <h2>New Supplier Credits</h2>
-}
-
-
-
-@using (Html.BeginForm()) {
     @Html.AntiForgeryToken()
     <div class="row">
         <div class="custom-header-div">
             <input type="submit" value="Save" class="btn btn-primary" />
-            @Html.ActionLink("Back to List", "Index", new { type=Model.Type})
+            @Html.ActionLink("Back to List", "Index", new { type = Model.Type })
         </div>
     </div>
 
     <div class="form-horizontal">
         <hr class="custom-header-hr" />
-       
+
         @*@Html.HiddenFor(model => model.Partner_Id)
-        @Html.HiddenFor(model => model.Order_Id)*@
+            @Html.HiddenFor(model => model.Order_Id)*@
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
 
         <div class="form-group">
@@ -41,41 +33,34 @@ else if (Model.Type == Web.Controllers.Helper.Constants.InvoiceType.SupplierCred
         </div>
 
         <div class="form-group">
-           
-            @if (Model.Type == Web.Controllers.Helper.Constants.InvoiceType.CustomerCredit)
+
+            @if (Model.Order.AdjustmentReason == "RETURN_CUSTOMER")
             {
                 @Html.LabelFor(model => model.Partner_Id, "Customer", htmlAttributes: new { @class = "control-label col-md-2" })
             }
-            else if (Model.Type == Web.Controllers.Helper.Constants.InvoiceType.SupplierCredit)
+            else if (Model.Order.AdjustmentReason == "RETURN_SUPPLIER")
             {
-               @Html.LabelFor(model => model.Partner_Id, "Supplier", htmlAttributes: new { @class = "control-label col-md-2" })
+                @Html.LabelFor(model => model.Partner_Id, "Supplier", htmlAttributes: new { @class = "control-label col-md-2" })
             }
-            
+
             <div class="col-md-10">
                 @*@Html.EditorFor(model => model.Partner.Name, new { htmlAttributes = new { @class = "form-control", @disabled = "disabled" } })*@
                 @Html.DropDownListFor(model => model.Partner_Id, new SelectList(ViewBag.Partners, "Value", "Text"), null, new { @class = "custom-bootstrap-select form-control" })
                 @Html.ValidationMessageFor(model => model.Partner_Id, "", new { @class = "text-danger" })
             </div>
         </div>
-        
+
         <div class="form-group">
-            @if(Model.Type == Web.Controllers.Helper.Constants.InvoiceType.CustomerCredit)
-            { 
-                @Html.LabelFor(model => model.Order_Id, "Customer Return #", htmlAttributes: new { @class = "control-label col-md-2" })
-            }
-            else if (Model.Type == Web.Controllers.Helper.Constants.InvoiceType.SupplierCredit)
-            {
-                @Html.LabelFor(model => model.Order_Id, "Supplier Return #", htmlAttributes: new { @class = "control-label col-md-2" })
-            }
-                <div class="col-md-10">
-                @*@Html.EditorFor(model => model.Order.OrderNumber, new { htmlAttributes = new { @class = "form-control", @disabled = "disabled" } })*@
-                @Html.DropDownListFor(model => model.Order_Id, new SelectList(ViewBag.Orders, "Value", "Text"), null, new { @class = "custom-bootstrap-select form-control" })
+            @Html.LabelFor(model => model.Order_Id, "Reference #", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Order.OrderNumber, new { htmlAttributes = new { @class = "form-control", @disabled = "disabled" } })
+                @*@Html.DropDownListFor(model => model.Order_Id, new SelectList(ViewBag.Orders, "Value", "Text"), null, new { @class = "custom-bootstrap-select form-control", disabled = "disabled" })*@
                 @Html.ValidationMessageFor(model => model.Order_Id, "", new { @class = "text-danger" })
             </div>
         </div>
 
         <div class="form-group">
-            @Html.LabelFor(model => model.CreditDate,"Credit Date", htmlAttributes: new { @class = "control-label col-md-2" })
+            @Html.LabelFor(model => model.CreditDate, "Credit Date", htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
                 @Html.EditorFor(model => model.CreditDate, new { htmlAttributes = new { @class = "form-control" } })
                 @Html.ValidationMessageFor(model => model.CreditDate, "", new { @class = "text-danger" })
@@ -88,11 +73,19 @@ else if (Model.Type == Web.Controllers.Helper.Constants.InvoiceType.SupplierCred
                 @Html.EditorFor(model => model.DueDate, new { htmlAttributes = new { @class = "form-control" } })
                 @Html.ValidationMessageFor(model => model.DueDate, "", new { @class = "text-danger" })
             </div>
-        </div>               
+        </div>
 
-       
+        <div class="form-group">
+            @Html.Label("Amount", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Amount, new { htmlAttributes = new { @class = "form-control", disabled = "disabled" } })
 
-      
+            </div>
+        </div>
+
+
+
+
     </div>
 }
 
@@ -105,9 +98,9 @@ else if (Model.Type == Web.Controllers.Helper.Constants.InvoiceType.SupplierCred
 
 <script type="text/javascript">
     $(document).ready(function () {
-        
+
         $('#Order_Id').attr('data-live-search', true);
-               
+
         $('#Partner_Id').attr('data-live-search', true);
 
         $('.custom-bootstrap-select').selectpicker(
@@ -118,6 +111,6 @@ else if (Model.Type == Web.Controllers.Helper.Constants.InvoiceType.SupplierCred
         });
 
 
-      
+
     });
 </script>

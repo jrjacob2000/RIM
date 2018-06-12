@@ -12,28 +12,44 @@
 
 }
 
-<h2>Create</h2>
-<div style="display:inline-block; width:100%">
-    @if(Model.Type == Web.Controllers.Helper.Constants.PaymentType.RECIEVE)
-    { 
-        <h4 style="float:left">Receive Payment</h4>
-    }
-    else if (Model.Type == Web.Controllers.Helper.Constants.PaymentType.REFUND)
-    {
-        <h4 style="float:left">Refund Customer</h4>
-    }
+@if (Model.Type == Web.Controllers.Helper.Constants.PaymentType.RECIEVE)
+{
+    <h3 style="float:left">Receive Payment</h3>
+}
+else if (Model.Type == Web.Controllers.Helper.Constants.PaymentType.REFUND)
+{
+    <h3 style="float:left">Refund Customer</h3>
+}
+else if (Model.Type == Web.Controllers.Helper.Constants.PaymentType.BILL)
+{
+    <h3 style="float:left">Pay Bill</h3>
+}
+
+<div style="display:inline-block; width:100%">   
     <div style="float:right">
-        <input type="submit" value="Save" form="paymentForm" class="btn btn-primary" /> |
+        @if (!(ViewData.ModelState[""] != null && ViewData.ModelState[""].Errors.Count() > 0))
+        {
+            <span>
+                <input type="submit" value="Save" form="paymentForm" class="btn btn-primary" /> |
+            </span>
+        }
         @Html.ActionLink("Back to List", "Index")
     </div>
 </div>
 <hr style="margin-top:0px" />
-@Html.ValidationSummary(true, "", new { @class = "text-danger" })
 
-@using (Html.BeginForm("Create", "Payments", FormMethod.Get))
+@if (ViewData.ModelState[""] != null && ViewData.ModelState[""].Errors.Count() > 0)
+{
+    <div class="alert alert-danger">
+        <a class="close" data-dismiss="alert">×</a>
+        @Html.ValidationSummary(true)
+    </div>
+}
+
+@*@using (Html.BeginForm("Create", "Payments", FormMethod.Get))
 {   
     @Html.HiddenFor(model => model.Type)
-    @*<h4>Payment Recieved From:</h4>*@
+    @Html.HiddenFor(model => model.Partner_Id)
     <div class="form-horizontal">
         <div class="form-group">
             @Html.Label("Customer", htmlAttributes: new { @class = "control-label col-md-2" })
@@ -48,15 +64,16 @@
            
         </div>
     </div>
-}
+}*@
 
-<div class="form-horizontal">
+@*<div class="form-horizontal">
     <div class="form-group">
         <div class="col-md-12" style="text-align:center">
             <p>@ViewBag.Message</p>
         </div>        
     </div>
-</div>
+</div>*@
+
  @using (Html.BeginForm(null, null, FormMethod.Post, new { id = "paymentForm", @class = @showDetail }))
 {
             @Html.AntiForgeryToken()
@@ -65,10 +82,10 @@
 
             <div class="form-horizontal">               
                 <div class="form-group">
-                    @Html.LabelFor(model => model.Amount, htmlAttributes: new { @class = "control-label col-md-2" })
+                    @Html.LabelFor(model => model.Reference, htmlAttributes: new { @class = "control-label col-md-2" })
                     <div class="col-md-10">
-                        @Html.EditorFor(model => model.Amount, new { htmlAttributes = new { @class = "form-control" } })
-                        @Html.ValidationMessageFor(model => model.Amount, "", new { @class = "text-danger" })
+                        @Html.EditorFor(model => model.Reference, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.Reference, "", new { @class = "text-danger" })
                     </div>
                 </div>
 
@@ -84,9 +101,6 @@
             <h4>Unpaid Invoices</h4>
             <table class="table">
                 <tr>
-                    @*<th>
-                        @Html.DisplayNameFor(model => model.PaymentDetails.First().Order.InvoiceNumber)
-                    </th>*@
                     <th>
                         @Html.DisplayNameFor(model => model.PaymentDetails.First().Invoice.InvoiceNumber)
                     </th>

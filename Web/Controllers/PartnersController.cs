@@ -31,6 +31,8 @@ namespace Web.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
             Partner partner = GetPartnerById(id.Value); //db.Partners.Find(id);
+            partner.Payments = GetPaymentList().Where(x => x.Partner_Id == id).ToList();
+
             if (partner == null)
             {
                 return HttpNotFound();

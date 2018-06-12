@@ -38,9 +38,7 @@ namespace Web.Models
         [ForeignKey("Partner_Id")]
         [Display(Name = "Partner")]
         public Partner Partner {get;set;}
-
-       
-        
+                       
         [Display(Name = "Other Charges")]
         public decimal OtherCharges {get;set;}
 
@@ -63,6 +61,9 @@ namespace Web.Models
 
         [Display(Name = "Order Notes")]
         public string OrderNotes {get;set;}
+
+        [Display(Name = "Reason")]
+        public string AdjustmentReason { get; set; }
 
         public List<OrderDetail> OrderDetails { get; set; }
 

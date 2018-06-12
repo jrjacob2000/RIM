@@ -10,7 +10,7 @@
     <div class="custom-header-div">
         <input type="button" value="Print" onclick="printdiv()" class="btn btn-primary " />
         @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
-        @Html.ActionLink("Record Payment", "Create", "PaymentDetails", new { Id = Model.Id }, null) |
+        @Html.ActionLink("Record Payment", "Create", "PaymentDetails", new { Id = Model.Id, source="Invoices" }, null) |
         @Html.ActionLink("Back to List", "Index")
     </div>
 </div>
@@ -95,10 +95,10 @@
 
             <td style="width:50px">
                 
-                @using (Html.BeginForm("Delete", "PaymentDetails", new { id = item.Id }, FormMethod.Post))
+                @using (Html.BeginForm("Delete", "PaymentDetails", new { id = item.Id, source="Invoices"}, FormMethod.Post))
                 {
                     @Html.AntiForgeryToken()
-                    @Html.ActionLink(" ", "Edit", "PaymentDetails", new { id = item.Id }, new { @class = "glyphicon glyphicon-pencil", title = "Edit" })
+                    @Html.ActionLink(" ", "Edit", "PaymentDetails", new { id = item.Id, source = "Invoices" }, new { @class = "glyphicon glyphicon-pencil", title = "Edit" })
                 <button type="submit" style="background: transparent;border: 0px;padding: 0; outline: 0;" title="Delete" onclick="return confirm('Are you sure you want to delete this payment?')">
                         <span style=" color:#428bca" class="glyphicon glyphicon-remove">
                     </span>
@@ -222,7 +222,7 @@
                             <td style="text-align:right; padding-right:10px"><span style="font-weight:bolder;text-align:right; ">-@Html.DisplayFor(model => model.Order.OrderDiscount) </span></td>
                         </tr>
                         <tr style="@(Model.CreditAmountUsed > 0 ? "":"Display:None")">
-                            <td style="max-width:150px; min-width:100px; text-align:left">CREDIT:</td>
+                            <td style="max-width:150px; min-width:100px; text-align:left">CREDITS:</td>
                             <td style="max-width:150px; min-width:100px; text-align:right; padding-right:10px"><span style="font-weight:bolder; text-align:right">-@Html.DisplayFor(model => model.CreditAmountUsed) </span></td>
                         </tr>
                         <tr>

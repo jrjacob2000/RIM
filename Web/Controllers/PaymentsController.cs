@@ -81,10 +81,14 @@ namespace Web.Controllers
 
             if (paymentDetails.Count == 0 && Partner_Id != null)
             {
+                string message = null;
                 if(type == Helper.Constants.PaymentType.RECIEVE)
-                    ViewBag.Message = "The customer has no outstanding dues.";
+                    message = "No outstanding dues found.";
                 else if(type == Helper.Constants.PaymentType.REFUND)
-                    ViewBag.Message = "No items to refund.";
+                    message = "No credit notes found.";
+                else if (type == Helper.Constants.PaymentType.BILL)
+                    message = "No outstanding Bill found";
+                ModelState.AddModelError("", message);
             }
  
 
@@ -133,16 +137,12 @@ namespace Web.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create( Payment payment)
         {
+            if (payment.PaymentDetails == null)
+                return View();
+
             ViewBag.Partners = GetPartnerList().Select(x => new SelectListItem() { Value = x.Id.ToString(), Text = x.Name }).ToList();
-            if (payment.Amount == 0)
-                ModelState.AddModelError(string.Empty, "Payment amount cannot be zero");
-
-            if (payment.PaymentDetails.Sum(x => x.Amount) > payment.Amount)
-                ModelState.AddModelError(string.Empty, "Payment allocated is greater than payment received.");
-
-            if (payment.PaymentDetails.Sum(x => x.Amount) < payment.Amount)
-                ModelState.AddModelError(string.Empty, "Payment allocated is less than payment received.");
-
+            
+            payment.Amount = payment.PaymentDetails.Sum(x => x.Amount);
             payment.PaymentDetails = payment.PaymentDetails.Where(x => x.Amount > 0).ToList();
             payment.PaymentDetails.ForEach(x =>
             {
@@ -160,6 +160,7 @@ namespace Web.Controllers
                     x.Invoice.Status = Helper.Constants.InvoiceStatus.PARTIALPAID;
                 
                 x.CreatedBy = UserId;
+                x.Date = payment.Date;
             });
 
             if (ModelState.IsValid)

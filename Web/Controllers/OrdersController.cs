@@ -66,6 +66,7 @@ namespace Web.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
+            ViewBag.AdjustmentReasons = Helper.Constants.AdustmentReasonList();  
 
             var adjust = new Adjust();
             Order order = GetOrderById(id.Value);
@@ -75,6 +76,8 @@ namespace Web.Controllers
             adjust.OrderDetails = order.OrderDetails;
             adjust.OrderNotes = order.OrderNotes;
             adjust.OrderType = order.OrderType;
+            adjust.AdjustReason = Helper.Constants.AdustmentReasonList().Where( x => x.Value == order.AdjustmentReason).First().Text;
+            adjust.Credits = db.Credits.Where(x => x.Order_Id == id.Value && x.CreatedBy == UserId).ToList();
 
 
             if (order == null)
@@ -96,7 +99,7 @@ namespace Web.Controllers
         {
             ViewBag.IdToCopy = IdToCopy;
             ViewBag.OrderTypes = Helper.Constants.OrderTypeList();
-            //ViewBag.Partners = db.Partners.Select(x => new SelectListItem() { Value = x.Id.ToString(), Text = x.Name }).ToList();
+            ViewBag.AdjustmentReasons = Helper.Constants.AdustmentReasonList();            
             ViewBag.Partners = GetPartnerList().Select(x => new SelectListItem() { Value = x.Id.ToString(), Text = x.Name }).ToList();
 
             var setting = GetSetting();
@@ -133,12 +136,12 @@ namespace Web.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Create([Bind(Include = "Id,OrderNumber,OrderDate,ExpectedDate,OrderType,OtherCharges,OrderDiscount,TaxRate,OrderNotes,Partner_Id")] Order order,Guid? IdToCopy)
+        public async Task<ActionResult> Create(Order order,Guid? IdToCopy)
         {
             try
             {
                 ViewBag.OrderTypes = Helper.Constants.OrderTypeList();
-                //ViewBag.Partners = db.Partners.Select(x => new SelectListItem() { Value = x.Id.ToString(), Text = x.Name }).ToList();
+                ViewBag.AdjustmentReasons = Helper.Constants.AdustmentReasonList();                
                 ViewBag.Partners = GetPartnerList().Select(x => new SelectListItem() { Value = x.Id.ToString(), Text = x.Name }).ToList();
 
                 var setting = GetSetting();
@@ -267,9 +270,10 @@ namespace Web.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            
+            ViewBag.AdjustmentReasons = Helper.Constants.AdustmentReasonList();  
             //Order order = await db.Orders.FindAsync(id);
             Order order = GetOrderById(id.Value);
+
 
             order.TaxRate = order.TaxRate * 100;
 
@@ -304,7 +308,7 @@ namespace Web.Controllers
         {
             ViewBag.OrderTypes = Helper.Constants.OrderTypeList();            
             ViewBag.Partners = GetPartnerList().Select(x => new SelectListItem() { Value = x.Id.ToString(), Text = x.Name }).ToList();
-
+            ViewBag.AdjustmentReasons = Helper.Constants.AdustmentReasonList();  
 
             var dbOrder = GetOrderById(order.Id, true);
             order.CreatedBy = dbOrder.CreatedBy;

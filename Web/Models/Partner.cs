@@ -16,5 +16,7 @@ namespace Web.Models
         public string Contact{get;set;}
         public Guid CreatedBy { get; set; }
 
+        public List<Payment> Payments { get; set; }
+
     }
 }

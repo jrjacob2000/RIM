@@ -39,7 +39,13 @@ namespace Web.Models
 
         [ForeignKey("Invoice_Id")]
         public Invoice Invoice { get; set; }
-        
+
+        public List<PaymentDetail> PaymentDetails
+        {
+            get;
+            set;
+        }
+
         public Guid CreatedBy { get; set; }
 
         public string Status { get; set; }
@@ -49,7 +55,10 @@ namespace Web.Models
         public decimal Amount
         {
             get {
-                return Order.OrderDetails.Sum(x => x.AmountAfterTax);
+                if (Order != null && Order.OrderDetails != null)
+                    return Order.OrderDetails.Sum(x => x.AmountAfterTax);
+                else
+                    return 0;
             }
         }
          

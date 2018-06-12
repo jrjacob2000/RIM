@@ -17,9 +17,18 @@ namespace Web.Controllers
                 return new List<SelectListItem>(){
                 new SelectListItem(){Value = OrderType.PURCHASE, Text="Purchase"},
                 new SelectListItem(){Value = OrderType.SALE, Text="Sale"},
-                new SelectListItem(){Value = OrderType.QOUTE, Text="Qoute"},
+                //new SelectListItem(){Value = OrderType.QOUTE, Text="Qoute"},
                 new SelectListItem(){Value = OrderType.ADJUST, Text="Adjust"},
-                new SelectListItem(){Value = OrderType.CUSTOMER_RETURN, Text="Return by Customer"}
+                //new SelectListItem(){Value = OrderType.CUSTOMER_RETURN, Text="Return by Customer"}
+                };
+            }
+
+            public static List<SelectListItem> AdustmentReasonList()
+            {
+                return new List<SelectListItem>(){
+                new SelectListItem(){Value = "DAMAGE_LOST", Text="Damage and Lost"},
+                new SelectListItem(){Value = "RETURN_CUSTOMER", Text="Return by Customer"},
+                new SelectListItem(){Value = "RETURN_SUPPLIER", Text="Return to Supplier"}
                 };
             }
 
@@ -57,6 +66,7 @@ namespace Web.Controllers
             {
                 public const string REFUND = "REFUND";
                 public const string RECIEVE = "RECIEVE";
+                public const string BILL = "BILL";
             }
 
             public static class InvoiceStatus
@@ -66,7 +76,13 @@ namespace Web.Controllers
                 public const string DRAFT = "DRAFT";
                 public const string OVERDUE = "OVERDUE";
             }
-
+            public static class CreditNotesStatus
+            {
+                public const string PAID = "PAID";
+                //public const string PARTIALPAID = "PARTIAL PAID";
+                public const string DRAFT = "DRAFT";
+                public const string OVERDUE = "OVERDUE";
+            }
             public static class InvoiceType
             {
                 public const string INVOICE = "INVOICE";

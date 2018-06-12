@@ -30,7 +30,12 @@ namespace Web.Models
         [Display(Name = "Order Notes")]
         public string OrderNotes {get;set;}
 
+        [Display(Name = "Reason")]
+        public string AdjustReason { get; set; }
+
         public List<OrderDetail> OrderDetails { get; set; }
+
+        public List<Credit> Credits { get; set; }
 
         [Display(Name = "Invoice Number")]
         public string InvoiceNumber { get; set; }

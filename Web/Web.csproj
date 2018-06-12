@@ -179,6 +179,7 @@
     <Compile Include="Controllers\DashBoardController.cs" />
     <Compile Include="Controllers\Helper.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\InvoiceControllerBase.cs" />
     <Compile Include="Controllers\InvoicesController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Controllers\OrderDetailsController.cs" />
@@ -289,6 +290,18 @@
     <Compile Include="Migrations\201806080859540_updatePayment.cs" />
     <Compile Include="Migrations\201806080859540_updatePayment.Designer.cs">
       <DependentUpon>201806080859540_updatePayment.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201806091222396_addCreditIdToPaymentDatail.cs" />
+    <Compile Include="Migrations\201806091222396_addCreditIdToPaymentDatail.Designer.cs">
+      <DependentUpon>201806091222396_addCreditIdToPaymentDatail.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201806111053162_adjustmentReason.cs" />
+    <Compile Include="Migrations\201806111053162_adjustmentReason.Designer.cs">
+      <DependentUpon>201806111053162_adjustmentReason.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201806120340161_payment_ReferenceColumn.cs" />
+    <Compile Include="Migrations\201806120340161_payment_ReferenceColumn.Designer.cs">
+      <DependentUpon>201806120340161_payment_ReferenceColumn.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
@@ -541,6 +554,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201806080859540_updatePayment.resx">
       <DependentUpon>201806080859540_updatePayment.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201806091222396_addCreditIdToPaymentDatail.resx">
+      <DependentUpon>201806091222396_addCreditIdToPaymentDatail.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201806111053162_adjustmentReason.resx">
+      <DependentUpon>201806111053162_adjustmentReason.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201806120340161_payment_ReferenceColumn.resx">
+      <DependentUpon>201806120340161_payment_ReferenceColumn.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

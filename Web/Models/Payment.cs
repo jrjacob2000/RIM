@@ -11,11 +11,16 @@ namespace Web.Models
     public class Payment
     {
         public Guid Id { get; set; }
+
+        [Display(Name = "Reference#")]
+        public string Reference { get; set; }
+
         [Display(Name="Payment Recieved")]
         public decimal Amount { get; set; }
         
         [Required]
         [DataType(DataType.Date)]
+        [Display(Name = "Payment Date")]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public DateTime Date { get; set; }
 

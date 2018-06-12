@@ -38,20 +38,40 @@ namespace Web.Controllers
         }
 
         // GET: PaymentDetails/Create
-        public ActionResult Create(Guid id)
+        public ActionResult Create(Guid id, string source)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            var invoice = GetInvoiceById(id);
-            var payment = new PaymentDetail();
-            payment.Date = DateTime.Now;
-            payment.Invoice_Id = invoice.Id;
-            payment.Invoice = invoice;           
+            if (source == "Credits")
+            {
+                var credit = db.Credits
+                    .Include("Partner")
+                    .Where(x => x.Id == id && x.CreatedBy == UserId).First();
 
-            ViewBag.Order_Id = new SelectList(GetOrderList(), "Id", "OrderNumber");
-            return View(payment);
+                if (credit.Status == Helper.Constants.CreditNotesStatus.PAID)
+                    ModelState.AddModelError("","Credit notes is already paid");
+
+                var paymentDtl = new PaymentDetail();
+                paymentDtl.Date = DateTime.Now;
+                paymentDtl.Credit_Id = credit.Id;
+                paymentDtl.Credit = credit;
+                paymentDtl.Payment = new Payment() { Id = Guid.NewGuid() };
+                return View(paymentDtl);
+            }
+            else
+            {
+                var invoice = GetInvoiceById(id);
+                var paymentDtl = new PaymentDetail();
+                paymentDtl.Date = DateTime.Now;
+                paymentDtl.Invoice_Id = invoice.Id;
+                paymentDtl.Invoice = invoice;
+
+                ViewBag.Order_Id = new SelectList(GetOrderList(), "Id", "OrderNumber");
+                paymentDtl.Payment = new Payment() { Id = Guid.NewGuid() };
+                return View(paymentDtl);
+            }
         }
 
         // POST: PaymentDetails/Create
@@ -59,36 +79,101 @@ namespace Web.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(PaymentDetail paymentDetail)
+        public ActionResult Create(PaymentDetail paymentDetail, string source)
         {
-            if (paymentDetail.Invoice_Id == null)
+            //TODO: plan to remove payment table.
+            var payment = new Payment();
+            payment.Id = Guid.NewGuid();
+            payment.Reference = paymentDetail.Payment.Reference;
+            payment.Amount = paymentDetail.Amount;
+            payment.Date = paymentDetail.Date;
+            payment.DateCreated = DateTime.Now;
+            payment.CreatedBy = UserId;
+
+            if (source == "Credits") 
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                if (paymentDetail.Credit_Id == null)
+                {
+                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                }
+
+                var credit = db.Credits
+                    .Include("Order")
+                    .Include("Order.OrderDetails")
+                    .Include("Order.OrderDetails.Product")
+                    .Include("Order.OrderDetails.ProductPrice")
+                    .Include("Partner")
+                    .Where(x => x.Id == paymentDetail.Credit_Id && x.CreatedBy == UserId)
+                    .First();
+                
+                if (paymentDetail.Amount != credit.Amount)
+                    ModelState.AddModelError("", "Amount should be equal to credit notes amount. Credit notes amount is " + credit.Amount);
+
+                if (ModelState.IsValid)
+                {
+                    payment.Partner_Id = credit.Partner_Id;                    
+                    db.Payments.Add(payment);
+
+                    paymentDetail.Id = Guid.NewGuid();
+                    paymentDetail.CreatedBy = UserId;
+                    paymentDetail.Payment = payment;
+                    db.PaymentDetails.Add(paymentDetail);
+
+                    credit.Status = Helper.Constants.CreditNotesStatus.PAID;
+
+                    db.SaveChanges();
+                    return RedirectToAction("Details", source, new { id = paymentDetail.Credit_Id });
+                }
+                                
+                paymentDetail.Credit = credit;
+                return View(paymentDetail);
             }
-            if (ModelState.IsValid)
+            else
             {
+                if (paymentDetail.Invoice_Id == null)
+                {
+                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                }
+
                 var invoice = GetInvoiceById(paymentDetail.Invoice_Id.Value);
-                //TODO: plan to remove payment table.
-                var payment = new Payment();
-                payment.Id = Guid.NewGuid();
-                payment.Amount = paymentDetail.Amount;
-                payment.Date = paymentDetail.Date;
-                payment.DateCreated = DateTime.Now;
-                payment.Partner_Id = invoice.Partner_Id;
-                payment.CreatedBy = UserId;
-                db.Payments.Add(payment);
 
-                paymentDetail.Id = Guid.NewGuid();
-                paymentDetail.CreatedBy = UserId;
-                paymentDetail.Payment = payment;
-                db.PaymentDetails.Add(paymentDetail);
-                db.SaveChanges();
-        
+                var prevReceivePmnts = db.PaymentDetails.Where(x => x.Invoice_Id == invoice.Id && x.CreatedBy == UserId).ToList();
+                decimal invoiceBal = 0;
+                if (prevReceivePmnts != null)
+                    invoiceBal = invoice.Amount - prevReceivePmnts.Sum(s => s.Amount);
+
+                if (paymentDetail.Amount > invoiceBal)
+                    ModelState.AddModelError("", "Amount should not greater than the invoice balance. Invoice balance is only " + invoiceBal);
+
+                if (ModelState.IsValid)
+                {
+
+                    payment.Partner_Id = invoice.Partner_Id;
+                    db.Payments.Add(payment);
+
+                    paymentDetail.Id = Guid.NewGuid();
+                    paymentDetail.CreatedBy = UserId;
+                    paymentDetail.Payment = payment;
+                    db.PaymentDetails.Add(paymentDetail);
+                    db.SaveChanges();
+
+                    //Update invoice status
+                    var totalRecievedAmount = db.PaymentDetails.Where(x => x.Invoice_Id == invoice.Id && x.CreatedBy == UserId).Sum(s => s.Amount);
+                    if (invoice.Amount == totalRecievedAmount)
+                        invoice.Status = Helper.Constants.InvoiceStatus.PAID;
+                    else if (invoice.Amount > totalRecievedAmount && totalRecievedAmount > 0)
+                        invoice.Status = Helper.Constants.InvoiceStatus.PARTIALPAID;
+                    else if (totalRecievedAmount == 0)
+                        invoice.Status = Helper.Constants.InvoiceStatus.DRAFT;
+                    db.SaveChanges();
+                    return RedirectToAction("Details", source, new { id = paymentDetail.Invoice_Id });
+                }
+
+                //ViewBag.Order_Id = new SelectList(GetOrderList(), "Id", "OrderNumber", paymentDetail.Order_Id);
+                paymentDetail.Invoice = invoice;
+                return View(paymentDetail);
             }
-
-            //ViewBag.Order_Id = new SelectList(GetOrderList(), "Id", "OrderNumber", paymentDetail.Order_Id);
-            //return View(paymentDetail);
-            return RedirectToAction("Details", "Invoices", new { id = paymentDetail.Invoice_Id });
+           
         }
 
         // GET: PaymentDetails/Edit/5
@@ -115,18 +200,50 @@ namespace Web.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Edit(PaymentDetail paymentDetail)
         {
+            var dbPayment = GetPaymentById(paymentDetail.Payment_Id);
+            dbPayment.Date = paymentDetail.Date;
+            dbPayment.Reference = paymentDetail.Payment.Reference;
+
+            var dbPaymentDetail = GetPaymentDetailById(paymentDetail.Id);
+
+            var invoice = GetInvoiceById(paymentDetail.Invoice_Id.Value);
             
-            var dbPaymentDetail = GetPaymentDetailById(paymentDetail.Id, true);
-            paymentDetail.CreatedBy = dbPaymentDetail.CreatedBy;
+            var prevReceivePmnts = db.PaymentDetails.Where(x => x.Invoice_Id == invoice.Id 
+                && x.CreatedBy == UserId
+                && x.Id != paymentDetail.Id);
+
+            decimal invoiceBal = invoice.Amount; 
+
+            if (prevReceivePmnts.Count() > 0)
+                invoiceBal = invoice.Amount - prevReceivePmnts.Sum(s => s.Amount);
+
+            if (paymentDetail.Amount > invoiceBal && invoiceBal > 0)
+                ModelState.AddModelError("", "Amount should not greater than the invoice balance. Invoice balance is only " + invoiceBal);
 
             if (ModelState.IsValid)
-            {
-                db.Entry(paymentDetail).State = EntityState.Modified;
+            { 
+                //db.Entry(paymentDetail).State = EntityState.Modified;
+                dbPaymentDetail.Amount = paymentDetail.Amount;
+                dbPaymentDetail.Date = paymentDetail.Date;
+                //dbPaymentDetail.Reference = paymentDetail.Reference;
+                dbPaymentDetail.Notes = dbPaymentDetail.Notes;
+                db.SaveChanges();
+
+                //Update invoice status
+                var totalRecievedAmount = db.PaymentDetails.Where(x => x.Invoice_Id == invoice.Id && x.CreatedBy == UserId).Sum(s => s.Amount);
+                if (invoice.Amount == totalRecievedAmount)
+                    invoice.Status = Helper.Constants.InvoiceStatus.PAID;
+                else if (invoice.Amount > totalRecievedAmount && totalRecievedAmount > 0)
+                    invoice.Status = Helper.Constants.InvoiceStatus.PARTIALPAID;
+                else if (totalRecievedAmount == 0)
+                    invoice.Status = Helper.Constants.InvoiceStatus.DRAFT;
+
                 db.SaveChanges();
                 return RedirectToAction("Details", "Invoices", new { Id = paymentDetail.Invoice_Id });
             }
 
-            return View();
+            paymentDetail.Invoice = invoice;
+            return View(paymentDetail);
         }
 
         //// GET: PaymentDetails/Delete/5

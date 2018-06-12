@@ -49,24 +49,26 @@ namespace Web.Controllers
             ViewBag.Partners = new SelectList(GetPartnerList(), "Id", "Name");
 
 
-            var inv = new Credit();
+            var credit = new Credit();
 
 
-            inv.DueDate = DateTime.Now;
-            inv.CreditDate = DateTime.Now;
-            if (OrderType == Helper.Constants.OrderType.SUPPLIER_RETURN)
-                inv.Type = Helper.Constants.InvoiceType.SupplierCredit;
-            else if (OrderType == Helper.Constants.OrderType.CUSTOMER_RETURN)
-                inv.Type = Helper.Constants.InvoiceType.CustomerCredit;
-            else
-                throw new Exception(string.Format("Invalid command {0} for creating credits.", OrderType));
+            credit.DueDate = DateTime.Now;
+            credit.CreditDate = DateTime.Now;
+            //if (OrderType == Helper.Constants.OrderType.SUPPLIER_RETURN)
+            //    inv.Type = Helper.Constants.InvoiceType.SupplierCredit;
+            //else if (OrderType == Helper.Constants.OrderType.CUSTOMER_RETURN)
+            //    inv.Type = Helper.Constants.InvoiceType.CustomerCredit;
+            //else
+            //    throw new Exception(string.Format("Invalid command {0} for creating credits.", OrderType));
 
 
             var order = new Order();
             if (Order_Id.HasValue)
             {
                 order = GetOrderById(Order_Id.Value);
-                inv.Partner_Id = order.Partner_Id.Value;
+                credit.Order = order;
+                credit.Order_Id = Order_Id.Value;
+                //inv.Partner_Id = order.Partner_Id.Value;
             }
 
             var setting = GetSetting();
@@ -76,7 +78,7 @@ namespace Web.Controllers
 
             //}
 
-            return View(inv);
+            return View(credit);
         }
 
         // POST: Invoices/CreateBill
@@ -86,6 +88,7 @@ namespace Web.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create( Credit credit, string OrderType)
         {
+            ViewBag.Partners = new SelectList(GetPartnerList(), "Id", "Name", credit.Partner_Id);
 
             if (ModelState.IsValid)
             {
@@ -94,12 +97,12 @@ namespace Web.Controllers
                 credit.Status = Helper.Constants.InvoiceStatus.DRAFT;
 
 
-                if (OrderType == Helper.Constants.OrderType.SUPPLIER_RETURN)
-                    credit.Type = Helper.Constants.InvoiceType.SupplierCredit;
-                else if (OrderType == Helper.Constants.OrderType.CUSTOMER_RETURN)
-                    credit.Type = Helper.Constants.InvoiceType.CustomerCredit;
-                else
-                    throw new Exception(string.Format("Invalid command {0} for creating credits.", OrderType));
+                //if (OrderType == Helper.Constants.OrderType.SUPPLIER_RETURN)
+                //    credit.Type = Helper.Constants.InvoiceType.SupplierCredit;
+                //else if (OrderType == Helper.Constants.OrderType.CUSTOMER_RETURN)
+                //    credit.Type = Helper.Constants.InvoiceType.CustomerCredit;
+                //else
+                //    throw new Exception(string.Format("Invalid command {0} for creating credits.", OrderType));
                 
                 ////regenerate the invoicenumber just incase that the number has been used already
                 //var setting = GetSetting();
@@ -134,6 +137,7 @@ namespace Web.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
+
             Credit credit = db.Credits
                 .Include("Order")
                 //.Include("Order.OrderDetails")
@@ -195,10 +199,11 @@ namespace Web.Controllers
                 .Include("Order.OrderDetails")
                 .Include("Order.OrderDetails.Product")
                 .Include("Order.OrderDetails.ProductPrice")
-                .Include("Partner").
-                Where(x => x.Id == id && x.CreatedBy == UserId).FirstOrDefault();
+                .Include("Partner")
+                .Include("Invoice")
+                .Where(x => x.Id == id && x.CreatedBy == UserId).FirstOrDefault();
 
-            //invoice.PaymentDetails = GetPaymentDetailList().Where(x => x.Invoice_Id == id && !x.Payment.Deleted).ToList();
+            credit.PaymentDetails = GetPaymentDetailList().Where(x => x.Credit_Id == id && !x.Payment.Deleted).ToList();
             ViewBag.Total = credit.Order.OrderDetails.Sum(x => x.AmountAfterTax);
 
             if (credit == null)

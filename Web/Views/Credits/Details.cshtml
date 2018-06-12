@@ -9,196 +9,228 @@
     <div class="custom-header-div">
         <input type="button" value="Print" onclick="printdiv()" class="btn btn-primary " />
         @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
+        @Html.ActionLink("Refund", "Create", "PaymentDetails", new { Id = Model.Id, source = "Credits" }, null) |
         @Html.ActionLink("Back to List", "Index", new { Type = Model.Type })
     </div>
 </div>
 <hr class="custom-header-hr"/>
-@*<h4>Payments Made</h4>
-<table class="table">
-    <tr>
-        <th>
-            @Html.DisplayNameFor(model => model.PaymentDetails.First().Invoice.Order.OrderNumber)
-        </th>
-        <th>
-            Bill Number           
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Amount)
-        </th>
-        <th></th>
-    </tr>
-
-    @foreach (var item in Model.PaymentDetails)
-    {
+@if(Model.PaymentDetails.Count() > 0)
+{ 
+    <h4>Refunds</h4>
+    <table class="table">
         <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Invoice.Order.OrderNumber)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Invoice.InvoiceNumber)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Amount)
-            </td>
-
+            <th>
+                @Html.DisplayNameFor(model => model.PaymentDetails.First().Date)
+            </th>        
+            <th>
+                @Html.DisplayNameFor(model => model.Amount)
+            </th>
+            <th></th>
         </tr>
-    }
-</table>*@
-<hr style="background-color:grey; height:4px" />
-<div style="margin:20px; padding-bottom:20px; margin-right:15px; border:solid; border-width:1px">
-    <div id="printarea">
-        <div style="margin-left:10px; margin-right:10px">
-            <div style="text-align:center">
-                @if (Model.Type == Web.Controllers.Helper.Constants.InvoiceType.CustomerCredit)
-                {
-                    <h3>Customer Credits</h3>
-                }
-                else if (Model.Type == Web.Controllers.Helper.Constants.InvoiceType.SupplierCredit)
-                {
-                    <h3>Supplier Credits</h3>
-                }
-                
-                <h4>@ViewBag.BusinessName</h4>
-                <h6>@ViewBag.BillingAddress</h6>
-                @if (@ViewBag.ContactNumber != null)
+
+        @foreach (var item in Model.PaymentDetails)
         {
-                    <span class="glyphicon glyphicon-phone-alt" style="font-size:12px;">@ViewBag.ContactNumber</span>
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Date)
+                </td>            
+                <td>
+                    @Html.DisplayFor(modelItem => item.Amount)
+                </td>
+                <td></td>
+            </tr>
         }
-            </div>
+    </table>
+}
+else if(Model.Invoice != null)
+{ 
+    <h4>Invoice Applied</h4>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.Invoice.InvoiceNumber)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Amount)
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => modelItem.Invoice.InvoiceNumber)
+                </td>
 
-            <table style="width:100%">
-                <tr>
-                    <td>
-                        @if (Model.Type == Web.Controllers.Helper.Constants.InvoiceType.CustomerCredit)
-                        {
-                            <h4>Customer</h4>
-                        }
-                        else if (Model.Type == Web.Controllers.Helper.Constants.InvoiceType.SupplierCredit)
-                        {
-                            <h4>Supplier</h4>
-                        }
-                                               
-                        <table>
-                            <tr>
-                                <td>@Html.DisplayFor(model => model.Order.Partner.Name)</td>
-                            </tr>
-                            <tr>
-                                <td>@Html.DisplayFor(model => model.Order.Partner.ShippingAddress)</td>
-                            </tr>
-                        </table>
-                    </td>
-                    <td>
-                        <table style="float:right">
-                            <tr>
-                                <th style="text-align:right">@Html.DisplayNameFor(model => model.Order.OrderDate):</th>
-                                <td>@Html.DisplayFor(model => model.Order.OrderDate)</td>
-                            </tr>
-                            <tr>
-                                <th style="text-align:right">@Html.DisplayNameFor(model => model.Order.InvoiceNumber):</th>
-                                <td>@Html.DisplayFor(model => model.CreditNumber)</td>
-                            </tr>
-                        </table>
-                    </td>
-                </tr>
-            </table>
+                <td>
+                    @Html.DisplayFor(modelItem => modelItem.Amount)
+                </td>
+            </tr>
+        </tbody>
+    </table>
+}
+else
+{ 
+    <div style="text-align:center">
+        No Refund/Invoice applied found
+    </div>
+}
 
-            <br />
-            <br />
-            <table class="table table-bordered table-sm">
-                <tr>
-                    <th>
-                        <span>Items</span>
-                    </th>
-                    <th style="max-width:50px; text-align:center">
-                        <span>Qty</span>
-                    </th>
-                    <th style="max-width:50px; text-align:center">
-                        @Html.DisplayNameFor(model => model.Order.OrderDetails.FirstOrDefault().Product.Unit)
-                    </th>
-                    <th style="max-width:100px; min-width:50px; text-align:center">
-                        @Html.DisplayName("Unit Price")
-                    </th>
-                    <th style="max-width:150px; text-align:center">
-                        @Html.DisplayName("Amount")
-                    </th>
+    <hr style="background-color:grey; height:4px" />
+    <div style="margin:20px; padding-bottom:20px; margin-right:15px; border:solid; border-width:1px">
+        <div id="printarea">
+            <div style="margin-left:10px; margin-right:10px">
+                <div style="text-align:center">
+                    @if (Model.Type == Web.Controllers.Helper.Constants.InvoiceType.CustomerCredit)
+                    {
+                        <h3>Customer Credits</h3>
+                    }
+                    else if (Model.Type == Web.Controllers.Helper.Constants.InvoiceType.SupplierCredit)
+                    {
+                        <h3>Supplier Credits</h3>
+                    }
 
-                </tr>
+                    <h4>@ViewBag.BusinessName</h4>
+                    <h6>@ViewBag.BillingAddress</h6>
+                    @if (@ViewBag.ContactNumber != null)
+                    {
+                        <span class="glyphicon glyphicon-phone-alt" style="font-size:12px;">@ViewBag.ContactNumber</span>
+                    }
+                </div>
 
-                @foreach (var item in Model.Order.OrderDetails)
-            {
+                <table style="width:100%">
                     <tr>
                         <td>
-                            @Html.DisplayFor(modelItem => item.Product.Name)
-                        </td>
-                        <td style="text-align:center">
-                            @Html.DisplayFor(modelItem => item.Quantity)
+                            @if (Model.Type == Web.Controllers.Helper.Constants.InvoiceType.CustomerCredit)
+                            {
+                                <h4>Customer</h4>
+                            }
+                            else if (Model.Type == Web.Controllers.Helper.Constants.InvoiceType.SupplierCredit)
+                            {
+                                <h4>Supplier</h4>
+                            }
 
+                            <table>
+                                <tr>
+                                    <td>@Html.DisplayFor(model => model.Order.Partner.Name)</td>
+                                </tr>
+                                <tr>
+                                    <td>@Html.DisplayFor(model => model.Order.Partner.ShippingAddress)</td>
+                                </tr>
+                            </table>
                         </td>
-                        <td style="text-align:center">
-                            @Html.DisplayFor(modelItem => item.Product.Unit)
-                        </td>
-                        <td style="text-align:right">
-                            @Html.DisplayFor(modelItem => item.ProductPrice.SelesPrice)
-                        </td>
-                        <td style="text-align:right">
-                            @Html.DisplayFor(modelItem => item.AmountAfterTax)
+                        <td>
+                            <table style="float:right">
+                                <tr>
+                                    <th style="text-align:right">@Html.DisplayNameFor(model => model.Order.OrderDate):</th>
+                                    <td>@Html.DisplayFor(model => model.Order.OrderDate)</td>
+                                </tr>
+                                <tr>
+                                    <th style="text-align:right">@Html.DisplayNameFor(model => model.Order.InvoiceNumber):</th>
+                                    <td>@Html.DisplayFor(model => model.CreditNumber)</td>
+                                </tr>
+                            </table>
                         </td>
                     </tr>
-            }
+                </table>
 
-            </table>
+                <br />
+                <br />
+                <table class="table table-bordered table-sm">
+                    <tr>
+                        <th>
+                            <span>Items</span>
+                        </th>
+                        <th style="max-width:50px; text-align:center">
+                            <span>Qty</span>
+                        </th>
+                        <th style="max-width:50px; text-align:center">
+                            @Html.DisplayNameFor(model => model.Order.OrderDetails.FirstOrDefault().Product.Unit)
+                        </th>
+                        <th style="max-width:100px; min-width:50px; text-align:center">
+                            @Html.DisplayName("Unit Price")
+                        </th>
+                        <th style="max-width:150px; text-align:center">
+                            @Html.DisplayName("Amount")
+                        </th>
 
-            <div class="row">
-                <div class="col-xs-12" style="text-align:end; align-items:flex-end ">
+                    </tr>
 
-                    <table style="margin-right:0;margin-left:auto; ">
+                    @foreach (var item in Model.Order.OrderDetails)
+                    {
                         <tr>
-                            <td style="max-width:150px; min-width:100px; text-align:left">SUBTOTAL:</td>
-                            <td style="max-width:150px; min-width:100px; text-align:right; padding-right:10px"><span style="font-weight:bolder; text-align:right">@ViewBag.Total </span></td>
-                        </tr>
-                        <tr>
-                            <td style="max-width:150px; min-width:100px; text-align:left">OTHER CHARGES:</td>
-                            <td style="max-width:150px; min-width:100px; text-align:right; padding-right:10px"><span style="font-weight:bolder; text-align:right;">@Html.DisplayFor(model => model.Order.OtherCharges) </span></td>
-                        </tr>
-                        <tr>
-                            <td style="text-align:left">DISCOUNT: </td>
-                            <td style="text-align:right; padding-right:10px"><span style="font-weight:bolder;text-align:right; ">@Html.DisplayFor(model => model.Order.OrderDiscount) </span></td>
-                        </tr>
-                        <tr>
-                            <td style="text-align:left">TAX RATE:</td>
-                            <td style="text-align:right; padding-right:10px"><span style="font-weight:bolder;">@Html.DisplayFor(model => model.Order.TaxRate) </span></td>
-                        </tr>
-                        <tr>
-                            <td style="font-weight:bolder;text-align:left ; border-bottom:solid; border-top:solid; border-width:1px;">TOTAL:</td>
-                            <td style="text-align:right; border-bottom:solid; border-top:solid; border-width:1px; padding-right:10px ;max-width:150px; min-width:100px;"><span style="font-weight:bolder;text-align:right">@(((Model.Order.OtherCharges + Model.Order.Amount) - Model.Order.OrderDiscount).ToString("N2"))</span></td>
-                        </tr>
-                    </table>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Product.Name)
+                            </td>
+                            <td style="text-align:center">
+                                @Html.DisplayFor(modelItem => item.Quantity)
 
+                            </td>
+                            <td style="text-align:center">
+                                @Html.DisplayFor(modelItem => item.Product.Unit)
+                            </td>
+                            <td style="text-align:right">
+                                @Html.DisplayFor(modelItem => item.ProductPrice.SelesPrice)
+                            </td>
+                            <td style="text-align:right">
+                                @Html.DisplayFor(modelItem => item.AmountAfterTax)
+                            </td>
+                        </tr>
+                    }
+
+                </table>
+
+                <div class="row">
+                    <div class="col-xs-12" style="text-align:end; align-items:flex-end ">
+
+                        <table style="margin-right:0;margin-left:auto; ">
+                            <tr>
+                                <td style="max-width:150px; min-width:100px; text-align:left">SUBTOTAL:</td>
+                                <td style="max-width:150px; min-width:100px; text-align:right; padding-right:10px"><span style="font-weight:bolder; text-align:right">@ViewBag.Total </span></td>
+                            </tr>
+                            <tr>
+                                <td style="max-width:150px; min-width:100px; text-align:left">OTHER CHARGES:</td>
+                                <td style="max-width:150px; min-width:100px; text-align:right; padding-right:10px"><span style="font-weight:bolder; text-align:right;">@Html.DisplayFor(model => model.Order.OtherCharges) </span></td>
+                            </tr>
+                            <tr>
+                                <td style="text-align:left">DISCOUNT: </td>
+                                <td style="text-align:right; padding-right:10px"><span style="font-weight:bolder;text-align:right; ">@Html.DisplayFor(model => model.Order.OrderDiscount) </span></td>
+                            </tr>
+                            <tr>
+                                <td style="text-align:left">TAX RATE:</td>
+                                <td style="text-align:right; padding-right:10px"><span style="font-weight:bolder;">@Html.DisplayFor(model => model.Order.TaxRate) </span></td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight:bolder;text-align:left ; border-bottom:solid; border-top:solid; border-width:1px;">TOTAL:</td>
+                                <td style="text-align:right; border-bottom:solid; border-top:solid; border-width:1px; padding-right:10px ;max-width:150px; min-width:100px;"><span style="font-weight:bolder;text-align:right">@(((Model.Order.OtherCharges + Model.Order.Amount) - Model.Order.OrderDiscount).ToString("N2"))</span></td>
+                            </tr>
+                        </table>
+
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 
-<script type="text/javascript">
+    <script type="text/javascript">
 
-    function printdiv() {
-        //window.print();
-        var toPrint = document.getElementById('printarea');
+        function printdiv() {
+            //window.print();
+            var toPrint = document.getElementById('printarea');
 
-        var popupWin = window.open('', '_blank', 'width=1000,height=600,location=no,left=200');
-        popupWin.document.open();
-        popupWin.document.write('<html><title></title>')
-        popupWin.document.write('<link rel="stylesheet" type="text/css" href="/../Content/bootstrap.css" />')
-        popupWin.document.write('<link rel="stylesheet" type="text/css" href="/../Content/Print.css" />');
-        popupWin.document.write('</head><body onload="window.print()">')
-        popupWin.document.write(toPrint.innerHTML);
-        popupWin.document.write('</html>');
-        popupWin.document.close();
+            var popupWin = window.open('', '_blank', 'width=1000,height=600,location=no,left=200');
+            popupWin.document.open();
+            popupWin.document.write('<html><title></title>')
+            popupWin.document.write('<link rel="stylesheet" type="text/css" href="/../Content/bootstrap.css" />')
+            popupWin.document.write('<link rel="stylesheet" type="text/css" href="/../Content/Print.css" />');
+            popupWin.document.write('</head><body onload="window.print()">')
+            popupWin.document.write(toPrint.innerHTML);
+            popupWin.document.write('</html>');
+            popupWin.document.close();
 
-   
-    }
 
-</script>
+        }
+
+    </script>
 
 
