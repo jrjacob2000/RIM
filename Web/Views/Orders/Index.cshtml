@@ -13,23 +13,23 @@
 }
 
 @*<h2>List</h2>*@
-@if (Model.FirstOrDefault().OrderType == Web.Controllers.Helper.Constants.OrderType.PURCHASE)
+@if (ViewBag.OrderType == Web.Controllers.Helper.Constants.OrderType.PURCHASE)
 { 
     <h3>All Purchase Orders</h3>
 }
-else if (Model.FirstOrDefault().OrderType == Web.Controllers.Helper.Constants.OrderType.SALE)
+else if (ViewBag.OrderType == Web.Controllers.Helper.Constants.OrderType.SALE)
 {
     <h3>All Sales Orders</h3>
 }
-else if (Model.FirstOrDefault().OrderType == Web.Controllers.Helper.Constants.OrderType.ADJUST)
+else if (ViewBag.OrderType == Web.Controllers.Helper.Constants.OrderType.ADJUST)
 {
     <h3>All Adjustment</h3>
 }
-else if (Model.FirstOrDefault().OrderType == Web.Controllers.Helper.Constants.OrderType.CUSTOMER_RETURN)
+else if (ViewBag.OrderType == Web.Controllers.Helper.Constants.OrderType.CUSTOMER_RETURN)
 {
     <h3>All Customer Returns</h3>
 }
-else if (Model.FirstOrDefault().OrderType == Web.Controllers.Helper.Constants.OrderType.SUPPLIER_RETURN)
+else if (ViewBag.OrderType == Web.Controllers.Helper.Constants.OrderType.SUPPLIER_RETURN)
 {
     <h3>All Returns to Supplier</h3>
 }
@@ -50,8 +50,11 @@ else if (Model.FirstOrDefault().OrderType == Web.Controllers.Helper.Constants.Or
     <hr />
 
     <p>
-        @Html.ActionLink("Create New", "Create", new { orderType = Model.FirstOrDefault().OrderType })
+        @Html.ActionLink("Create New", "Create", new { orderType = ViewBag.OrderType })
     </p>
+@if (Model != null)
+{   
+
 <div style="overflow:auto">
     <table class="table">
         <tr>
@@ -62,7 +65,7 @@ else if (Model.FirstOrDefault().OrderType == Web.Controllers.Helper.Constants.Or
             <th>
                 @{
                     var orderNumColName = "OrderNumber";
-                    if (Model.FirstOrDefault().OrderType == Web.Controllers.Helper.Constants.OrderType.ADJUST)
+                    if (ViewBag.OrderType == Web.Controllers.Helper.Constants.OrderType.ADJUST)
                     { 
                         orderNumColName = "Adjust Number";
                     }
@@ -71,7 +74,7 @@ else if (Model.FirstOrDefault().OrderType == Web.Controllers.Helper.Constants.Or
                 @Html.SortIdentifier(currentSort, @orderNumColName)
             </th>
             
-            @if (Model.FirstOrDefault().OrderType != Web.Controllers.Helper.Constants.OrderType.ADJUST)
+            @if (ViewBag.OrderType != Web.Controllers.Helper.Constants.OrderType.ADJUST)
             { 
                 <th>
                     @Html.ActionLink("Expected Date", "Index", Request.QueryString.ToRouteValueDictionary("sortOrder", (string)ViewBag.ExpectedDateSortParam))
@@ -94,14 +97,14 @@ else if (Model.FirstOrDefault().OrderType == Web.Controllers.Helper.Constants.Or
             <th>
                 Amount
             </th>
-            @if (Model.FirstOrDefault().OrderType == Web.Controllers.Helper.Constants.OrderType.SALE)
+            @if (ViewBag.OrderType == Web.Controllers.Helper.Constants.OrderType.SALE)
             {
                 <th>
                     <span>Invoiced</span>
                     @*@Html.DisplayNameFor(model => model.InvoiceNumber)*@
                 </th>
             }
-            else if (Model.FirstOrDefault().OrderType == Web.Controllers.Helper.Constants.OrderType.PURCHASE || Model.FirstOrDefault().OrderType == Web.Controllers.Helper.Constants.OrderType.CUSTOMER_RETURN)     
+            else if (ViewBag.OrderType == Web.Controllers.Helper.Constants.OrderType.PURCHASE || Model.FirstOrDefault().OrderType == Web.Controllers.Helper.Constants.OrderType.CUSTOMER_RETURN)     
             {
                 <th>
                     <span>Billed</span>
@@ -139,7 +142,7 @@ else if (Model.FirstOrDefault().OrderType == Web.Controllers.Helper.Constants.Or
                 <td>
                     @Html.DisplayFor(modelItem => item.Amount)
                 </td>
-                @if (Model.FirstOrDefault().OrderType != Web.Controllers.Helper.Constants.OrderType.ADJUST)
+                @if (ViewBag.OrderType != Web.Controllers.Helper.Constants.OrderType.ADJUST)
                 {
                 <td>
                     @if (item.OrderType == Web.Controllers.Helper.Constants.OrderType.SALE || item.OrderType == Web.Controllers.Helper.Constants.OrderType.PURCHASE || item.OrderType == Web.Controllers.Helper.Constants.OrderType.CUSTOMER_RETURN)
@@ -157,7 +160,7 @@ else if (Model.FirstOrDefault().OrderType == Web.Controllers.Helper.Constants.Or
                 }
                 <td>
                     <span style="white-space:nowrap">@Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
-                    @if (Model.FirstOrDefault().OrderType == Web.Controllers.Helper.Constants.OrderType.ADJUST)
+                    @if (ViewBag.OrderType == Web.Controllers.Helper.Constants.OrderType.ADJUST)
                     {
                         @Html.ActionLink("Details", "AdjustDetails", new { id = item.Id })
 
@@ -184,6 +187,7 @@ else if (Model.FirstOrDefault().OrderType == Web.Controllers.Helper.Constants.Or
         Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount
     </div>
 </div>
+}
     <script type="text/javascript">
         var token = sessionStorage.getItem("tokenKey");
         var headers = {};

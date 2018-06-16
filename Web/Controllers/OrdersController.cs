@@ -22,6 +22,7 @@ namespace Web.Controllers
         // GET: Orders
         public ActionResult Index(string orderType,string sortOrder,  int page = 1, int pageSize = 10)
         {
+            ViewBag.OrderType = orderType;
             page = page > 0 ? page : 1;
             pageSize = pageSize > 0 ? pageSize : 10;
 
@@ -36,7 +37,7 @@ namespace Web.Controllers
             var list = Helper.Constants.OrderTypeList();
 
             ViewBag.OrderTypes = list;
-            ViewData["orderType"] = orderType;
+            
 
             var query = GetOrderList()
                 .Where(x => x.OrderType == orderType || string.IsNullOrEmpty(orderType));
