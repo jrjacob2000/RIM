@@ -1,13 +1,23 @@
-﻿@model IEnumerable<Web.Models.Invoice>
+﻿@using PagedList.Mvc
+@model PagedList.IPagedList<Web.Models.Invoice>
 
 @{
-    ViewBag.Title = "Index";
+    ViewBag.Title = "All Bills";
+
+    string currentFilter = ViewBag.CurrentFilter;
+    string currentSort = ViewBag.CurrentSort;
+    if (string.IsNullOrEmpty(currentSort))
+    {
+        currentSort = "OrderDate_desc";
+    }
 }
+
+
 
 <h4>All Bills</h4>
 <hr />
 <p>
-    @Html.ActionLink("Create New", "Create")
+    @Html.ActionLink("Create New", "Create",new {type="Bill" })
 </p>
 <table class="table">
     <tr>
@@ -16,7 +26,7 @@
             @*@Html.DisplayNameFor(model => model.InvoiceNumber)*@
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.Order.OrderNumber)
+            @Html.DisplayNameFor(model => model.First().Order.OrderNumber)
         </th>
         <th>
             <span>Customer</span>
@@ -24,10 +34,10 @@
         </th>
        
         <th>
-            @Html.DisplayNameFor(model => model.InvoiceDate)
+            @Html.DisplayNameFor(model => model.First().InvoiceDate)
         </th>        
         <th>
-            @Html.DisplayNameFor(model => model.DueDate)
+            @Html.DisplayNameFor(model => model.First().DueDate)
         </th>
         <th>
             Status
@@ -60,13 +70,16 @@
             @Html.DisplayFor(modelItem => item.DueDate)
         </td>
         <td>
-            @{
-                var color = item.Status == Web.Controllers.Helper.Constants.InvoiceStatus.PAID ? "green" : 
-                            item.Status == Web.Controllers.Helper.Constants.InvoiceStatus.OVERDUE? "Orange": "gray";
+           @{
+                    var status = Web.Controllers.Helper.StatusDisplay(item);
+                    var color = status == Web.Controllers.Helper.Constants.InvoiceStatus.PAID ? "green" :
+                    status == Web.Controllers.Helper.Constants.InvoiceStatus.OVERDUE ? "Orange" : "gray";
             }
-            <span style="color:@color">
-                @Html.DisplayFor(modelItem => item.Status)
-            </span>
+        <span style="color:@color">
+            @{
+                @status
+            }
+        </span>
            
         </td>
         <td>
@@ -84,5 +97,12 @@
         </td>
     </tr>
 }
-
 </table>
+<div class="pager">
+    @Html.PagedListPager(Model, page => Url.Action("Index", new
+                       {
+                           page,
+                           sortOrder = ViewBag.currentSort
+                       }))
+    Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount
+</div>

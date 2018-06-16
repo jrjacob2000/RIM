@@ -9,6 +9,7 @@ using System.Web;
 using System.Web.Mvc;
 using System.Data.SqlClient;
 using Web.Models;
+using PagedList;
 
 namespace Web.Controllers
 {
@@ -19,18 +20,67 @@ namespace Web.Controllers
         //private ApplicationDbContext db = new ApplicationDbContext();
 
         // GET: Orders
-        public ActionResult Index(string orderType)
+        public ActionResult Index(string orderType,string sortOrder,  int page = 1, int pageSize = 10)
         {
+            page = page > 0 ? page : 1;
+            pageSize = pageSize > 0 ? pageSize : 10;
+
+            ViewBag.OrderNumberSortParam = sortOrder == "OrderNumber" ? "OrderNumber_desc" : "OrderNumber";
+            ViewBag.OrderDateSortParam = sortOrder == "OrderDate" ? "OrderDate_desc" : "OrderDate";
+            ViewBag.ExpectedDateSortParam = sortOrder == "ExpectedDate" ? "ExpectedDate_desc" : "ExpectedDate";
+            ViewBag.PartnerSortParam = sortOrder == "Partner" ? "Partner_desc" : "Partner";
+            ViewBag.ReasonSortParam = sortOrder == "Reason" ? "Reason_desc" : "Reason";
+
+            ViewBag.CurrentSort = sortOrder;
+
             var list = Helper.Constants.OrderTypeList();
 
             ViewBag.OrderTypes = list;
             ViewData["orderType"] = orderType;
-            
-            var orders = GetOrderList()
-                .Where(x => x.OrderType == orderType || string.IsNullOrEmpty(orderType))
-                .OrderByDescending(o => o.OrderDate).ToList();
-            
-            orders.ForEach(x =>
+
+            var query = GetOrderList()
+                .Where(x => x.OrderType == orderType || string.IsNullOrEmpty(orderType));
+                //.OrderByDescending(o => o.OrderDate).ToList();
+
+            switch (sortOrder)
+            {
+                case "OrderDate":
+                    query = query.OrderBy(x => x.OrderDate);
+                    break;
+                case "OrderDate_desc":
+                    query = query.OrderByDescending(x => x.OrderDate);
+                    break;
+                case "OrderNumber":
+                    query = query.OrderBy(x => x.OrderNumber);
+                    break;
+                case "OrderNumber_desc":
+                    query = query.OrderByDescending(x => x.OrderNumber);
+                    break;
+                case "ExpectedDate":
+                    query = query.OrderBy(x => x.ExpectedDate);
+                    break;
+                case "ExpectedDate_desc":
+                    query = query.OrderByDescending(x => x.ExpectedDate);
+                    break;
+                case "Partner":
+                    query = query.OrderBy(x => x.Partner.Name);
+                    break;
+                case "Partner_desc":
+                    query = query.OrderByDescending(x => x.Partner.Name);
+                    break;
+                case "Reason":
+                    query = query.OrderBy(x => x.AdjustmentReason);
+                    break;
+                case "Reason_desc":
+                    query = query.OrderByDescending(x => x.AdjustmentReason);
+                    break;  
+                default:
+                    query = query.OrderBy(x => x.OrderDate);
+                    break;
+            }
+
+            IPagedList<Order> orders = query.ToPagedList(page, pageSize);
+            orders.ToList().ForEach(x =>
                     x.Invoices = GetInvoiceByOrderId(x.Id).ToList()
                 );
 
@@ -113,11 +163,11 @@ namespace Web.Controllers
                 if (!string.IsNullOrEmpty(setting.SalesNumber) && OrderType == Helper.Constants.OrderType.SALE)
                     order.OrderNumber = string.Format("{0}-{1}", setting.SalesPrefix, setting.SalesNumber);
 
-                if (!string.IsNullOrEmpty(setting.CustomerReturnNumber) && OrderType == Helper.Constants.OrderType.CUSTOMER_RETURN)
-                    order.OrderNumber = string.Format("{0}-{1}", setting.CustomerReturnPrefix, setting.CustomerReturnNumber);
+                //if (!string.IsNullOrEmpty(setting.CustomerReturnNumber) && OrderType == Helper.Constants.OrderType.CUSTOMER_RETURN)
+                //    order.OrderNumber = string.Format("{0}-{1}", setting.CustomerReturnPrefix, setting.CustomerReturnNumber);
 
-                if (!string.IsNullOrEmpty(setting.SupplierReturnNumber) && OrderType == Helper.Constants.OrderType.SUPPLIER_RETURN)
-                    order.OrderNumber = string.Format("{0}-{1}", setting.SupplierReturnPrefix, setting.SupplierReturnNumber);
+                //if (!string.IsNullOrEmpty(setting.SupplierReturnNumber) && OrderType == Helper.Constants.OrderType.SUPPLIER_RETURN)
+                //    order.OrderNumber = string.Format("{0}-{1}", setting.SupplierReturnPrefix, setting.SupplierReturnNumber);
 
                 if (!string.IsNullOrEmpty(setting.AdjustNumber) && OrderType == Helper.Constants.OrderType.ADJUST)
                     order.OrderNumber = string.Format("{0}-{1}", setting.AdjustPrefix, setting.AdjustNumber);
@@ -165,16 +215,16 @@ namespace Web.Controllers
 
                         setting.SalesNumber = newValue.ToString().PadLeft(length, '0');
                     }
-                    if (order.OrderType == Helper.Constants.OrderType.CUSTOMER_RETURN && !string.IsNullOrEmpty(setting.CustomerReturnNumber))
-                    {
-                        order.OrderNumber = string.Format("{0}-{1}", setting.CustomerReturnPrefix, setting.CustomerReturnNumber);
-                        setting.CustomerReturnNumber = GetNextNumber(setting.CustomerReturnNumber);
-                    }
-                    if (order.OrderType == Helper.Constants.OrderType.SUPPLIER_RETURN && !string.IsNullOrEmpty(setting.SupplierReturnNumber))
-                    {
-                        order.OrderNumber = string.Format("{0}-{1}", setting.SupplierReturnPrefix, setting.SupplierReturnNumber);
-                        setting.SupplierReturnNumber = GetNextNumber(setting.SupplierReturnNumber);
-                    }
+                    //if (order.OrderType == Helper.Constants.OrderType.CUSTOMER_RETURN && !string.IsNullOrEmpty(setting.CustomerReturnNumber))
+                    //{
+                    //    order.OrderNumber = string.Format("{0}-{1}", setting.CustomerReturnPrefix, setting.CustomerReturnNumber);
+                    //    setting.CustomerReturnNumber = GetNextNumber(setting.CustomerReturnNumber);
+                    //}
+                    //if (order.OrderType == Helper.Constants.OrderType.SUPPLIER_RETURN && !string.IsNullOrEmpty(setting.SupplierReturnNumber))
+                    //{
+                    //    order.OrderNumber = string.Format("{0}-{1}", setting.SupplierReturnPrefix, setting.SupplierReturnNumber);
+                    //    setting.SupplierReturnNumber = GetNextNumber(setting.SupplierReturnNumber);
+                    //}
                     if (order.OrderType == Helper.Constants.OrderType.ADJUST && !string.IsNullOrEmpty(setting.AdjustNumber))
                     {
                         order.OrderNumber = string.Format("{0}-{1}", setting.AdjustPrefix, setting.AdjustNumber);

@@ -8,6 +8,7 @@ using System.Web;
 using System.Web.Mvc;
 using System.Data.SqlClient;
 using Web.Models;
+using PagedList;
 
 namespace Web.Controllers
 {
@@ -17,16 +18,18 @@ namespace Web.Controllers
         //private ApplicationDbContext db = new ApplicationDbContext();
 
         // GET: ProductItems
-        public ActionResult Index(string product, Guid? category)
+        public ActionResult Index(string product, Guid? category, string sortOrder, int page = 1, int pageSize = 10)
         {
+            ViewBag.ProductFilter = product;
+            ViewBag.CategoryFilter = category;
             ViewBag.CategoryItems = GetCategoryList().ToList().Select(x => new SelectListItem() { Value = x.Id.ToString(), Text = x.Name }).ToList(); ;
 
+            var query = GetProductList()
+                .Where(x => (x.Name.Contains(product) || string.IsNullOrEmpty(product)) && (x.Category.Id == category || category == null));
 
-            var list = GetProductList()
-                .Where(x => (x.Name.Contains(product) || string.IsNullOrEmpty(product)) && (x.Category.Id == category || category == null))
-                .ToList();
+            var list = query.ToPagedList(page, pageSize);
 
-            list.ForEach(x =>
+            list.ToList().ForEach(x =>
                 {
                     x.OrderDetails = GetOrderDetailList().Where(o => o.Product_Id == x.Id).ToList();
                     x.ProductPrices = GetPriceList().Where(p => p.Product_Id == x.Id).ToList();
@@ -42,9 +45,9 @@ namespace Web.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Product productItem = GetProductById(id.Value); //db.ProductItems.Find(id);
-            //db.Entry(productItem).Reference("Category").Load();
-                //.Include("Category").SingleOrDefault(x => x.Id == id);
+            Product productItem = GetProductById(id.Value); 
+            productItem.ProductPrices = db.ProductPrices.Where(x => x.Product_Id == id && x.CreatedBy == UserId).ToList();
+
             if (productItem == null)
             {
                 return HttpNotFound();
@@ -56,8 +59,12 @@ namespace Web.Controllers
         // GET: ProductItems/Create
         public ActionResult Create()
         {
+            var prices = new List<ProductPrice>();
+            prices.Add(new ProductPrice());
+
             var p = new Product();
-            p.Category = new Category();
+            p.Category = new Category();           
+            p.ProductPrices = prices;
 
             ViewBag.CategoryItems = GetCategoryList().ToList().Select(x => new SelectListItem() { Value = x.Id.ToString(), Text = x.Name }).ToList(); ;
             ViewBag.Units = Helper.Constants.UnitList();
@@ -70,7 +77,7 @@ namespace Web.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Id,Name,Description,StartingInventory,ReOrderPoint,Unit,Taxable,Category_Id")] Product productItem)
+        public ActionResult Create(Product productItem)
         {
             ViewBag.CategoryItems = GetCategoryList().ToList().Select(x => new SelectListItem() { Value = x.Id.ToString(), Text = x.Name }).ToList(); ;
             ViewBag.Units = Helper.Constants.UnitList();
@@ -88,9 +95,17 @@ namespace Web.Controllers
                 productItem.Id = Guid.NewGuid();
                 productItem.CreatedBy = UserId;
                 db.ProductItems.Add(productItem);
+
+                var price = productItem.ProductPrices.First();
+                price.Id = Guid.NewGuid();
+                price.Product_Id = productItem.Id;
+                price.EffectiveFromDate = DateTime.Now;
+                price.CreatedBy = UserId;
+
                 db.SaveChanges();
 
-                return RedirectToAction("Create", "ProductPrices", new { Product_Id = productItem.Id, ReturnPage = "Product" });
+                return RedirectToAction("Index");
+                //return RedirectToAction("Create", "ProductPrices", new { Product_Id = productItem.Id, ReturnPage = "Product" });
             }
 
             return View(productItem);

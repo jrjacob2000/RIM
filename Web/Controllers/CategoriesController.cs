@@ -8,6 +8,7 @@ using System.Web;
 using System.Web.Mvc;
 using System.Data.SqlClient;
 using Microsoft.AspNet.Identity;
+using PagedList;
 using Web.Models;
 
 namespace Web.Controllers
@@ -19,9 +20,11 @@ namespace Web.Controllers
 
         
         // GET: Categories
-        public ActionResult Index()
+        public ActionResult Index(string sortOrder, int page = 1, int pageSize = 10)
         {
-            return View(GetCategoryList());//db.CategoryItems.Where(x => x.CreatedBy == UserId).ToList());
+            var query = GetCategoryList();
+            var list = query.ToPagedList(page, pageSize);
+            return View(list);
         }
 
         // GET: Categories/Details/5

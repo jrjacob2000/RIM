@@ -43,7 +43,7 @@ namespace Web.Models
 
         public System.Data.Entity.DbSet<Web.Models.Product> ProductItems { get; set; }
 
-        public System.Data.Entity.DbSet<Web.Models.ProductPrice> PriceItems { get; set; }
+        public System.Data.Entity.DbSet<Web.Models.ProductPrice> ProductPrices { get; set; }
 
         public System.Data.Entity.DbSet<Web.Models.Partner> Partners { get; set; }
 

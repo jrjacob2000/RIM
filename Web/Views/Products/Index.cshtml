@@ -1,10 +1,19 @@
-﻿@model IEnumerable<Web.Models.Product>
+﻿@using PagedList.Mvc
+@model PagedList.IPagedList<Web.Models.Product>
 
 @{
     ViewBag.Title = "Index";
+
+    string currentFilter = ViewBag.CurrentFilter;
+    string currentSort = ViewBag.CurrentSort;
+    if (string.IsNullOrEmpty(currentSort))
+    {
+        currentSort = "OrderDate_desc";
+    }
 }
 
-<h4>All Items</h4>
+
+<h3>All Items</h3>
 <hr />
 <form asp-action="Index" method="get">
 
@@ -12,7 +21,7 @@
         <div class="col-sm-1">
             <h4>Filter</h4>
         </div>
-        <div class="col-sm-3">Product: @Html.TextBox("product", "", new { @class = "form-control" })  </div>
+        <div class="col-sm-3">Product: @Html.TextBox("product", ViewBag.ProductFilter as string, new { @class = "form-control" })  </div>
         <div class="col-sm-3">
             Category:
             @Html.DropDownList("category", new SelectList(ViewBag.CategoryItems, "Value", "Text"), "- Please Select -", new { @class = "form-control" })
@@ -33,23 +42,23 @@
     <table class="table">
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Name)
+                @Html.DisplayNameFor(model => model.First().Name)
             </th>
 
             <th>
-                @Html.DisplayNameFor(model => model.InventoryOnHand)
+                @Html.DisplayNameFor(model => model.First().InventoryOnHand)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.InventoryToCome)
+                @Html.DisplayNameFor(model => model.First().InventoryToCome)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.InventoryToGo)
+                @Html.DisplayNameFor(model => model.First().InventoryToGo)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.ToOrder)
+                @Html.DisplayNameFor(model => model.First().ToOrder)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.InventoryValue)
+                @Html.DisplayNameFor(model => model.First().InventoryValue)
             </th>
             <th></th>
         </tr>
@@ -81,8 +90,17 @@
                     @Html.ActionLink("Delete", "Delete", new { id = item.Id })</span>
                 </td>
             </tr>
-}
+        }
 
     </table>
-
+    <div class="pager">
+        @Html.PagedListPager(Model, page => Url.Action("Index", new
+                       {
+                           page,
+                           sortOrder = ViewBag.currentSort,
+                           product = ViewBag.ProductFilter,
+                           category = ViewBag.CategoryFilter
+                       }))
+        Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount
+    </div>
 </div>

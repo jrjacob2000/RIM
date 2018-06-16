@@ -33,7 +33,7 @@ namespace Web.Controllers
                 if (setting != null && !string.IsNullOrEmpty(setting.BusinessName))
                     ViewBag.ApplicationName = setting.BusinessName;
                 else
-                    ViewBag.ApplicationName = "Your Business Name";
+                    ViewBag.ApplicationName = "JRIM";
             }
             else
                 ViewBag.ApplicationName = "JRIM";
@@ -158,7 +158,7 @@ namespace Web.Controllers
         //Pricelist
         public ProductPrice GetPriceByProduct(Guid productId, bool detach = false)
         {
-            var price = db.PriceItems.Where(x => x.CreatedBy == UserId && x.Product_Id == productId).OrderByDescending(x => x.EffectiveFromDate).FirstOrDefault();
+            var price = db.ProductPrices.Where(x => x.CreatedBy == UserId && x.Product_Id == productId).OrderByDescending(x => x.EffectiveFromDate).FirstOrDefault();
 
             if (price == null)
                 return null;
@@ -170,7 +170,7 @@ namespace Web.Controllers
 
         public ProductPrice GetPriceById(Guid Id, bool detach = false)
         {
-            var price = db.PriceItems
+            var price = db.ProductPrices
                 .Include("Product")
                 .Where(x => x.CreatedBy == UserId && x.Id == Id).FirstOrDefault();
 
@@ -186,7 +186,7 @@ namespace Web.Controllers
 
         public IQueryable<ProductPrice> GetPriceList()
         {
-            return db.PriceItems
+            return db.ProductPrices
                 .Include("Product")
                 .Where(x => x.CreatedBy == UserId);
         }
@@ -207,7 +207,8 @@ namespace Web.Controllers
 
         public IQueryable<Partner> GetPartnerList()
         {
-            return db.Partners.Where(x => x.CreatedBy == UserId );
+            return db.Partners
+                .Where(x => x.CreatedBy == UserId );
         }
 
         //PaymentDetail
@@ -311,6 +312,18 @@ namespace Web.Controllers
             return invoice;
         }
 
+        public IQueryable<Invoice> GetInvoiceByPartnerId(Guid partnerId)
+        {
+            var invoices = db.Invoices
+                   .Include("Order")
+                   .Include("Order.OrderDetails")
+                   .Include("Order.OrderDetails.Product")
+                   .Include("Order.OrderDetails.ProductPrice")
+                   .Where(x => x.CreatedBy == UserId && x.Partner_Id == partnerId);
+
+            return invoices;
+        }
+
         public IQueryable<Invoice> GetInvoiceByOrderId(Guid OrderId)
         {
             var invoices = db.Invoices                  
@@ -344,5 +357,7 @@ namespace Web.Controllers
 
             return credits;
         }
+
+       
     }
 }

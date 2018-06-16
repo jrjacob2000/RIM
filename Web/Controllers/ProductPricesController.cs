@@ -69,7 +69,6 @@ namespace Web.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "Id,EffectiveFromDate,PurchasePrice,SelesPrice,Product_Id")] ProductPrice priceItem, string ReturnPage)
         {
-
             ViewBag.ProductItems = GetProductList().Select(x => new SelectListItem() { Value = x.Id.ToString(), Text = x.Name }).ToList();
 
             if (ModelState.IsValid)
@@ -77,14 +76,13 @@ namespace Web.Controllers
                 priceItem.Id = Guid.NewGuid();
                 priceItem.CreatedBy = UserId;                
                 
-                db.PriceItems.Add(priceItem);
+                db.ProductPrices.Add(priceItem);
                 db.SaveChanges();
                 if(ReturnPage == "Product")
                     return RedirectToAction("Index","Products");
                 else
-                    return RedirectToAction("Index");
+                    return RedirectToAction("Details", "Products", new { Id = priceItem.Product_Id });
             }
-
             return View(priceItem);
         }
 
@@ -119,7 +117,7 @@ namespace Web.Controllers
             {
                 db.Entry(priceItem).State = EntityState.Modified;
                 db.SaveChanges();
-                return RedirectToAction("Index");
+                return RedirectToAction("Details", "Products", new { Id = priceItem.Product_Id });
             }
             return View(priceItem);
         }
@@ -154,9 +152,9 @@ namespace Web.Controllers
                 return View(priceItem);
             }
 
-            db.PriceItems.Remove(priceItem);
+            db.ProductPrices.Remove(priceItem);
             db.SaveChanges();
-            return RedirectToAction("Index");
+            return RedirectToAction("Details", "Products", new { Id = priceItem.Product_Id });
         }
 
         protected override void Dispose(bool disposing)

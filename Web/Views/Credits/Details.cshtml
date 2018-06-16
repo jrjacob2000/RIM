@@ -2,6 +2,20 @@
 
 @{
     ViewBag.Title = "Details";
+    var refundType = "";
+    var refundtooltip = "";
+    if (Model.Order.AdjustmentReason == "RETURN_CUSTOMER")
+    { 
+        refundType = "Pay";
+        refundtooltip = "Record the out going payment";
+    }
+    if (Model.Order.AdjustmentReason == "RETURN_SUPPLIER")
+    {
+        refundType = "Recieve";
+        refundtooltip = "Record the payment recieved";
+    }
+    
+        
 }
 
 <h2>Detail - @Model.CreditNumber</h2>
@@ -9,7 +23,7 @@
     <div class="custom-header-div">
         <input type="button" value="Print" onclick="printdiv()" class="btn btn-primary " />
         @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
-        @Html.ActionLink("Refund", "Create", "PaymentDetails", new { Id = Model.Id, source = "Credits" }, null) |
+        @Html.ActionLink(@refundType + " Refund", "Create", "PaymentDetails", new { Id = Model.Id, source = "Credits" }, new { Title = @refundtooltip }) |
         @Html.ActionLink("Back to List", "Index", new { Type = Model.Type })
     </div>
 </div>

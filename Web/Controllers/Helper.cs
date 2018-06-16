@@ -8,6 +8,19 @@ namespace Web.Controllers
 {
     public static class Helper
     {
+        public static string StatusDisplay(Web.Models.Invoice inv)
+        {
+            if (inv.Balance <= 0)
+                return Helper.Constants.InvoiceStatus.PAID;
+            else if (inv.DueDate < DateTime.Now)
+                return Helper.Constants.InvoiceStatus.OVERDUE;
+            else if (inv.PaidAmount > 0)
+                return Helper.Constants.InvoiceStatus.PARTIALPAID;
+            else
+                return Helper.Constants.InvoiceStatus.DRAFT;
+
+        }
+
         public static class Constants
         {
             public static string DefaulApplicationName = "RIM";

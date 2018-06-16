@@ -1,29 +1,37 @@
-﻿@model IEnumerable<Web.Models.Order>
+﻿@using PagedList.Mvc
+@model PagedList.IPagedList<Web.Models.Order>
 
 @{
     ViewBag.Title = "Orders";
+
+    string currentFilter = ViewBag.CurrentFilter;
+    string currentSort = ViewBag.CurrentSort;
+    if (string.IsNullOrEmpty(currentSort))
+    {
+        currentSort = "OrderDate_desc";
+    }
 }
 
 @*<h2>List</h2>*@
 @if (Model.FirstOrDefault().OrderType == Web.Controllers.Helper.Constants.OrderType.PURCHASE)
 { 
-    <h4>All Purchase Orders</h4>
+    <h3>All Purchase Orders</h3>
 }
 else if (Model.FirstOrDefault().OrderType == Web.Controllers.Helper.Constants.OrderType.SALE)
 {
-    <h4>All Sales Orders</h4>
+    <h3>All Sales Orders</h3>
 }
 else if (Model.FirstOrDefault().OrderType == Web.Controllers.Helper.Constants.OrderType.ADJUST)
 {
-    <h4>All Adjustment</h4>
+    <h3>All Adjustment</h3>
 }
 else if (Model.FirstOrDefault().OrderType == Web.Controllers.Helper.Constants.OrderType.CUSTOMER_RETURN)
 {
-    <h4>All Customer Returns</h4>
+    <h3>All Customer Returns</h3>
 }
 else if (Model.FirstOrDefault().OrderType == Web.Controllers.Helper.Constants.OrderType.SUPPLIER_RETURN)
 {
-    <h4>All Returns to Supplier</h4>
+    <h3>All Returns to Supplier</h3>
 }
 @*<hr />
     <form asp-action="Index" method="get">
@@ -48,33 +56,39 @@ else if (Model.FirstOrDefault().OrderType == Web.Controllers.Helper.Constants.Or
     <table class="table">
         <tr>
             <th>
-                @if (Model.FirstOrDefault().OrderType == Web.Controllers.Helper.Constants.OrderType.ADJUST)
-                {
-                   <span>Adjust Number</span> 
-                }
-                else
-                { 
-                    @Html.DisplayNameFor(model => model.OrderNumber)
-                }
+                @Html.ActionLink("Date", "Index", Request.QueryString.ToRouteValueDictionary("sortOrder", (string)ViewBag.OrderDateSortParam))
+                @Html.SortIdentifier(currentSort, "OrderDate")
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.OrderDate)
+                @{
+                    var orderNumColName = "OrderNumber";
+                    if (Model.FirstOrDefault().OrderType == Web.Controllers.Helper.Constants.OrderType.ADJUST)
+                    { 
+                        orderNumColName = "Adjust Number";
+                    }
+                 }                
+                @Html.ActionLink(@orderNumColName, "Index", Request.QueryString.ToRouteValueDictionary("sortOrder", (string)ViewBag.OrderNumberSortParam))
+                @Html.SortIdentifier(currentSort, @orderNumColName)
             </th>
+            
             @if (Model.FirstOrDefault().OrderType != Web.Controllers.Helper.Constants.OrderType.ADJUST)
             { 
                 <th>
-                    @Html.DisplayNameFor(model => model.ExpectedDate)
+                    @Html.ActionLink("Expected Date", "Index", Request.QueryString.ToRouteValueDictionary("sortOrder", (string)ViewBag.ExpectedDateSortParam))
+                    @Html.SortIdentifier(currentSort, "ExpectedDate")
                 </th>
             
                 <th>
-                    @Html.DisplayNameFor(model => model.Partner)
+                    @Html.ActionLink("Partner", "Index", Request.QueryString.ToRouteValueDictionary("sortOrder", (string)ViewBag.PartnerSortParam))
+                    @Html.SortIdentifier(currentSort, "Partner")
                 </th>
                 
             }
             else
             { 
                 <th>
-                    <span>Reason</span>
+                    @Html.ActionLink("Reason", "Index", Request.QueryString.ToRouteValueDictionary("sortOrder", (string)ViewBag.ReasonSortParam))
+                    @Html.SortIdentifier(currentSort, "Reason")
                 </th>
             }
             <th>
@@ -100,11 +114,12 @@ else if (Model.FirstOrDefault().OrderType == Web.Controllers.Helper.Constants.Or
         {
             <tr>
                 <td>
-                    @Html.DisplayFor(modelItem => item.OrderNumber)
-                </td>
-                <td>
                     @Html.DisplayFor(modelItem => item.OrderDate)
                 </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.OrderNumber)
+                </td>
+               
                 @if (Model.FirstOrDefault().OrderType != Web.Controllers.Helper.Constants.OrderType.ADJUST)
                 { 
                 <td>
@@ -118,7 +133,7 @@ else if (Model.FirstOrDefault().OrderType == Web.Controllers.Helper.Constants.Or
                 else
                 {
                     <td>
-                        @Html.DisplayFor(modelItem => item.OrderNotes)
+                        @Html.DisplayFor(modelItem => item.AdjustmentReason)
                     </td> 
                 }
                 <td>
@@ -159,6 +174,15 @@ else if (Model.FirstOrDefault().OrderType == Web.Controllers.Helper.Constants.Or
         }
 
     </table>
+    <div class="pager">
+        @Html.PagedListPager(Model, page => Url.Action("Index", new
+                       {
+                           page,
+                           sortOrder = ViewBag.currentSort,
+                           orderType = Model.FirstOrDefault().OrderType
+                       }))
+        Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount
+    </div>
 </div>
     <script type="text/javascript">
         var token = sessionStorage.getItem("tokenKey");

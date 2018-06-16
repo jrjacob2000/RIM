@@ -111,10 +111,10 @@ namespace Web.Controllers
                 dbUserSetting.SalesNumber = userSetting.SalesNumber;
                 dbUserSetting.PurchasePrefix = userSetting.PurchasePrefix;
                 dbUserSetting.PurchaseNumber = userSetting.PurchaseNumber;
-                dbUserSetting.CustomerReturnPrefix = userSetting.CustomerReturnPrefix;
-                dbUserSetting.CustomerReturnNumber = userSetting.CustomerReturnNumber;
-                dbUserSetting.SupplierReturnPrefix = userSetting.SupplierReturnPrefix;
-                dbUserSetting.SupplierReturnNumber = userSetting.SupplierReturnNumber;
+                dbUserSetting.BillPrefix = userSetting.BillPrefix;
+                dbUserSetting.BillNumber = userSetting.BillNumber;
+                dbUserSetting.CreditNotePrefix = userSetting.CreditNotePrefix;
+                dbUserSetting.CreditNoteNumber = userSetting.CreditNoteNumber;
                 dbUserSetting.AdjustPrefix = userSetting.AdjustPrefix;
                 dbUserSetting.AdjustNumber = userSetting.AdjustNumber;
                 if (ModelState.IsValid)

@@ -12,7 +12,7 @@ namespace Web.Models
         public Guid Id { get; set; }
         public Guid Partner_Id { get; set; }
 
-        [Display(Name = "Credit Number")]
+        [Display(Name = "Credit Note Number")]
         public string CreditNumber { get; set; }
 
         public Guid Order_Id { get; set; }

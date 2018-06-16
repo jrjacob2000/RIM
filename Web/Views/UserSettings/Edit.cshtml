@@ -92,6 +92,60 @@
             <hr />
             <div class="form-group">
                 <div class="row">
+                    @Html.LabelFor(model => model.BillNumber, htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-4">@Html.RadioButtonFor(x => x.BillAuto, "true",  new { htmlAttributes = new { @class = "form-control" } }) Continue auto-generating Bill numbers</div>
+                    <div class="col-md-6"></div>
+                </div>
+                <div class="row">
+                    <div class="col-md-3">
+                    </div>
+                    <div class="col-md-1">
+                        <span>Prefix</span>
+                        @Html.EditorFor(model => model.BillPrefix, Model.BillAuto ? new { htmlAttributes = (object)new { @class = "form-control" } } : new { htmlAttributes = (object)new { @class = "form-control", @disabled = "disabled" } })
+                        @Html.ValidationMessageFor(model => model.BillPrefix, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="col-md-6">
+                        <span>Next Number</span>
+                        @Html.EditorFor(model => model.BillNumber, Model.BillAuto ? new { htmlAttributes = (object)new { @class = "form-control" } } : new { htmlAttributes = (object)new { @class = "form-control", @disabled = "disabled" } })
+                        @Html.ValidationMessageFor(model => model.BillNumber, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-2"></div>
+                    <div class="col-md-4">@Html.RadioButtonFor(x => x.BillAuto, "false") I will add them manually</div>
+                    <div class="col-md-6"></div>
+                </div>
+            </div>
+            <hr />
+            <div class="form-group">
+                <div class="row">
+                    @Html.LabelFor(model => model.CreditNoteNumber, htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-4">@Html.RadioButton("CreditNoteAuto", "true", true, new { htmlAttributes = new { @class = "form-control" } }) Continue auto-generating sales numbers</div>
+                    <div class="col-md-6"></div>
+                </div>
+                <div class="row">
+                    <div class="col-md-3">
+                    </div>
+                    <div class="col-md-1">
+                        <span>Prefix</span>
+                        @Html.EditorFor(model => model.CreditNotePrefix, Model.CreditNoteAuto ? new { htmlAttributes = (object)new { @class = "form-control" } } : new { htmlAttributes = (object)new { @class = "form-control", @disabled = "disabled" } })
+                        @Html.ValidationMessageFor(model => model.CreditNotePrefix, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="col-md-6">
+                        <span>Next Number</span>
+                        @Html.EditorFor(model => model.CreditNoteNumber, Model.CreditNoteAuto ? new { htmlAttributes = (object)new { @class = "form-control" } } : new { htmlAttributes = (object)new { @class = "form-control", @disabled = "disabled" } })
+                        @Html.ValidationMessageFor(model => model.CreditNoteNumber, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-2"></div>
+                    <div class="col-md-4">@Html.RadioButton("CreditNoteAuto", "false") I will add them manually</div>
+                    <div class="col-md-6"></div>
+                </div>
+            </div>
+            <hr />
+            <div class="form-group">
+                <div class="row">
                     @Html.LabelFor(model => model.PurchaseNumber, htmlAttributes: new { @class = "control-label col-md-2" })
                     <div class="col-md-4">@Html.RadioButton("PurchaseAuto", "true", true, new { htmlAttributes = new { @class = "form-control" } }) Continue auto-generating purchase numbers</div>
                     <div class="col-md-6"></div>
@@ -145,62 +199,7 @@
                 </div>
             </div>
             <hr />
-
-            <div class="form-group">
-                <div class="row">
-                    @Html.LabelFor(model => model.CustomerReturnNumber, htmlAttributes: new { @class = "control-label col-md-2" })
-                    <div class="col-md-4">@Html.RadioButton("CustomerReturnAuto", "true", true, new { htmlAttributes = new { @class = "form-control" } }) Continue auto-generating Customer return numbers</div>
-                    <div class="col-md-6"></div>
-                </div>
-                <div class="row">
-                    <div class="col-md-3">
-                    </div>
-                    <div class="col-md-1">
-                        <span>Prefix</span>
-                        @Html.EditorFor(model => model.CustomerReturnPrefix, Model.CustomerReturnAuto ? new { htmlAttributes = (object)new { @class = "form-control" } } : new { htmlAttributes = (object)new { @class = "form-control", @disabled = "disabled" } })
-                        @Html.ValidationMessageFor(model => model.CustomerReturnPrefix, "", new { @class = "text-danger" })
-                    </div>
-                    <div class="col-md-6">
-                        <span>Next Number</span>
-                        @Html.EditorFor(model => model.CustomerReturnNumber, Model.CustomerReturnAuto ? new { htmlAttributes = (object)new { @class = "form-control" } } : new { htmlAttributes = (object)new { @class = "form-control", @disabled = "disabled" } })
-                        @Html.ValidationMessageFor(model => model.CustomerReturnNumber, "", new { @class = "text-danger" })
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-2"></div>
-                    <div class="col-md-4">@Html.RadioButton("CustomerReturnAuto", "false") I will add them manually</div>
-                    <div class="col-md-6"></div>
-                </div>
-            </div>
-            <hr />
-
-            <div class="form-group">
-                <div class="row">
-                    @Html.LabelFor(model => model.SupplierReturnNumber, htmlAttributes: new { @class = "control-label col-md-2" })
-                    <div class="col-md-4">@Html.RadioButton("SupplierReturnAuto", "true", true, new { htmlAttributes = new { @class = "form-control" } }) Continue auto-generating sales numbers</div>
-                    <div class="col-md-6"></div>
-                </div>
-                <div class="row">
-                    <div class="col-md-3">
-                    </div>
-                    <div class="col-md-1">
-                        <span>Prefix</span>
-                        @Html.EditorFor(model => model.SupplierReturnPrefix, Model.SupplierReturnAuto ? new { htmlAttributes = (object)new { @class = "form-control" } } : new { htmlAttributes = (object)new { @class = "form-control", @disabled = "disabled" } })
-                        @Html.ValidationMessageFor(model => model.SupplierReturnPrefix, "", new { @class = "text-danger" })
-                    </div>
-                    <div class="col-md-6">
-                        <span>Next Number</span>
-                        @Html.EditorFor(model => model.SupplierReturnNumber, Model.SupplierReturnAuto ? new { htmlAttributes = (object)new { @class = "form-control" } } : new { htmlAttributes = (object)new { @class = "form-control", @disabled = "disabled" } })
-                        @Html.ValidationMessageFor(model => model.SupplierReturnNumber, "", new { @class = "text-danger" })
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-2"></div>
-                    <div class="col-md-4">@Html.RadioButton("SupplierReturnAuto", "false") I will add them manually</div>
-                    <div class="col-md-6"></div>
-                </div>
-            </div>
-            <hr />
+                        
             <div class="form-group">
                 <div class="row">
                     @Html.LabelFor(model => model.AdjustNumber, htmlAttributes: new { @class = "control-label col-md-2" })
@@ -268,6 +267,36 @@
                 $('#InvoicePrefix').attr("disabled", "true");;
                 $('#InvoiceNumber').val('');
                 $('#InvoiceNumber').attr("disabled", "true");
+            }
+        });
+
+        $(':radio[name=BillAuto]').change(function () {
+            // read the value of the selected radio
+            var value = $(this).val();
+            if (value == 'true') {
+                $('#BillPrefix').removeAttr("disabled");;
+                $('#BillNumber').removeAttr("disabled");
+            }
+            else {
+                $('#BillPrefix').val('');
+                $('#BillPrefix').attr("disabled", "true");;
+                $('#BillNumber').val('');
+                $('#BillNumber').attr("disabled", "true");
+            }
+        });
+
+        $(':radio[name=CreditNoteAuto]').change(function () {
+            // read the value of the selected radio
+            var value = $(this).val();
+            if (value == 'true') {
+                $('#CreditNotePrefix').removeAttr("disabled");;
+                $('#CreditNoteNumber').removeAttr("disabled");
+            }
+            else {
+                $('#CreditNotePrefix').val('');
+                $('#CreditNotePrefix').attr("disabled", "true");;
+                $('#CreditNoteNumber').val('');
+                $('#CreditNoteNumber').attr("disabled", "true");
             }
         });
 

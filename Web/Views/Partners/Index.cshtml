@@ -29,6 +29,12 @@
         <th>
             @Html.DisplayNameFor(model => model.Contact)
         </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Recievables)
+        </th>
+        <th>
+            <span>Payables</span>
+        </th>
         <th></th>
     </tr>
 
@@ -51,6 +57,12 @@
         </td>
         <td>
             @Html.DisplayFor(modelItem => item.Contact)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Recievables)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Payables)
         </td>
         <td>
             @Html.ActionLink("Edit", "Edit", new { id=item.Id }) |

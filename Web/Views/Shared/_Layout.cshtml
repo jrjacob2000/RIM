@@ -30,30 +30,30 @@
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">Order<span class="caret"></span></a>
                         <ul class="dropdown-menu" role="menu">
-                            <li class="dropdown-header">Order</li>
-                            <li style="padding-left:20px">@Html.ActionLink("Purchase Orders", "Index", "Orders", new { OrderType = Web.Controllers.Helper.Constants.OrderType.PURCHASE }, null)</li>
-                            <li style="padding-left:20px">@Html.ActionLink("Sales Orders", "Index", "Orders", new { OrderType = Web.Controllers.Helper.Constants.OrderType.SALE }, null)</li>
-                            <li style="padding-left:20px">@Html.ActionLink("Adjustment", "Index", "Orders", new { OrderType = Web.Controllers.Helper.Constants.OrderType.ADJUST }, null)</li>
+                            @*<li class="dropdown-header">Order</li>*@
+                            <li >@Html.ActionLink("Purchase Orders", "Index", "Orders", new { OrderType = Web.Controllers.Helper.Constants.OrderType.PURCHASE }, null)</li>
+                            <li >@Html.ActionLink("Sales Orders", "Index", "Orders", new { OrderType = Web.Controllers.Helper.Constants.OrderType.SALE }, null)</li>
+                            <li >@Html.ActionLink("Adjustment", "Index", "Orders", new { OrderType = Web.Controllers.Helper.Constants.OrderType.ADJUST }, null)</li>
                             @*<li style="padding-left:20px">@Html.ActionLink("Returns to Supplier", "Index", "Orders", new { OrderType = Web.Controllers.Helper.Constants.OrderType.SUPPLIER_RETURN }, null)</li>*@
                         </ul>
                     </li>
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">Products<span class="caret"></span></a>
                         <ul class="dropdown-menu" role="menu">      
-                            <li style="padding-left:20px">@Html.ActionLink("Items", "Index", "Products", new { area = "" }, null)</li>
+                            <li >@Html.ActionLink("Items", "Index", "Products", new { area = "" }, null)</li>
                             @*<li style="padding-left:20px">@Html.ActionLink("Adjust Items", "Index", "Orders", new { OrderType = Web.Controllers.Helper.Constants.OrderType.ADJUST }, null)</li>*@
-                            <li style="padding-left:20px">@Html.ActionLink("Price List", "Index", "ProductPrices", new { area = "" }, null)</listyle>
-                            <li style="padding-left:20px">@Html.ActionLink("Category", "Index", "Categories", new { area = "" }, null)</li>
+                            @*<li style="padding-left:20px">@Html.ActionLink("Price List", "Index", "ProductPrices", new { area = "" }, null)</li>*@
+                            <li >@Html.ActionLink("Category", "Index", "Categories", new { area = "" }, null)</li>
                         </ul>
                     </li>
                     <li>@Html.ActionLink("Partners", "Index", "Partners")</li>
                     <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Financial<span class="caret"></span></a>
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Payment<span class="caret"></span></a>
                         <ul class="dropdown-menu" role="menu">
-
-                            <li>@Html.ActionLink("Payments", "Index", "Payments", new { area = "" }, null)</li>
+                            @*<li>@Html.ActionLink("Payments", "Index", "Payments", new { area = "" }, null)</li>*@
                             <li>@Html.ActionLink("Invoices", "Index", "Invoices", new { area = "" }, null)</li>
                             <li>@Html.ActionLink("Bills", "Index", "Bills", new { area = "" }, null)</li>
+                            <li>@Html.ActionLink("Credit Notes", "Index", "Credits", new { area = "" }, null)</li>
                             <li>@Html.ActionLink("Cash Injection", "Index", "CashInjections", new { area = "" }, null)</li>
                         </ul>
                     </li>

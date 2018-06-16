@@ -15,20 +15,6 @@ namespace Web.Controllers
     public class InvoiceControllerBase : ControllerBase
     {
        
-
-        protected string GetStatus(Invoice inv)
-        {
-            if (inv.Balance <= 0)
-                return Helper.Constants.InvoiceStatus.PAID;
-            else if (inv.DueDate < DateTime.Now)
-                return Helper.Constants.InvoiceStatus.OVERDUE;
-            else if (inv.PaidAmount > 0)
-                return Helper.Constants.InvoiceStatus.PARTIALPAID;
-            else
-                return Helper.Constants.InvoiceStatus.DRAFT;
-
-        }
-
         // GET: Invoices/Details/5
         public ActionResult Details(Guid? id)
         {
@@ -45,8 +31,14 @@ namespace Web.Controllers
                 .Include("Partner").
                 Where(x => x.Id == id && x.CreatedBy == UserId).FirstOrDefault();
 
+            var credits = new List<Credit>();
+            if(invoice.Type == Helper.Constants.InvoiceType.INVOICE)
+                credits = GetCreditByPartnerId(invoice.Partner_Id).Where(x => x.Order.AdjustmentReason == "RETURN_CUSTOMER").ToList();
+            else if (invoice.Type == Helper.Constants.InvoiceType.INVOICE)
+                credits = GetCreditByPartnerId(invoice.Partner_Id).Where(x => x.Order.AdjustmentReason == "RETURN_SUPPLIER").ToList();
+
             invoice.PaymentDetails = GetPaymentDetailList().Where(x => x.Invoice_Id == id && !x.Payment.Deleted).ToList();
-            invoice.Credits = GetCreditByPartnerId(invoice.Partner_Id).ToList();
+            invoice.Credits = credits;
             ViewBag.Total = invoice.Order.OrderDetails.Sum(x => x.AmountAfterTax);
 
             if (invoice == null)
@@ -60,7 +52,7 @@ namespace Web.Controllers
         }
 
         // GET: Invoices/Create
-        public ActionResult Create(Guid? Order_Id)
+        public ActionResult Create(Guid? Order_Id,string type)
         {
             ViewBag.Orders = GetOrderList().Where(x => x.OrderType == Helper.Constants.OrderType.SALE).Select(x => new SelectListItem() { Value = x.Id.ToString(), Text = x.OrderNumber }).ToList();
             ViewBag.Partners = new SelectList(GetPartnerList(), "Id", "Name");
@@ -80,11 +72,18 @@ namespace Web.Controllers
             }
 
             var setting = GetSetting();
-            if (setting != null && !string.IsNullOrEmpty(setting.InvoiceNumber))
+            if (type.ToUpper() == "INV" && setting != null && !string.IsNullOrEmpty(setting.InvoiceNumber))
             {
                 inv.InvoiceNumber = string.Format("{0}-{1}", setting.InvoicePrefix, setting.InvoiceNumber);
 
             }
+            else if (type.ToUpper() == "BILL" && setting != null && !string.IsNullOrEmpty(setting.BillNumber))
+            {
+                inv.InvoiceNumber = string.Format("{0}-{1}", setting.BillPrefix, setting.BillNumber);
+
+            }
+            else
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest,"unrecognized command");
 
             return View(inv);
         }
@@ -250,7 +249,13 @@ namespace Web.Controllers
             invoice.PaymentDetails = GetPaymentDetailList().Where(x => x.Invoice_Id == id && !x.Payment.Deleted).ToList();
             invoice.Credits = GetCreditByPartnerId(invoice.Partner_Id).ToList();
 
-            var credits = GetCreditByPartnerId(invoice.Partner_Id).Where(x => x.Invoice_Id == null).ToList();
+            var credits = new List<Credit>();
+            if (invoice.Type == Helper.Constants.InvoiceType.INVOICE)
+                credits = GetCreditByPartnerId(invoice.Partner_Id).Where(x => x.Invoice_Id == null && x.Order.AdjustmentReason == "RETURN_CUSTOMER").ToList();
+            else if (invoice.Type == Helper.Constants.InvoiceType.INVOICE)
+                credits = GetCreditByPartnerId(invoice.Partner_Id).Where(x => x.Invoice_Id == null && x.Order.AdjustmentReason == "RETURN_SUPPLIER").ToList();
+
+            //var credits = GetCreditByPartnerId(invoice.Partner_Id).Where(x => x.Invoice_Id == null).ToList();
 
             var creditsAmount = credits.Sum(x => x.Amount);
 

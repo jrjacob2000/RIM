@@ -38,14 +38,14 @@ namespace Web.Models
         public string AdjustNumber { get; set; }
 
         [Display(Name = "Prefix")]
-        public string CustomerReturnPrefix { get; set; }
-        [Display(Name = "Customer Return Number")]
-        public string CustomerReturnNumber { get; set; }
+        public string BillPrefix { get; set; }
+        [Display(Name = "Bill Number")]
+        public string BillNumber { get; set; }
 
         [Display(Name = "Prefix")]
-        public string SupplierReturnPrefix { get; set; }
-        [Display(Name = "Supplier Return Number")]
-        public string SupplierReturnNumber { get; set; }
+        public string CreditNotePrefix { get; set; }
+        [Display(Name = "Credit Note Number")]
+        public string CreditNoteNumber { get; set; }
 
 
         public bool InvoiceAuto
@@ -68,14 +68,14 @@ namespace Web.Models
             get { return !string.IsNullOrEmpty(AdjustNumber); }
         }
 
-        public bool CustomerReturnAuto
+        public bool BillAuto
         {
-            get { return !string.IsNullOrEmpty(CustomerReturnNumber); }
+            get { return !string.IsNullOrEmpty(BillNumber); }
         }
 
-        public bool SupplierReturnAuto
+        public bool CreditNoteAuto
         {
-            get { return !string.IsNullOrEmpty(SupplierReturnNumber); }
+            get { return !string.IsNullOrEmpty(CreditNoteNumber); }
         }
     }
 }

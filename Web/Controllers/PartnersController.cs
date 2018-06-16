@@ -19,19 +19,39 @@ namespace Web.Controllers
         // GET: Partners
         public ActionResult Index()
         {
-            //return View(db.Partners.ToList());
-            return View(GetPartnerList());
+            var partners = GetPartnerList()
+                .ToList()
+                .Select(x => new Partner() { 
+                    Id = x.Id,
+                    Name = x.Name,
+                    BillingAddress = x.BillingAddress,
+                    ShippingAddress = x.ShippingAddress,
+                    Email = x.Email,
+                    Contact =x.Contact,
+                    UnpaidInvoices = GetInvoiceByPartnerId(x.Id).Where(s => s.Status != Helper.Constants.InvoiceStatus.PAID).ToList(),
+                    UnpaidCreditNotes = GetCreditByPartnerId(x.Id).Where(s => s.Status != Helper.Constants.CreditNotesStatus.PAID).ToList()
+                })
+                .ToList();
+            return View(partners);
         }
 
         // GET: Partners/Details/5
-        public ActionResult Details(Guid? id)
+        public ActionResult Details(Guid id)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Partner partner = GetPartnerById(id.Value); //db.Partners.Find(id);
+            Partner partner = GetPartnerById(id); //db.Partners.Find(id);
             partner.Payments = GetPaymentList().Where(x => x.Partner_Id == id).ToList();
+            partner.UnpaidInvoices = GetInvoiceByPartnerId(id)
+                                .Where(x => x.Status != Helper.Constants.InvoiceStatus.PAID)
+                                .ToList();
+            partner.UnpaidCreditNotes = GetCreditByPartnerId(id)
+                                .Where(x => x.Status != Helper.Constants.CreditNotesStatus.PAID)
+                                .ToList();
+            
+            
 
             if (partner == null)
             {

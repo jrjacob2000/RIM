@@ -7,6 +7,7 @@ using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using System.Data.SqlClient;
+using PagedList;
 using Web.Models;
 
 namespace Web.Controllers
@@ -15,29 +16,25 @@ namespace Web.Controllers
     {
 
         //Get: Bills
-        public ActionResult Index(string type)
+        public ActionResult Index(string sortOrder, int page = 1, int pageSize = 10)
         {
-            var invoices = db.Credits
+            var query = db.Credits
                 .Include("Partner")
-                .Where(x => x.CreatedBy == UserId && x.Type == type)
-                .ToList()
-                .Select(s => new Credit()
+                .Where(x => x.CreatedBy == UserId )
+                .OrderByDescending(o => o.CreditDate);
+
+            var list = query.ToPagedList(page, pageSize);
+
+            list.ToList().ForEach(s => 
                 {
-                    Id = s.Id,
-                    Partner_Id = s.Partner_Id,
-                    CreditNumber = s.CreditNumber,
-                    Order_Id = s.Order_Id,
-                    CreditDate = s.CreditDate,
-                    DueDate = s.DueDate,
-                    CreatedBy = s.CreatedBy,
-                    Order = GetOrderById(s.Order_Id),
-                    Partner = s.Partner,
+                    s.Order = GetOrderById(s.Order_Id);
+                    s.Partner = s.Partner;
                     //PaymentDetails = db.PaymentDetails.Include("Payment").Where(p => p.Invoice_Id == s.Id && !p.Payment.Deleted).ToList(),
-                    Status = s.Status == Helper.Constants.InvoiceStatus.PAID? s.Status : s.DueDate < DateTime.Now ? Helper.Constants.InvoiceStatus.OVERDUE : s.Status
+                    s.Status = s.Status == Helper.Constants.InvoiceStatus.PAID? s.Status : s.DueDate < DateTime.Now ? Helper.Constants.InvoiceStatus.OVERDUE : s.Status;
                 });
 
 
-            return View(invoices);
+            return View(list);
         }
 
       
@@ -72,11 +69,11 @@ namespace Web.Controllers
             }
 
             var setting = GetSetting();
-            //if (setting != null && !string.IsNullOrEmpty(setting.InvoiceNumber))
-            //{
-            //    inv.CreditNumber = string.Format("{0}-{1}", setting.InvoicePrefix, setting.InvoiceNumber);
+            if (setting != null && !string.IsNullOrEmpty(setting.CreditNoteNumber))
+            {
+                credit.CreditNumber = string.Format("{0}-{1}", setting.CreditNotePrefix, setting.CreditNoteNumber);
 
-            //}
+            }
 
             return View(credit);
         }

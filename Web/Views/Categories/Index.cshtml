@@ -1,10 +1,19 @@
-﻿@model IEnumerable<Web.Models.Category>
+﻿
+@using PagedList.Mvc
+@model PagedList.IPagedList<Web.Models.Category>
 
 @{
-    ViewBag.Title = "Index";
+    ViewBag.Title = "All Categories";
+
+    string currentFilter = ViewBag.CurrentFilter;
+    string currentSort = ViewBag.CurrentSort;
+    if (string.IsNullOrEmpty(currentSort))
+    {
+        currentSort = "OrderDate_desc";
+    }
 }
 
-<h4>All Categories</h4>
+<h3>All Categories</h3>
 <hr />
 <p>
     @Html.ActionLink("Create New", "Create")
@@ -12,7 +21,7 @@
 <table class="table">
     <tr>
         <th>
-            @Html.DisplayNameFor(model => model.Name)
+            @Html.DisplayNameFor(model => model.First().Name)
         </th>
         <th></th>
     </tr>
@@ -31,3 +40,11 @@
 }
 
 </table>
+<div class="pager">
+    @Html.PagedListPager(Model, page => Url.Action("Index", new
+                       {
+                           page,
+                           sortOrder = ViewBag.currentSort
+                       }))
+    Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount
+</div>

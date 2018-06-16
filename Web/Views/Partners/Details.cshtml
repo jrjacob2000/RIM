@@ -1,72 +1,126 @@
 ﻿@model Web.Models.Partner
-
 @{
     ViewBag.Title = "Details";
 }
-
+<style>
+    .dl-horizontal dt { text-align: left; }
+</style>
 <h3>View @Model.Name</h3>
 
 <div>
     <div class="row">
         <div class="custom-header-div">
-            @Html.ActionLink("Invoice Payment", "Create", "Payments", new {Type="RECIEVE", Partner_Id = Model.Id }, null)|
-            @Html.ActionLink("Bill Payment", "Create", "Payments", new { Type = "BILL", Partner_Id = Model.Id }, null)|
+            @Html.ActionLink("Invoice Payment", "Create", "Payments", new { Type = "RECIEVE", Partner_Id = Model.Id }, null) |
+            @Html.ActionLink("Bill Payment", "Create", "Payments", new { Type = "BILL", Partner_Id = Model.Id }, null) |
+            @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
             @Html.ActionLink("Back to List", "Index")
         </div>
     </div>
     <hr />
     <h5 style="font-weight:bold; font-size:16px; color:gray">DETAIL</h5>
-    <dl >
-        <dt>
-            @Html.DisplayNameFor(model => model.Name)
-        </dt>
+    <div class="row">
+        <div class="col-xs-6" style="flex: 50%">
+            <dl class="dl-horizontal" style="margin-left:25px">
+                <dt>
+                    @Html.DisplayNameFor(model => model.Name)
+                </dt>
 
-        <dd>
-            @Html.DisplayFor(model => model.Name)
-        </dd>
+                <dd>
+                    @Html.DisplayFor(model => model.Name)
+                </dd>
 
-        <dt>
-            @Html.DisplayNameFor(model => model.ShippingAddress)
-        </dt>
+                <dt>
+                    @Html.DisplayNameFor(model => model.ShippingAddress)
+                </dt>
 
-        <dd>
-            @Html.DisplayFor(model => model.ShippingAddress)
-        </dd>
+                <dd>
+                    @Html.DisplayFor(model => model.ShippingAddress)
+                </dd>
 
-        <dt>
-            @Html.DisplayNameFor(model => model.BillingAddress)
-        </dt>
+                <dt>
+                    @Html.DisplayNameFor(model => model.BillingAddress)
+                </dt>
 
-        <dd>
-            @Html.DisplayFor(model => model.BillingAddress)
-        </dd>
+                <dd>
+                    @Html.DisplayFor(model => model.BillingAddress)
+                </dd>
 
-        <dt>
-            @Html.DisplayNameFor(model => model.Email)
-        </dt>
+                <dt>
+                    @Html.DisplayNameFor(model => model.Email)
+                </dt>
 
-        <dd>
-            @Html.DisplayFor(model => model.Email)
-        </dd>
+                <dd>
+                    @Html.DisplayFor(model => model.Email)
+                </dd>
 
-        <dt>
-            @Html.DisplayNameFor(model => model.Phone)
-        </dt>
+                <dt>
+                    @Html.DisplayNameFor(model => model.Phone)
+                </dt>
 
-        <dd>
-            @Html.DisplayFor(model => model.Phone)
-        </dd>
+                <dd>
+                    @Html.DisplayFor(model => model.Phone)
+                </dd>
 
-        <dt>
-            @Html.DisplayNameFor(model => model.Contact)
-        </dt>
+                <dt>
+                    @Html.DisplayNameFor(model => model.Contact)
+                </dt>
 
-        <dd>
-            @Html.DisplayFor(model => model.Contact)
-        </dd>
+                <dd>
+                    @Html.DisplayFor(model => model.Contact)
+                </dd>
 
-    </dl>
-</div>
+            </dl>
+        </div>
+        <div class="col-xs-6" style="background-color:#eff2ef;flex: 50%">
+            <div class="row">
+                <div class="col-xs-6" style="flex: 50%">
+                    <dl style="margin-left:25px">
+                        <dt>
+                            <span>Receivables</span>
+                        </dt>
+
+                        <dd>
+                            <span style="font-size:large; color:#ed8d38; font-weight:bold">@Model.Recievables</span>
+                        </dd>
+                       
+                        <dt>
+                            <span>Customer Credits</span>
+                        </dt>
+
+                        <dd>
+                            <span style="font-size:large;color:#ed8d38; font-weight:bold">@Model.CustomerCredits</span>
+                        </dd>
+                       
+                    </dl>
+                </div>
+                <div class="col-xs-6" style="flex: 50%">
+                    <dl style="margin-left:25px">
+                        <dt>
+                            <span>Payables</span>
+                        </dt>
+
+                        <dd>
+                            <span style="font-size:large; color:#ed8d38; font-weight:bold">@Model.Payables</span>
+                        </dd>
+                        <dt>
+                            <span>Supplier Credits</span>
+                        </dt>
+
+                        <dd>
+                            <span style="font-size:large;color:#ed8d38; font-weight:bold">@Model.SupplierCredits</span>
+                        </dd>
+
+
+                    </dl>
+                </div>
+            </div>
+            
+        </div>
+            
+
+        </div>
+    </div>
+
 
 <h5 style="font-weight:bold; font-size:16px; color:gray">PAYMENTS RECEIVED</h5>
 <table class="table table-striped" style="margin-left:25px">
@@ -133,7 +187,7 @@
 @if (Model.Payments.Where(x => x.Type == "BILL").Count() > 0)
 { 
 <h5 style="font-weight:bold; font-size:16px; color:gray">BILLS PAID</h5>
-    <table class="table table-striped">
+    <table class="table table-striped" style="margin-left:25px">
         <tr>
             <th>
                 @Html.DisplayNameFor(model => model.Payments.First().Date)
@@ -163,7 +217,129 @@
         }
     </table>
 }
-<p>
-    @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
-    @Html.ActionLink("Back to List", "Index")
-</p>
+
+<h5 style="font-weight:bold; font-size:16px; color:gray">INVOICES</h5>
+@if (Model.UnpaidInvoices.Count() > 0)
+{
+    <table class="table table-striped" style="margin-left:25px">
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.UnpaidInvoices.First().InvoiceDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.UnpaidInvoices.First().InvoiceNumber)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.UnpaidInvoices.First().DueDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.UnpaidInvoices.First().Amount)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.UnpaidInvoices.First().Balance)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.UnpaidInvoices.First().Status)
+            </th>
+        </tr>
+
+        @foreach (var item in Model.UnpaidInvoices)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.InvoiceDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.InvoiceNumber)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.DueDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Amount)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Balance)
+                </td>
+                <td>
+                    @{
+                        var status = Web.Controllers.Helper.StatusDisplay(item);
+                        var color = status == Web.Controllers.Helper.Constants.InvoiceStatus.PAID ? "green" :
+                        status == Web.Controllers.Helper.Constants.InvoiceStatus.OVERDUE ? "Orange" : "gray";
+                    }
+                    <span style="color:@color">
+                        @{
+                            @status
+                        }
+                    </span>
+                </td>
+            </tr>
+        }
+    </table>
+}
+else
+{
+    <div style="text-align:center">
+        No available invoice
+    </div>
+}
+
+<h5 style="font-weight:bold; font-size:16px; color:gray">CREDIT NOTES</h5>
+@if (Model.UnpaidCreditNotes.Count() > 0)
+{
+    <table class="table table-striped" style="margin-left:25px">
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.UnpaidCreditNotes.First().CreditDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.UnpaidCreditNotes.First().CreditNumber)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.UnpaidCreditNotes.First().DueDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.UnpaidCreditNotes.First().Amount)
+            </th>
+
+            <th>
+                @Html.DisplayNameFor(model => model.UnpaidCreditNotes.First().Status)
+            </th>
+            <th>
+                Reason
+            </th>
+        </tr>
+
+        @foreach (var item in Model.UnpaidCreditNotes)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CreditDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CreditNumber)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.DueDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Amount)
+                </td>
+
+                <td>
+                    @Html.DisplayFor(modelItem => item.Status)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Order.AdjustmentReason)
+                </td>
+            </tr>
+        }
+    </table>
+}
+else
+{
+    <div style="text-align:center">
+        No available invoice
+    </div>
+}
+

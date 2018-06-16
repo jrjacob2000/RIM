@@ -1,7 +1,15 @@
-﻿@model IEnumerable<Web.Models.Credit>
+﻿@using PagedList.Mvc
+@model PagedList.IPagedList<Web.Models.Credit>
 
 @{
-    ViewBag.Title = "Index";
+    ViewBag.Title = "All Credit notes";
+
+    string currentFilter = ViewBag.CurrentFilter;
+    string currentSort = ViewBag.CurrentSort;
+    if (string.IsNullOrEmpty(currentSort))
+    {
+        currentSort = "OrderDate_desc";
+    }
 }
 
 @if(Request.QueryString["type"] == Web.Controllers.Helper.Constants.InvoiceType.CustomerCredit)
@@ -23,22 +31,22 @@ else
 <table class="table">
     <tr>
         <th>
+            @Html.DisplayNameFor(model => model.First().CreditDate)
+        </th>   
+        <th>
             Credit Notes Number
             @*@Html.DisplayNameFor(model => model.InvoiceNumber)*@
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.Order.OrderNumber)
+            @Html.DisplayNameFor(model => model.First().Order.OrderNumber)
         </th>
         <th>
             <span>Customer</span>
             @*@Html.DisplayNameFor(model => model.Partner.Name)*@
         </th>
-       
+
         <th>
-            @Html.DisplayNameFor(model => model.CreditDate)
-        </th>        
-        <th>
-            @Html.DisplayNameFor(model => model.DueDate)
+            @Html.DisplayNameFor(model => model.First().DueDate)
         </th>
         <th>
             Status
@@ -55,6 +63,9 @@ else
 @foreach (var item in Model) {
     <tr>
         <td>
+            @Html.DisplayFor(modelItem => item.CreditDate)
+        </td>
+        <td>
             @Html.DisplayFor(modelItem => item.CreditNumber)
         </td>
         <td>
@@ -63,10 +74,7 @@ else
         <td>
             @Html.DisplayFor(modelItem => item.Partner.Name)
         </td>
-        
-        <td>
-            @Html.DisplayFor(modelItem => item.CreditDate)
-        </td>
+                
         <td>
             @Html.DisplayFor(modelItem => item.DueDate)
         </td>
@@ -97,3 +105,11 @@ else
 }
 
 </table>
+<div class="pager">
+    @Html.PagedListPager(Model, page => Url.Action("Index", new
+                       {
+                           page,
+                           sortOrder = ViewBag.currentSort
+                       }))
+    Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount
+</div>

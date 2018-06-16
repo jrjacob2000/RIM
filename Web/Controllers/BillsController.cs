@@ -7,6 +7,7 @@ using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using System.Data.SqlClient;
+using PagedList;
 using Web.Models;
 
 namespace Web.Controllers
@@ -15,32 +16,25 @@ namespace Web.Controllers
     public class BillsController : InvoiceControllerBase
     {
         //Get: Bills
-        public ActionResult Index()
+        public ActionResult Index(string sortOrder, int page = 1, int pageSize = 10)
         {
-            var invoices = db.Invoices
+            var query = db.Invoices
                 .Include("Partner")
                 .Where(x => x.CreatedBy == UserId && x.Type == Helper.Constants.InvoiceType.BILL)
-                .ToList()
-                .Select(s => new Invoice()
+                .OrderByDescending(o => o.InvoiceDate);
+
+            var list = query.ToPagedList(page, pageSize);
+
+            list.ToList().ForEach(s =>
                 {
-                    Id = s.Id,
-                    Partner_Id = s.Partner_Id,
-                    InvoiceNumber = s.InvoiceNumber,
-                    Order_Id = s.Order_Id,
-                    InvoiceDate = s.InvoiceDate,
-                    DueDate = s.DueDate,
-                    OtherCharges = s.OtherCharges,
-                    OrderDiscount = s.OrderDiscount,
-                    TaxRate = s.TaxRate,
-                    CreatedBy = s.CreatedBy,
-                    Order = GetOrderById(s.Order_Id),
-                    Partner = s.Partner,
-                    PaymentDetails = db.PaymentDetails.Include("Payment").Where(p => p.Invoice_Id == s.Id && !p.Payment.Deleted).ToList(),
-                    Status = s.Status == Helper.Constants.InvoiceStatus.PAID ? s.Status : s.DueDate < DateTime.Now ? Helper.Constants.InvoiceStatus.OVERDUE : s.Status
+                    s.Order = GetOrderById(s.Order_Id);
+                    s.Partner = s.Partner;
+                    s.PaymentDetails = db.PaymentDetails.Include("Payment").Where(p => p.Invoice_Id == s.Id && !p.Payment.Deleted).ToList();
+                    s.Status = s.Status == Helper.Constants.InvoiceStatus.PAID ? s.Status : s.DueDate < DateTime.Now ? Helper.Constants.InvoiceStatus.OVERDUE : s.Status;
                 });
 
 
-            return View(invoices);
+            return View(list);
         }
 
     }

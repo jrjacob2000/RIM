@@ -94,6 +94,7 @@ namespace Web.Models
                     return 0;
             }
         }
+
         [Display(Name="To Order")]
         public bool ToOrder
         {
@@ -116,5 +117,7 @@ namespace Web.Models
                     return 0;
             }
         }
+
+        
     }
 }

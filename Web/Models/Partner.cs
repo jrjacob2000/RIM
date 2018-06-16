@@ -17,6 +17,56 @@ namespace Web.Models
         public Guid CreatedBy { get; set; }
 
         public List<Payment> Payments { get; set; }
+        public List<Invoice> UnpaidInvoices { get; set; }
+        public List<Credit> UnpaidCreditNotes { get; set; }
+
+        public decimal Recievables {
+            get {
+                if (UnpaidInvoices == null)
+                    return 0;
+                else
+                {
+                    return UnpaidInvoices.Where(x => x.Type == Controllers.Helper.Constants.InvoiceType.INVOICE).Sum(x => x.Balance);
+                }
+            }
+        }
+
+        public decimal Payables
+        {
+            get
+            {
+                if (UnpaidInvoices == null)
+                    return 0;
+                else
+                {
+                    return UnpaidInvoices.Where(x => x.Type == Controllers.Helper.Constants.InvoiceType.BILL).Sum(x => x.Balance);
+                }
+            }
+        }
+
+ 
+        public decimal CustomerCredits
+        {
+            get {
+                if (UnpaidCreditNotes == null)
+                    return 0;
+                else {
+                    return  UnpaidCreditNotes.Where(x => x.Order.AdjustmentReason == "RETURN_CUSTOMER").Sum(x => x.Amount);
+
+                }
+            }
+        }
+
+        public decimal SupplierCredits
+        {
+            get {
+                if (UnpaidCreditNotes == null)
+                    return 0;
+                else {
+                    return UnpaidCreditNotes.Where(x => x.Order.AdjustmentReason == "RETURN_SUPPLIER").Sum(x => x.Amount); 
+                }
+            }
+        }
 
     }
 }

@@ -62,7 +62,7 @@ namespace Web.Migrations
                 EffectiveFromDate = DateTime.Parse("1/29/2018")
             };
 
-            context.PriceItems.AddOrUpdate(price);
+            context.ProductPrices.AddOrUpdate(price);
 
             context.SaveChanges();
         }
