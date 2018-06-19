@@ -25,14 +25,7 @@ else if (ViewBag.OrderType == Web.Controllers.Helper.Constants.OrderType.ADJUST)
 {
     <h3>All Adjustment</h3>
 }
-else if (ViewBag.OrderType == Web.Controllers.Helper.Constants.OrderType.CUSTOMER_RETURN)
-{
-    <h3>All Customer Returns</h3>
-}
-else if (ViewBag.OrderType == Web.Controllers.Helper.Constants.OrderType.SUPPLIER_RETURN)
-{
-    <h3>All Returns to Supplier</h3>
-}
+
 @*<hr />
     <form asp-action="Index" method="get">
 
@@ -104,7 +97,7 @@ else if (ViewBag.OrderType == Web.Controllers.Helper.Constants.OrderType.SUPPLIE
                     @*@Html.DisplayNameFor(model => model.InvoiceNumber)*@
                 </th>
             }
-            else if (ViewBag.OrderType == Web.Controllers.Helper.Constants.OrderType.PURCHASE || Model.FirstOrDefault().OrderType == Web.Controllers.Helper.Constants.OrderType.CUSTOMER_RETURN)     
+            else if (ViewBag.OrderType == Web.Controllers.Helper.Constants.OrderType.PURCHASE)     
             {
                 <th>
                     <span>Billed</span>
@@ -140,12 +133,12 @@ else if (ViewBag.OrderType == Web.Controllers.Helper.Constants.OrderType.SUPPLIE
                     </td> 
                 }
                 <td>
-                    @Html.DisplayFor(modelItem => item.Amount)
+                    &#8369  @Html.DisplayFor(modelItem => item.Amount)
                 </td>
                 @if (ViewBag.OrderType != Web.Controllers.Helper.Constants.OrderType.ADJUST)
                 {
                 <td>
-                    @if (item.OrderType == Web.Controllers.Helper.Constants.OrderType.SALE || item.OrderType == Web.Controllers.Helper.Constants.OrderType.PURCHASE || item.OrderType == Web.Controllers.Helper.Constants.OrderType.CUSTOMER_RETURN)
+                    @if (item.OrderType == Web.Controllers.Helper.Constants.OrderType.SALE || item.OrderType == Web.Controllers.Helper.Constants.OrderType.PURCHASE )
                     {    
                         if(item.Invoices.Count() > 0)
                         {

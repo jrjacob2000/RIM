@@ -17,7 +17,7 @@
         </div>
     </div>
     <hr />
-    <h5 style="font-weight:bold; font-size:16px; color:gray">DETAIL</h5>
+    <h5  >Detail</h5>
     <div class="row">
         <div class="col-xs-6" style="flex: 50%">
             <dl class="dl-horizontal" style="margin-left:25px">
@@ -122,72 +122,10 @@
     </div>
 
 
-<h5 style="font-weight:bold; font-size:16px; color:gray">PAYMENTS RECEIVED</h5>
-<table class="table table-striped" style="margin-left:25px">
-    <tr>
-        <th>
-            @Html.DisplayNameFor(model => model.Payments.First().Date)
-        </th>   
-        <th>
-            @Html.DisplayNameFor(model => model.Payments.First().Reference)
-        </th>     
-        <th>
-            Amount
-        </th>
-    </tr>
-
-    @foreach (var item in Model.Payments.Where(x => x.Type == "RECIEVE").OrderByDescending(o => o.Date))
-    {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Date)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Reference)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Amount)
-            </td>
-
-        </tr>
-    }
-</table>
-
-<h5 style="font-weight:bold; font-size:16px; color:gray">REFUND PAID</h5>
-<table class="table table-striped" style="margin-left:25px">
-    <tr>
-        <th>
-            @Html.DisplayNameFor(model => model.Payments.First().Date)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Payments.First().Reference)
-        </th>
-        <th>
-            Amount
-        </th>
-    </tr>
-
-    @foreach (var item in Model.Payments.Where(x => x.Type == "REFUND").OrderByDescending(o => o.Date))
-    {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Date)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Reference)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Amount)
-            </td>
-
-        </tr>
-    }
-</table>
-
-@if (Model.Payments.Where(x => x.Type == "BILL").Count() > 0)
+@if (Model.Payments.Count() > 0)
 { 
-<h5 style="font-weight:bold; font-size:16px; color:gray">BILLS PAID</h5>
-    <table class="table table-striped" style="margin-left:25px">
+<h5>Payments Made</h5>
+    <table class="table table-striped">
         <tr>
             <th>
                 @Html.DisplayNameFor(model => model.Payments.First().Date)
@@ -198,30 +136,40 @@
             <th>
                 Amount
             </th>
+            <th>Payment Type</th>
         </tr>
 
-        @foreach (var item in Model.Payments.Where(x => x.Type == "BILL"))
+        @foreach (var parent in Model.Payments)
         {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Date)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Reference)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Amount)
-                </td>
+            foreach (var item in parent.PaymentDetails)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Date)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Reference)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Amount)
+                    </td>
+                    <td>
+                        @{
+                            var type = item.Invoice != null ? item.Invoice.Type : item.Credit.Order.AdjustmentReason == "RETURN_CUSTOMER" ? "GIVE REFUND": "RECEIVED REFUND";
+                        }
+                       @type
+                    </td>
 
-            </tr>
+                </tr>
+            }
         }
     </table>
 }
 
-<h5 style="font-weight:bold; font-size:16px; color:gray">INVOICES</h5>
-@if (Model.UnpaidInvoices.Count() > 0)
+<h5>Invoices</h5>
+@if (Model.UnpaidInvoices.Where(x => x.Type == Web.Controllers.Helper.Constants.InvoiceType.INVOICE).Count() > 0)
 {
-    <table class="table table-striped" style="margin-left:25px">
+    <table class="table table-striped" >
         <tr>
             <th>
                 @Html.DisplayNameFor(model => model.UnpaidInvoices.First().InvoiceDate)
@@ -243,7 +191,7 @@
             </th>
         </tr>
 
-        @foreach (var item in Model.UnpaidInvoices)
+        @foreach (var item in Model.UnpaidInvoices.Where(x => x.Type == Web.Controllers.Helper.Constants.InvoiceType.INVOICE))
         {
             <tr>
                 <td>
@@ -284,10 +232,77 @@ else
     </div>
 }
 
-<h5 style="font-weight:bold; font-size:16px; color:gray">CREDIT NOTES</h5>
+
+<h5>Bills</h5>
+@if (Model.UnpaidInvoices.Where(x => x.Type == Web.Controllers.Helper.Constants.InvoiceType.BILL).Count() > 0)
+{
+    <table class="table table-striped" >
+        <tr>
+            <th>
+                <span>Bill Date</span>
+            </th>
+            <th>
+                <span>Bill Number</span>
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.UnpaidInvoices.First().DueDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.UnpaidInvoices.First().Amount)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.UnpaidInvoices.First().Balance)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.UnpaidInvoices.First().Status)
+            </th>
+        </tr>
+
+        @foreach (var item in Model.UnpaidInvoices.Where(x => x.Type == Web.Controllers.Helper.Constants.InvoiceType.BILL))
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.InvoiceDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.InvoiceNumber)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.DueDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Amount)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Balance)
+                </td>
+                <td>
+                    @{
+            var status = Web.Controllers.Helper.StatusDisplay(item);
+            var color = status == Web.Controllers.Helper.Constants.InvoiceStatus.PAID ? "green" :
+            status == Web.Controllers.Helper.Constants.InvoiceStatus.OVERDUE ? "Orange" : "gray";
+                    }
+                    <span style="color:@color">
+                        @{
+                            @status
+                        }
+                    </span>
+                </td>
+            </tr>
+        }
+    </table>
+}
+else
+{
+    <div style="text-align:center">
+        No available bill
+    </div>
+}
+
+<h5>Credit Notes</h5>
 @if (Model.UnpaidCreditNotes.Count() > 0)
 {
-    <table class="table table-striped" style="margin-left:25px">
+    <table class="table table-striped" >
         <tr>
             <th>
                 @Html.DisplayNameFor(model => model.UnpaidCreditNotes.First().CreditDate)
@@ -339,7 +354,7 @@ else
 else
 {
     <div style="text-align:center">
-        No available invoice
+        No available credit notes
     </div>
 }
 

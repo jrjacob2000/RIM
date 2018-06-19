@@ -14,7 +14,7 @@
                 @Html.ActionLink("Edit", "Edit", new { id = Model.Id, returnUrl = Request.Url }) |
                 @if (Model.OrderType == Web.Controllers.Helper.Constants.OrderType.PURCHASE)
                 { 
-                    @Html.ActionLink("Copy to Sales", "Create", new { IdToCopy = Model.Id, orderType = Web.Controllers.Helper.Constants.OrderType.SALE }, new { @title = "Promote this order into a new sales order" })
+                    @Html.ActionLink("Convert to Sales", "Create", new { IdToCopy = Model.Id, orderType = Web.Controllers.Helper.Constants.OrderType.SALE }, new { @title = "Promote this order into a new sales order" })
                     <span> |</span>
                 }
                 @if(Model.OrderType == Web.Controllers.Helper.Constants.OrderType.SALE)
@@ -26,7 +26,7 @@
                   }
                     else
                   { 
-                    @Html.ActionLink("Create Invoices", "Create", "Invoices", new { order_Id = Model.Id, orderType = Model.OrderType }, null)
+                    @Html.ActionLink("Create Invoices", "Create", "Invoices", new { order_Id = Model.Id, type = "INV" }, null)
                   }
                     <span> |</span>
                 }
@@ -38,22 +38,11 @@
                     }
                     else
                     {
-                        @Html.ActionLink("Create Bill", "Create", "Bills", new { order_Id = Model.Id, orderType = Model.OrderType }, null)
+                        @Html.ActionLink("Create Bill", "Create", "Bills", new { order_Id = Model.Id, TYPE ="BILL" }, null)
                     }
                     <span> |</span>
                 }
-                else if (Model.OrderType == Web.Controllers.Helper.Constants.OrderType.SUPPLIER_RETURN || Model.OrderType == Web.Controllers.Helper.Constants.OrderType.CUSTOMER_RETURN)
-                {
-                    if (Model.Credits.FirstOrDefault() != null)
-                    {
-                        @Html.ActionLink("Credit", "Details", "Credits", new { order_Id = Model.Id, Id = Model.Credits.FirstOrDefault().Id }, null)
-                    }
-                    else
-                    {
-                        @Html.ActionLink("Create Credit", "Create", "Credits", new { order_Id = Model.Id, orderType = Model.OrderType }, null)
-                    }
-                    <span> |</span>
-                }
+                
                
                 @Html.ActionLink("Back to List", "Index", new { orderType = Model.OrderType }, null)         
         </div>
@@ -153,7 +142,7 @@
             </th>
 
             <th>
-            @if (Model.OrderType == Web.Controllers.Helper.Constants.OrderType.SALE || Model.OrderType == Web.Controllers.Helper.Constants.OrderType.CUSTOMER_RETURN)
+            @if (Model.OrderType == Web.Controllers.Helper.Constants.OrderType.SALE )
             {
                 @Html.DisplayNameFor(model => model.OrderDetails.First().ProductPrice.PurchasePrice)
             }
@@ -179,7 +168,7 @@
                     @Html.DisplayFor(modelItem => item.UnitDiscount)
                 </td>
                 <td>
-                @if (item.Order.OrderType == Web.Controllers.Helper.Constants.OrderType.SALE || item.Order.OrderType == Web.Controllers.Helper.Constants.OrderType.CUSTOMER_RETURN)
+                @if (item.Order.OrderType == Web.Controllers.Helper.Constants.OrderType.SALE )
                 {
                         @Html.DisplayFor(modelItem => item.ProductPrice.SelesPrice )
                 }
@@ -199,7 +188,7 @@
                     @Html.DisplayFor(modelItem => item.AmountAfterTax)
                 </td>
                 <td>
-                @if (item.Order.OrderType == Web.Controllers.Helper.Constants.OrderType.SALE || item.Order.OrderType == Web.Controllers.Helper.Constants.OrderType.CUSTOMER_RETURN)
+                @if (item.Order.OrderType == Web.Controllers.Helper.Constants.OrderType.SALE )
                 {
                         @Html.DisplayFor(modelItem => item.ProductPrice.PurchasePrice)
                 }

@@ -54,7 +54,9 @@ namespace Web.Controllers
         // GET: Invoices/Create
         public ActionResult Create(Guid? Order_Id,string type)
         {
-            ViewBag.Orders = GetOrderList().Where(x => x.OrderType == Helper.Constants.OrderType.SALE).Select(x => new SelectListItem() { Value = x.Id.ToString(), Text = x.OrderNumber }).ToList();
+            ViewBag.Orders = GetOrderList().Where(x => x.OrderType == (type.ToUpper() == "INV" ? Helper.Constants.OrderType.SALE : Helper.Constants.OrderType.PURCHASE)
+                && x.Invoices.Count() == 0)
+                .Select(x => new SelectListItem() { Value = x.Id.ToString(), Text = x.OrderNumber }).ToList();
             ViewBag.Partners = new SelectList(GetPartnerList(), "Id", "Name");
 
             var inv = new Invoice();
@@ -62,7 +64,7 @@ namespace Web.Controllers
 
             inv.DueDate = DateTime.Now;
             inv.InvoiceDate = DateTime.Now;
-            inv.Type = Helper.Constants.InvoiceType.INVOICE;
+            
 
             var order = new Order();
             if (Order_Id.HasValue)
@@ -75,12 +77,12 @@ namespace Web.Controllers
             if (type.ToUpper() == "INV" && setting != null && !string.IsNullOrEmpty(setting.InvoiceNumber))
             {
                 inv.InvoiceNumber = string.Format("{0}-{1}", setting.InvoicePrefix, setting.InvoiceNumber);
-
+                inv.Type = Helper.Constants.InvoiceType.INVOICE;
             }
             else if (type.ToUpper() == "BILL" && setting != null && !string.IsNullOrEmpty(setting.BillNumber))
             {
                 inv.InvoiceNumber = string.Format("{0}-{1}", setting.BillPrefix, setting.BillNumber);
-
+                inv.Type = Helper.Constants.InvoiceType.BILL;
             }
             else
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest,"unrecognized command");
@@ -93,33 +95,57 @@ namespace Web.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Id,Partner_Id,InvoiceNumber,Order_Id,InvoiceDate,DueDate,OtherCharges,OrderDiscount,TaxRate,CreatedBy")] Invoice invoice)
+        public ActionResult Create(Invoice invoice, string type)
         {
+            var setting = GetSetting();
 
-            if (ModelState.IsValid)
+            invoice.Id = Guid.NewGuid();
+            invoice.CreatedBy = UserId;
+            invoice.Status = Helper.Constants.InvoiceStatus.DRAFT;
+
+            if (type.ToUpper() == "INV")
             {
-                invoice.Id = Guid.NewGuid();
-                invoice.CreatedBy = UserId;
-                invoice.Status = Helper.Constants.InvoiceStatus.DRAFT;
                 invoice.Type = Helper.Constants.InvoiceType.INVOICE;
-                //regenerate the invoicenumber just incase that the number has been used already
-                var setting = GetSetting();
+                //regenerate the invoicenumber just incase that the number has been used already               
                 if (setting != null && !string.IsNullOrEmpty(setting.InvoiceNumber))
                 {
                     invoice.InvoiceNumber = string.Format("{0}-{1}", setting.InvoicePrefix, setting.InvoiceNumber);
-
                     var length = setting.InvoiceNumber.Length;
                     var newValue = int.Parse(setting.InvoiceNumber) + 1;
                     setting.InvoiceNumber = newValue.ToString().PadLeft(length, '0');
                 }
+            }
+            else if (type.ToUpper() == "BILL")
+            {
+                invoice.Type = Helper.Constants.InvoiceType.BILL;
+                //regenerate the billnumber just incase that the number has been used already               
+                if (setting != null && !string.IsNullOrEmpty(setting.BillNumber))
+                {
+                    invoice.InvoiceNumber = string.Format("{0}-{1}", setting.BillPrefix, setting.BillNumber);
+                    var length = setting.BillNumber.Length;
+                    var newValue = int.Parse(setting.BillNumber) + 1;
+                    setting.BillNumber = newValue.ToString().PadLeft(length, '0');
+                }
+            }
+            else
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "unrecognized command");
+
+            var validOrder = db.Orders.Where(x => x.Partner_Id == invoice.Partner_Id && x.Id == invoice.Order_Id).Count() > 0;
+            if (!validOrder)
+                ModelState.AddModelError("", "Selected order is not existing in Vendor's orders");
 
 
+            if (ModelState.IsValid)
+            {
+                
                 db.Invoices.Add(invoice);
                 db.SaveChanges();
                 return RedirectToAction("Details", new { id = invoice.Id });
             }
 
-            ViewBag.Orders = GetOrderList().Where(x => x.OrderType == Helper.Constants.OrderType.SALE).Select(x => new SelectListItem() { Value = x.Id.ToString(), Text = x.OrderNumber }).ToList();
+            ViewBag.Orders = GetOrderList().Where(x => x.OrderType == (type.ToUpper() == "INV" ? Helper.Constants.OrderType.SALE : Helper.Constants.OrderType.PURCHASE)
+                && x.Invoices.Count() == 0)
+                .Select(x => new SelectListItem() { Value = x.Id.ToString(), Text = x.OrderNumber }).ToList();
             ViewBag.Partners = new SelectList(GetPartnerList(), "Id", "Name");
 
             return View(invoice);
@@ -201,18 +227,21 @@ namespace Web.Controllers
         {
             Invoice invoice = db.Invoices.Find(id);
 
-            if (invoice.PaymentDetails.Count() > 0)
+            if (invoice.PaymentDetails != null && invoice.PaymentDetails.Count() > 0)
             {
-
-                ModelState.AddModelError(string.Empty, string.Format("Can't delete this {0}, because its payment", invoice.Type));
+                ModelState.AddModelError(string.Empty, string.Format("Can't delete this {0}, because its containing payment", invoice.Type));
                 return View(invoice);
             }
 
             try
             {
-                db.Invoices.Remove(invoice);
-                db.SaveChanges();
-                return RedirectToAction("Index");
+                if (ModelState.IsValid)
+                {
+                    db.Invoices.Remove(invoice);
+                    db.SaveChanges();
+                    return RedirectToAction("Index");
+                }
+                return View(invoice);
             }
             catch (Exception ex)
             {
@@ -227,7 +256,7 @@ namespace Web.Controllers
                 if (sqlException != null && sqlException.Errors.OfType<SqlError>()
                     .Any(se => se.Number == 547/*DELETE statement conflicted */))
                 {
-                    ModelState.AddModelError(string.Empty, "Can't delete this order, because its containing details or used in payment");
+                    ModelState.AddModelError(string.Empty, "Can't delete this order, because its containing payments");
                     return View(invoice);
                 }
                 else

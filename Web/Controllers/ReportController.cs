@@ -4,7 +4,6 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using Web.Models;
-using System.Web.Mvc;
 
 
 namespace Web.Controllers
@@ -16,9 +15,9 @@ namespace Web.Controllers
         // GET: Report
         public ActionResult SalesAndPurchase()
         {
-            var sales = GetOrderDetailList().Where(x => x.Order.OrderType == Helper.Constants.OrderType.SALE || x.Order.OrderType == Helper.Constants.OrderType.CUSTOMER_RETURN).ToList();
+            var sales = GetOrderDetailList().Where(x => (x.Order.Invoices.Count() > 0 && x.Order.OrderType == Helper.Constants.OrderType.SALE) || x.Order.AdjustmentReason == "RETURN_CUSTOMER").ToList();
 
-            var purchases = GetOrderDetailList().Where(x => x.Order.OrderType == Helper.Constants.OrderType.PURCHASE || x.Order.OrderType == Helper.Constants.OrderType.SUPPLIER_RETURN || x.Order.OrderType == Helper.Constants.OrderType.ADJUST).ToList();
+            var purchases = GetOrderDetailList().Where(x => (x.Order.Invoices.Count() > 0 &&  x.Order.OrderType == Helper.Constants.OrderType.PURCHASE) || x.Order.AdjustmentReason == "RETURN_SUPPLIER").ToList();
 
             var sp = new SalesAndPurchase();
             sp.Sales = new OrderReport(sales);
@@ -32,17 +31,52 @@ namespace Web.Controllers
         {
             var list = new List<CashFlow>();
 
-            var orders = GetOrderList().Where(x => x.OrderType == Helper.Constants.OrderType.PURCHASE).ToList();
 
-            orders.ForEach(x => {
-                list.Add(new CashFlow() { 
-                    Particulars = x.OrderNumber,
-                    CashOut = (x.OtherCharges + GetOrderDetailList()
-                                                .Where(o => o.Order_Id == x.Id)
-                                                .ToList().Sum(s => s.AmountPurchase)) - x.OrderDiscount ,
-                    Date = x.OrderDate
+            var bills = GetPaymentDetailList().Where(x => x.Invoice.Type == Helper.Constants.InvoiceType.BILL).ToList();
+            bills.ForEach(x =>
+            {
+                list.Add(new CashFlow()
+                {
+                    Particulars = x.Invoice.InvoiceNumber,
+                    CashOut = x.Amount,
+                    Date = x.Date
                 });
             });
+
+            var invoices = GetPaymentDetailList().Where(x => x.Invoice.Type == Helper.Constants.InvoiceType.INVOICE).ToList();
+            invoices.ForEach(x =>
+            {
+                list.Add(new CashFlow()
+                {
+                    Particulars = x.Invoice.InvoiceNumber,
+                    CashIn = x.Amount,
+                    Date = x.Date
+                });
+            });
+
+
+            var refunds = GetPaymentDetailList().Where(x => x.Credit.Order.AdjustmentReason == "RETURN_CUSTOMER").ToList();
+            refunds.ForEach(x =>
+            {
+                list.Add(new CashFlow()
+                {
+                    Particulars = x.Credit.CreditNumber,
+                    CashOut = x.Amount,
+                    Date = x.Date
+                });
+            });
+
+            //var orders = GetOrderList().Where(x => x.OrderType == Helper.Constants.OrderType.PURCHASE).ToList();
+
+            //orders.ForEach(x => {
+            //    list.Add(new CashFlow() { 
+            //        Particulars = x.OrderNumber,
+            //        CashOut = (x.OtherCharges + GetOrderDetailList()
+            //                                    .Where(o => o.Order_Id == x.Id)
+            //                                    .ToList().Sum(s => s.AmountPurchase)) - x.OrderDiscount ,
+            //        Date = x.OrderDate
+            //    });
+            //});
 
             //cash Injection
             list.AddRange(GetCashInjectionList().Select(x => 

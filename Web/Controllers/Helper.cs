@@ -62,8 +62,7 @@ namespace Web.Controllers
                 public const string SALE = "SALE";
                 public const string QOUTE = "QOUTE";
                 public const string ADJUST = "ADJUST";
-                public const string CUSTOMER_RETURN = "CUSTOMER_RETURN";
-                public const string SUPPLIER_RETURN = "SUPPLIER_RETURN";
+
             }
 
             public static class Unit

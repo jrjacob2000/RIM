@@ -5,6 +5,7 @@
 }
 @{
     string showDetail = "hidden";
+    string listTitle = "";
     if (Model.PaymentDetails.Count > 0)  
     {    
         showDetail = "visible";       
@@ -14,14 +15,17 @@
 
 @if (Model.Type == Web.Controllers.Helper.Constants.PaymentType.RECIEVE)
 {
+    listTitle = "Unpaid Invoices";
     <h3 style="float:left">Receive Payment</h3>
 }
 else if (Model.Type == Web.Controllers.Helper.Constants.PaymentType.REFUND)
 {
+    listTitle = "Unpaid Credit Notes";
     <h3 style="float:left">Refund Customer</h3>
 }
 else if (Model.Type == Web.Controllers.Helper.Constants.PaymentType.BILL)
 {
+    listTitle = "Unpaid Bills";
     <h3 style="float:left">Pay Bill</h3>
 }
 
@@ -98,7 +102,7 @@ else if (Model.Type == Web.Controllers.Helper.Constants.PaymentType.BILL)
                 </div>
             </div>
             <hr />
-            <h4>Unpaid Invoices</h4>
+            <h4>@listTitle</h4>
             <table class="table">
                 <tr>
                     <th>

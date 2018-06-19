@@ -30,9 +30,15 @@ namespace Web.Models
         public decimal Quantity
         {
             get {
-                
-                if (OrderDetails.Count() > 0)
-                    return OrderDetails.Sum(s => s.Quantity);
+
+                if (OrderDetails != null && OrderDetails.Count() > 0)
+                {
+                    var qty = OrderDetails.Where(x => (x.Order.OrderType == Helper.Constants.OrderType.SALE
+                        || x.Order.OrderType == Helper.Constants.OrderType.PURCHASE)
+                        && x.Order.Invoices.Count() > 0).Sum(s => s.Quantity);
+
+                    return qty - QuantityReturn;
+                }
                 else
                     return 0;
             }
@@ -40,13 +46,13 @@ namespace Web.Models
         public decimal Amount
         {
             get {
-                if (OrderDetails.Count() > 0)
+                if (OrderDetails != null && OrderDetails.Count() > 0)
                 {
                     var amount = OrderDetails.Sum(x => x.Order.OrderType == Helper.Constants.OrderType.SALE ? x.AmountBeforeTax : 
                         x.Order.OrderType == Helper.Constants.OrderType.PURCHASE ? x.AmountPurchase : 0);
 
-                    var custReturn = OrderDetails.Sum(x => x.Order.OrderType == Helper.Constants.OrderType.CUSTOMER_RETURN ? x.AmountBeforeTax :
-                        x.Order.OrderType == Helper.Constants.OrderType.SUPPLIER_RETURN ? x.AmountPurchase : 0);
+                    var custReturn = OrderDetails.Sum(x => (x.Order.OrderType == Helper.Constants.OrderType.ADJUST && x.Order.AdjustmentReason == "RETURN_CUSTOMER") ? x.AmountBeforeTax :
+                        (x.Order.OrderType == Helper.Constants.OrderType.ADJUST && x.Order.AdjustmentReason == "RETURN_SUPPLIER") ? x.AmountPurchase : 0);
 
                     
                     return amount - custReturn ;
@@ -59,7 +65,7 @@ namespace Web.Models
         {
             get
             {
-                if (OrderDetails.Count() > 0)
+                if (OrderDetails != null && OrderDetails.Count() > 0)
                     return OrderDetails.Where(x => x.Order.OrderType == Helper.Constants.OrderType.SALE ||
                         x.Order.OrderType == Helper.Constants.OrderType.PURCHASE).Sum(x => x.Tax);
                 else
@@ -70,9 +76,10 @@ namespace Web.Models
         {
             get
             {
-                if (OrderDetails.Count() > 0)
-                    return OrderDetails.Where(x => x.Order.OrderType == Helper.Constants.OrderType.CUSTOMER_RETURN
-                         || x.Order.OrderType == Helper.Constants.OrderType.SUPPLIER_RETURN).Sum(x => x.Quantity);
+                if (OrderDetails != null && OrderDetails.Count() > 0)
+                    return OrderDetails.Where(x => x.Order.OrderType == Helper.Constants.OrderType.ADJUST
+                         && (x.Order.AdjustmentReason == "RETURN_CUSTOMER"
+                         || x.Order.AdjustmentReason == "RETURN_SUPPLIER")).Sum(x => x.Quantity);
                 else
                     return 0;
             }
@@ -81,7 +88,7 @@ namespace Web.Models
         {
             get
             {
-                if (OrderDetails.Count() > 0)
+                if (OrderDetails != null &&  OrderDetails.Count() > 0)
                 {
                     var unitDiscount = OrderDetails.Sum(x => x.UnitDiscount);
                     var orderDiscount = OrderDetails.Select(x => x.Order).Distinct().Sum(x => x.OrderDiscount);
@@ -95,7 +102,7 @@ namespace Web.Models
         {
             get
             {
-                if (OrderDetails.Count() > 0)
+                if (OrderDetails != null && OrderDetails.Count() > 0)
                 {
                     var orders = OrderDetails.Select(x => x.Order).Distinct().ToList();
                     return orders.Sum(x => x.OtherCharges);

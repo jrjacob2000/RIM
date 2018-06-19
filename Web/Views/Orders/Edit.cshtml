@@ -14,18 +14,9 @@ else if (Model.OrderType == Web.Controllers.Helper.Constants.OrderType.SALE)
 }
 else if (Model.OrderType == Web.Controllers.Helper.Constants.OrderType.ADJUST)
 {
-    <h2>Edit Adjustment -  @Model.OrderNumber</h2>
-    <p>Adjust item quantity for any damages or lost</p>
-    
+    <h2>Edit Adjustment -  @Model.OrderNumber</h2>    
 }
-else if (Model.OrderType == Web.Controllers.Helper.Constants.OrderType.CUSTOMER_RETURN)
-{
-    <h2>Edit Return -  @Model.OrderNumber</h2>
-}
-else if (Model.OrderType == Web.Controllers.Helper.Constants.OrderType.SUPPLIER_RETURN)
-{
-    <h2>Edit Return -  @Model.OrderNumber</h2>
-}
+
 
 
 @using (Html.BeginForm())

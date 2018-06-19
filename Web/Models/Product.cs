@@ -41,19 +41,19 @@ namespace Web.Models
                     var sold = OrderDetails
                                 .Where(x => x.Order.ExpectedDate <= DateTime.Now && x.Order.OrderType == Web.Controllers.Helper.Constants.OrderType.SALE)
                                 .Select(s => s.Quantity).Sum();
-                    var adjust = OrderDetails
-                                .Where(x => x.Order.ExpectedDate <= DateTime.Now && x.Order.OrderType == Web.Controllers.Helper.Constants.OrderType.ADJUST)
+                    var damage = OrderDetails
+                                .Where(x => x.Order.ExpectedDate <= DateTime.Now && x.Order.OrderType == Web.Controllers.Helper.Constants.OrderType.ADJUST && x.Order.AdjustmentReason == "DAMAGE_LOST")
                                 .Select(s => s.Quantity).Sum();
 
                     var custReturn = OrderDetails
-                                .Where(x => x.Order.ExpectedDate <= DateTime.Now && x.Order.OrderType == Web.Controllers.Helper.Constants.OrderType.CUSTOMER_RETURN)
+                                .Where(x => x.Order.ExpectedDate <= DateTime.Now && x.Order.OrderType == Web.Controllers.Helper.Constants.OrderType.ADJUST && x.Order.AdjustmentReason == "RETURN_CUSTOMER")
                                 .Select(s => s.Quantity).Sum();
 
                     var suppReturn = OrderDetails
-                                .Where(x => x.Order.ExpectedDate <= DateTime.Now && x.Order.OrderType == Web.Controllers.Helper.Constants.OrderType.SUPPLIER_RETURN)
+                                .Where(x => x.Order.ExpectedDate <= DateTime.Now && x.Order.OrderType == Web.Controllers.Helper.Constants.OrderType.ADJUST && x.Order.AdjustmentReason == "RETURN_SUPPLIER")
                                 .Select(s => s.Quantity).Sum();
 
-                    return (StartingInventory + purchased + custReturn) - (sold + adjust + suppReturn);
+                    return (StartingInventory + purchased + custReturn) - (sold + damage + suppReturn);
                 }
                 else
                     return 0;

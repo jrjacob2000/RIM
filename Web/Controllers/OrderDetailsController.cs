@@ -93,8 +93,12 @@ namespace Web.Controllers
                 hasErrors = true;
             }
 
-            if(hasErrors)
+            if (hasErrors)
+            {
+                orderDetail.Order = order;
                 return View(orderDetail);
+            }
+            
 
             orderDetail.Id = Guid.NewGuid();
             orderDetail.ProductPrice_Id = priceId;

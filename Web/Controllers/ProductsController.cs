@@ -60,7 +60,8 @@ namespace Web.Controllers
         public ActionResult Create()
         {
             var prices = new List<ProductPrice>();
-            prices.Add(new ProductPrice());
+
+            prices.Add(new ProductPrice() { EffectiveFromDate= DateTime.Now });
 
             var p = new Product();
             p.Category = new Category();           
@@ -99,7 +100,7 @@ namespace Web.Controllers
                 var price = productItem.ProductPrices.First();
                 price.Id = Guid.NewGuid();
                 price.Product_Id = productItem.Id;
-                price.EffectiveFromDate = DateTime.Now;
+                //price.EffectiveFromDate = DateTime.Now;
                 price.CreatedBy = UserId;
 
                 db.SaveChanges();

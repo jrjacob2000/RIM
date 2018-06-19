@@ -118,6 +118,7 @@ namespace Web.Controllers
                 .Include("ProductPrice")
                 .Include("Product")
                 .Include("Order")
+                .Include(x => x.Order.Invoices)
                 .Where(x =>  x.CreatedBy == UserId);
         }
 
@@ -233,6 +234,8 @@ namespace Web.Controllers
                 .Include("Invoice")
                 .Include("Invoice.Order")
                 .Include("Payment")
+                .Include("Credit")
+                .Include("Credit.Order")
                 .Where(x => x.CreatedBy == UserId);
         }
 
@@ -255,7 +258,9 @@ namespace Web.Controllers
         {
             return db.Payments
                 .Include("Partner")
-                .Where(x => x.CreatedBy == UserId && !x.Deleted);
+                .Include(x => x.PaymentDetails.Select(s => s.Invoice))
+                .Include(x => x.PaymentDetails.Select(s => s.Credit.Order))
+                .Where(x => x.CreatedBy == UserId && !x.Deleted && x.PaymentDetails.Count() > 0);
         }
 
 
@@ -319,6 +324,7 @@ namespace Web.Controllers
                    .Include("Order.OrderDetails")
                    .Include("Order.OrderDetails.Product")
                    .Include("Order.OrderDetails.ProductPrice")
+                   .Include("PaymentDetails")
                    .Where(x => x.CreatedBy == UserId && x.Partner_Id == partnerId);
 
             return invoices;

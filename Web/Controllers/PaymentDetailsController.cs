@@ -277,6 +277,7 @@ namespace Web.Controllers
             {
                 return HttpNotFound();
             }
+            paymentDetail.Payment.Amount = paymentDetail.Payment.Amount - paymentDetail.Amount;
             db.PaymentDetails.Remove(paymentDetail);
             db.SaveChanges();
             return RedirectToAction("Details", "Invoices", new { Id = invId });
