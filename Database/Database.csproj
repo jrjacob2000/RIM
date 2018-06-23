@@ -65,6 +65,7 @@
     <Content Include="ChangeScript\1.2\201806111053162_adjustmentReason.sql" />
     <Content Include="ChangeScript\1.2\201806120340161_payment_ReferenceColumn.sql" />
     <Content Include="ChangeScript\1.2\201806150639569_userSettingsUpdate.sql" />
+    <Content Include="ChangeScript\1.2\201806230935092_madeChangeToCredits.sql" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
