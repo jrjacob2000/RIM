@@ -47,7 +47,8 @@ namespace Web.Controllers
             if (source == "Credits")
             {
                 var credit = db.Credits
-                    .Include("Partner")
+                    .Include("Order")
+                    .Include("Order.Partner")
                     .Where(x => x.Id == id && x.CreatedBy == UserId).First();
 
                 if (credit.Status == Helper.Constants.CreditNotesStatus.PAID)
@@ -102,9 +103,17 @@ namespace Web.Controllers
                     .Include("Order.OrderDetails")
                     .Include("Order.OrderDetails.Product")
                     .Include("Order.OrderDetails.ProductPrice")
-                    .Include("Partner")
+                    .Include("Order.Partner")
                     .Where(x => x.Id == paymentDetail.Credit_Id && x.CreatedBy == UserId)
                     .First();
+
+                decimal dbTotalPaid = 0;
+                var dbPaymentdtls = db.PaymentDetails.Where(x => x.Credit_Id == paymentDetail.Credit_Id && x.CreatedBy == UserId).ToList();
+                if(dbPaymentdtls != null)
+                    dbTotalPaid = dbPaymentdtls.Sum(s => s.Amount);
+
+                if (dbTotalPaid == credit.Amount)
+                    ModelState.AddModelError("", "Unable to save. Credit notes is already paid");
                 
                 if (paymentDetail.Amount != credit.Amount)
                     ModelState.AddModelError("", "Amount should be equal to credit notes amount. Credit notes amount is " + credit.Amount);
@@ -264,7 +273,7 @@ namespace Web.Controllers
         // POST: PaymentDetails/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(Guid id)
+        public ActionResult DeleteConfirmed(Guid id, string source)
         {
             if (id == null)
             {
@@ -272,7 +281,21 @@ namespace Web.Controllers
             }
 
             PaymentDetail paymentDetail = GetPaymentDetailById(id); //db.PaymentDetails.Find(id);
-            var invId = paymentDetail.Invoice_Id;
+            var srcId = paymentDetail.Invoice_Id;
+
+            if (source == "Invoices" || source == "Bills")
+            {
+                srcId = paymentDetail.Invoice_Id;
+                var dbInvoice = db.Invoices.Where(x => x.Id == srcId && x.CreatedBy == UserId).First();
+                dbInvoice.Status = Helper.Constants.InvoiceStatus.DRAFT;
+            }
+            if (source == "Credits")
+            {
+                srcId = paymentDetail.Credit_Id;
+                var dbCredit = db.Credits.Where(x => x.Id == srcId && x.CreatedBy == UserId).First();
+                dbCredit.Status = Helper.Constants.CreditNotesStatus.DRAFT;
+            }
+
             if (paymentDetail == null)
             {
                 return HttpNotFound();
@@ -280,7 +303,7 @@ namespace Web.Controllers
             paymentDetail.Payment.Amount = paymentDetail.Payment.Amount - paymentDetail.Amount;
             db.PaymentDetails.Remove(paymentDetail);
             db.SaveChanges();
-            return RedirectToAction("Details", "Invoices", new { Id = invId });
+            return RedirectToAction("Details", source, new { Id = srcId });
         }
 
         protected override void Dispose(bool disposing)

@@ -39,7 +39,7 @@ else
             {
                 @Html.Label("Customer", htmlAttributes: new { @class = "control-label col-md-2" })
                 <div class="col-md-10">
-                    @Html.EditorFor(model => model.Credit.Partner.Name, new { htmlAttributes = new { @class = "form-control", disabled = "disabled" } })
+                    @Html.EditorFor(model => model.Credit.Order.Partner.Name, new { htmlAttributes = new { @class = "form-control", disabled = "disabled" } })
                 </div>
             }
             else

@@ -118,9 +118,9 @@
     <div style="text-align:center; width:600px">No payments found</div>
 }
 <hr style="background-color:grey; height:4px" />
-<div style="margin:20px; padding-bottom:20px; margin-right:15px; border:solid; border-width:1px">
+<div style="border:solid; border-width:1px">
     <div id="printarea">
-        <div style="margin-left:10px; margin-right:10px">
+        <div style="margin:50px; padding-bottom:20px; ">
             <div style="text-align:center">
                 <h3>INVOICE</h3>
                 <h4>@ViewBag.BusinessName</h4>
@@ -211,7 +211,7 @@
                     <table style="margin-right:0;margin-left:auto; ">
                         <tr>
                             <td style="max-width:150px; min-width:100px; text-align:left">SUBTOTAL:</td>
-                            <td style="max-width:150px; min-width:100px; text-align:right; padding-right:10px"><span style="font-weight:bolder; text-align:right">@ViewBag.Total </span></td>
+                            <td style="max-width:150px; min-width:100px; text-align:right; padding-right:10px"><span style="font-weight:bolder; text-align:right"  >@ViewBag.Total.ToString("N2")</span></td>
                         </tr>
                         <tr>
                             <td style="max-width:150px; min-width:100px; text-align:left">OTHER CHARGES:</td>
@@ -233,11 +233,33 @@
                             <td style="font-weight:bolder;text-align:left ; border-bottom:solid; border-top:solid; border-width:1px;">TOTAL:</td>
                             <td style="text-align:right; border-bottom:solid; border-top:solid; border-width:1px; padding-right:10px ;max-width:150px; min-width:100px;"><span style="font-weight:bolder;text-align:right">@(Model.Amount.ToString("N2"))</span></td>
                         </tr>
+                        <tr>
+                            <td style="height:25px"></td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:left">Previous Balance</td>
+                            <td style="text-align:right; padding-right:10px"><span style="font-weight:bolder;">@ViewBag.PreviousBalance </span></td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:left">Last Payment Received</td>
+                            <td style="text-align:right; padding-right:10px"><span style="font-weight:bolder;">-@ViewBag.LastPaymentReceived </span></td>
+                        </tr>
+                        <tr>
+                            <td style="height:15px"></td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight:bolder;text-align:left ; border-bottom:solid; border-top:solid; border-width:1px;">TOTAL AMOUNT DUE</td>
+                            <td style="text-align:right; border-bottom:solid; border-top:solid; border-width:1px; padding-right:10px ;max-width:150px; min-width:100px;"><span style="font-weight:bolder;text-align:right">@ViewBag.AmountDue.ToString("N2") </span></td>
+                        </tr>
                     </table>
 
                 </div>
             </div>
         </div>
+
+
     </div>
 </div>
 

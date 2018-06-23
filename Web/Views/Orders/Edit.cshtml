@@ -68,6 +68,13 @@ else if (Model.OrderType == Web.Controllers.Helper.Constants.OrderType.ADJUST)
                 @Html.ValidationMessageFor(model => model.OrderDate, "", new { @class = "text-danger" })
             </div>
         </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.Partner, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.DropDownListFor(model => model.Partner_Id, new SelectList(ViewBag.Partners, "Value", "Text"), "- Please Select -", new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.Partner, "", new { @class = "text-danger" })
+            </div>
+        </div>
 
         @if (Model.OrderType != Web.Controllers.Helper.Constants.OrderType.ADJUST)
         {
@@ -79,13 +86,7 @@ else if (Model.OrderType == Web.Controllers.Helper.Constants.OrderType.ADJUST)
             </div>
         </div>
 
-        <div class="form-group">
-            @Html.LabelFor(model => model.Partner, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.DropDownListFor(model => model.Partner_Id, new SelectList(ViewBag.Partners, "Value", "Text"), "- Please Select -", new { @class = "form-control" })
-                @Html.ValidationMessageFor(model => model.Partner, "", new { @class = "text-danger" })
-            </div>
-        </div>
+        
         
         <div class="form-group">
             @Html.LabelFor(model => model.OtherCharges, htmlAttributes: new { @class = "control-label col-md-2" })

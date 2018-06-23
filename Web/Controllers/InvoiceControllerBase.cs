@@ -28,18 +28,33 @@ namespace Web.Controllers
                 .Include("Order.OrderDetails")
                 .Include("Order.OrderDetails.Product")
                 .Include("Order.OrderDetails.ProductPrice")
-                .Include("Partner").
-                Where(x => x.Id == id && x.CreatedBy == UserId).FirstOrDefault();
+                .Include("Order.Partner")
+                //.Include("Partner").
+                .Where(x => x.Id == id && x.CreatedBy == UserId).FirstOrDefault();
 
             var credits = new List<Credit>();
             if(invoice.Type == Helper.Constants.InvoiceType.INVOICE)
-                credits = GetCreditByPartnerId(invoice.Partner_Id).Where(x => x.Order.AdjustmentReason == "RETURN_CUSTOMER").ToList();
+                credits = GetCreditByPartnerId(invoice.Order.Partner_Id.Value).Where(x => x.Order.AdjustmentReason == "RETURN_CUSTOMER").ToList();
             else if (invoice.Type == Helper.Constants.InvoiceType.INVOICE)
-                credits = GetCreditByPartnerId(invoice.Partner_Id).Where(x => x.Order.AdjustmentReason == "RETURN_SUPPLIER").ToList();
+                credits = GetCreditByPartnerId(invoice.Order.Partner_Id.Value).Where(x => x.Order.AdjustmentReason == "RETURN_SUPPLIER").ToList();
 
             invoice.PaymentDetails = GetPaymentDetailList().Where(x => x.Invoice_Id == id && !x.Payment.Deleted).ToList();
             invoice.Credits = credits;
             ViewBag.Total = invoice.Order.OrderDetails.Sum(x => x.AmountAfterTax);
+
+            var invoiceList = GetInvoiceByPartnerId(invoice.Order.Partner_Id.Value).ToList();
+            ViewBag.PreviousBalance = invoiceList.Sum(x => x.Balance) - invoice.Amount;
+            ViewBag.AmountDue = invoiceList.Sum(x => x.Balance);
+
+            var lastpayment = db.Payments
+                .Where(x => x.Partner_Id == invoice.Order.Partner_Id.Value && x.CreatedBy == UserId)
+                .OrderByDescending(o => o.Date).FirstOrDefault();
+            if(lastpayment != null)
+            {
+                var pdList = GetPaymentDetailList().Where(x => x.Payment_Id == lastpayment.Id && x.CreatedBy == UserId).ToList();
+                if (pdList != null)
+                    ViewBag.LastPaymentReceived = pdList.Sum(x => x.Amount);
+            }
 
             if (invoice == null)
             {
@@ -163,8 +178,9 @@ namespace Web.Controllers
                 //.Include("Order.OrderDetails")
                 //.Include("Order.OrderDetails.Product")
                 //.Include("Order.OrderDetails.ProductPrice")
-                .Include("Partner").
-                Where(x => x.Id == id && x.CreatedBy == UserId).FirstOrDefault();
+                .Include("Order.Partner")
+                //.Include("Partner").
+                .Where(x => x.Id == id && x.CreatedBy == UserId).FirstOrDefault();
 
 
             if (invoice == null)

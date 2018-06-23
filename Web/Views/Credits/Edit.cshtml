@@ -23,14 +23,13 @@
      
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
         @Html.HiddenFor(model => model.Id)
-        @Html.HiddenFor(model => model.Partner_Id)
         @Html.HiddenFor(model => model.Order_Id)
 
         <div class="form-group">
-            @Html.LabelFor(model => model.Partner_Id, "Vendor", htmlAttributes: new { @class = "control-label col-md-2" })
+            @Html.LabelFor(model => model.Order.Partner.Name, "Vendor", htmlAttributes: new { @class = "control-label col-md-2"})
             <div class="col-md-10">
-                @Html.EditorFor(model => model.Partner.Name, new { htmlAttributes = new { @class = "form-control", @disabled = "disabled" } })
-                @Html.ValidationMessageFor(model => model.Partner_Id, "", new { @class = "text-danger" })
+                @Html.EditorFor(model => model.Order.Partner.Name, new { htmlAttributes = new { @class = "form-control", @disabled = "disabled" } })
+                @Html.ValidationMessageFor(model => model.Order.Partner.Id, "", new { @class = "text-danger" })
             </div>
         </div>
 

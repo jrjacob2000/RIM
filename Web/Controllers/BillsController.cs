@@ -19,7 +19,8 @@ namespace Web.Controllers
         public ActionResult Index(string sortOrder, int page = 1, int pageSize = 10)
         {
             var query = db.Invoices
-                .Include("Partner")
+                .Include("Order")
+                .Include("Order.Partner")
                 .Where(x => x.CreatedBy == UserId && x.Type == Helper.Constants.InvoiceType.BILL)
                 .OrderByDescending(o => o.InvoiceDate);
 

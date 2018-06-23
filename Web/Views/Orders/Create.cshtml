@@ -71,11 +71,19 @@ else if (Model.OrderType == Web.Controllers.Helper.Constants.OrderType.ADJUST)
             <div class="form-group">
                 @Html.LabelFor(model => model.AdjustmentReason, htmlAttributes: new { @class = "control-label col-md-2" })
                 <div class="col-md-10">
-                    @Html.DropDownListFor(model => model.AdjustmentReason, new SelectList(ViewBag.AdjustmentReasons, "Value", "Text"), "- Please Select -", new { @class = "form-control" })
+                    @Html.DropDownListFor(model => model.AdjustmentReason, new SelectList(ViewBag.AdjustmentReasons, "Value", "Text"), "- Please Select -", new { @class = "form-control", onchange = "reasonChange(this.value)" })
                     @Html.ValidationMessageFor(model => model.AdjustmentReason, "", new { @class = "text-danger" })
                 </div>
             </div>
         }
+        
+        <div class="form-group" id="divPartner">
+            @Html.LabelFor(model => model.Partner, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.DropDownListFor(model => model.Partner_Id, new SelectList(ViewBag.Partners, "Value", "Text"), "- Please Select -", new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.Partner_Id, "", new { @class = "text-danger" })
+            </div>
+        </div>
 
         @if (Model.OrderType != Web.Controllers.Helper.Constants.OrderType.ADJUST)
         { 
@@ -86,15 +94,7 @@ else if (Model.OrderType == Web.Controllers.Helper.Constants.OrderType.ADJUST)
                         @Html.ValidationMessageFor(model => model.ExpectedDate, "", new { @class = "text-danger" })
                     </div>
                 </div>
-        
-                <div class="form-group">
-                    @Html.LabelFor(model => model.Partner, htmlAttributes: new { @class = "control-label col-md-2" })
-                    <div class="col-md-10">
-                        @Html.DropDownListFor(model => model.Partner_Id, new SelectList(ViewBag.Partners, "Value", "Text"), "- Please Select -", new { @class = "form-control" })
-                        @Html.ValidationMessageFor(model => model.Partner_Id, "", new { @class = "text-danger" })
-                    </div>
-                </div>
-
+            
                 <div class="form-group">
                     @Html.LabelFor(model => model.OtherCharges, htmlAttributes: new { @class = "control-label col-md-2" })
                     <div class="col-md-10">
@@ -146,26 +146,39 @@ else if (Model.OrderType == Web.Controllers.Helper.Constants.OrderType.ADJUST)
 }
 
 <script type="text/javascript">
+    $("#divPartner").hide();
 
-    function GetOrderType() {
-        if ($('#OrderType').val() != "") {
-            $.ajax({
-                type: 'GET',
-                url: "@Url.Action("Create", Url.RequestContext.RouteData.Values)" + "?orderType=" + $("#OrderType").val(),
-                data: "{}",
-                success: function (view) {
-                    $('#OrderNumber').val(view);
-                    alert('');
-                },
-                error: function () {
-                    alert("error");
-                }
-            });
+        function GetOrderType() {
+            if ($('#OrderType').val() != "") {
+                $.ajax({
+                    type: 'GET',
+                    url: "@Url.Action("Create", Url.RequestContext.RouteData.Values)" + "?orderType=" + $("#OrderType").val(),
+                    data: "{}",
+                    success: function (view) {
+                        $('#OrderNumber').val(view);
+                        alert('');
+                    },
+                    error: function () {
+                        alert("error");
+                    }
+                });
+            }
+        }
+
+        function OrderTypeChange(value) {
+            var url = '/Orders/Create?IdToCopy=@ViewBag.IdToCopy&orderType='+ value;
+            document.location.href = url;
+        }
+
+    function reasonChange(value) {
+        
+
+        if (value == "DAMAGE_LOST") {
+            $("#divPartner").hide();
+        }
+        else {
+            $("#divPartner").show();
         }
     }
 
-    function OrderTypeChange(value) {
-        var url = '/Orders/Create?IdToCopy=@ViewBag.IdToCopy&orderType='+ value;
-        document.location.href = url;
-    }
 </script>

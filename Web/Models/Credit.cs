@@ -27,9 +27,9 @@ namespace Web.Models
         [Display(Name = "Due Date")]
         public DateTime DueDate { get; set; }
 
-        [ForeignKey("Partner_Id")]
-        [Display(Name = "Partner")]
-        public Partner Partner { get; set; }
+        //[ForeignKey("Partner_Id")]
+        //[Display(Name = "Partner")]
+        //public Partner Partner { get; set; }
 
         [ForeignKey("Order_Id")]
         [Display(Name = "Order")]

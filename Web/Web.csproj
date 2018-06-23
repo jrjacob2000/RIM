@@ -316,6 +316,10 @@
     <Compile Include="Migrations\201806150639569_userSettingsUpdate.Designer.cs">
       <DependentUpon>201806150639569_userSettingsUpdate.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201806230935092_madeChangeToCredits.cs" />
+    <Compile Include="Migrations\201806230935092_madeChangeToCredits.Designer.cs">
+      <DependentUpon>201806230935092_madeChangeToCredits.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\CashFlow.cs" />
@@ -580,6 +584,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201806150639569_userSettingsUpdate.resx">
       <DependentUpon>201806150639569_userSettingsUpdate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201806230935092_madeChangeToCredits.resx">
+      <DependentUpon>201806230935092_madeChangeToCredits.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

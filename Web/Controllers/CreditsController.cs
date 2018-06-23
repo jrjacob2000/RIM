@@ -19,7 +19,8 @@ namespace Web.Controllers
         public ActionResult Index(string sortOrder, int page = 1, int pageSize = 10)
         {
             var query = db.Credits
-                .Include("Partner")
+                .Include("Order")
+                .Include("Order.Partner")
                 .Where(x => x.CreatedBy == UserId )
                 .OrderByDescending(o => o.CreditDate);
 
@@ -28,7 +29,7 @@ namespace Web.Controllers
             list.ToList().ForEach(s => 
                 {
                     s.Order = GetOrderById(s.Order_Id);
-                    s.Partner = s.Partner;
+                    //s.Partner = s.Partner;
                     //PaymentDetails = db.PaymentDetails.Include("Payment").Where(p => p.Invoice_Id == s.Id && !p.Payment.Deleted).ToList(),
                     s.Status = s.Status == Helper.Constants.InvoiceStatus.PAID? s.Status : s.DueDate < DateTime.Now ? Helper.Constants.InvoiceStatus.OVERDUE : s.Status;
                 });
@@ -65,7 +66,8 @@ namespace Web.Controllers
                 order = GetOrderById(Order_Id.Value);
                 credit.Order = order;
                 credit.Order_Id = Order_Id.Value;
-                //inv.Partner_Id = order.Partner_Id.Value;
+                //credit.Partner = order.Partner;
+                credit.Partner_Id = order.Partner_Id.Value;
             }
 
             var setting = GetSetting();
@@ -85,7 +87,7 @@ namespace Web.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create( Credit credit, string OrderType)
         {
-            ViewBag.Partners = new SelectList(GetPartnerList(), "Id", "Name", credit.Partner_Id);
+            //ViewBag.Partners = new SelectList(GetPartnerList(), "Id", "Name", credit.Partner_Id);
 
             if (ModelState.IsValid)
             {
@@ -100,17 +102,17 @@ namespace Web.Controllers
                 //    credit.Type = Helper.Constants.InvoiceType.CustomerCredit;
                 //else
                 //    throw new Exception(string.Format("Invalid command {0} for creating credits.", OrderType));
-                
-                ////regenerate the invoicenumber just incase that the number has been used already
-                //var setting = GetSetting();
-                //if (setting != null && !string.IsNullOrEmpty(setting.InvoiceNumber))
-                //{
-                //    invoice.InvoiceNumber = string.Format("{0}-{1}", setting.InvoicePrefix, setting.InvoiceNumber);
 
-                //    var length = setting.InvoiceNumber.Length;
-                //    var newValue = int.Parse(setting.InvoiceNumber) + 1;
-                //    setting.InvoiceNumber = newValue.ToString().PadLeft(length, '0');
-                //}
+                //regenerate the invoicenumber just incase that the number has been used already
+                var setting = GetSetting();
+                if (setting != null && !string.IsNullOrEmpty(setting.CreditNoteNumber))
+                {
+                    credit.CreditNumber = string.Format("{0}-{1}", setting.CreditNotePrefix, setting.CreditNoteNumber);
+
+                    var length = setting.CreditNoteNumber.Length;
+                    var newValue = int.Parse(setting.CreditNoteNumber) + 1;
+                    setting.CreditNoteNumber = newValue.ToString().PadLeft(length, '0');
+                }
 
 
                 db.Credits.Add(credit);
@@ -140,7 +142,7 @@ namespace Web.Controllers
                 //.Include("Order.OrderDetails")
                 //.Include("Order.OrderDetails.Product")
                 //.Include("Order.OrderDetails.ProductPrice")
-                .Include("Partner").
+                .Include("Order.Partner").
                 Where(x => x.Id == id && x.CreatedBy == UserId).FirstOrDefault();
 
 
@@ -161,7 +163,7 @@ namespace Web.Controllers
         public ActionResult Edit( Credit credit)
         {
             var dbCredit = db.Credits.Find(credit.Id);
-            dbCredit.Partner_Id = credit.Partner_Id;
+            //dbCredit.Partner_Id = credit.Partner_Id;
             dbCredit.CreditNumber = credit.CreditNumber;
             dbCredit.Order_Id = credit.Order_Id;
             dbCredit.CreditDate = credit.CreditDate;
@@ -179,7 +181,7 @@ namespace Web.Controllers
 
             var orderlist = GetOrderList().Where(x => x.OrderType == Helper.Constants.OrderType.SALE);
             ViewBag.Orders = new SelectList(orderlist, "Id", "OrderNumber", credit.Order_Id);
-            ViewBag.Partners = new SelectList(GetPartnerList(), "Id", "Name");
+            //ViewBag.Partners = new SelectList(GetPartnerList(), "Id", "Name");
             return View(credit);
         }
 
@@ -196,7 +198,7 @@ namespace Web.Controllers
                 .Include("Order.OrderDetails")
                 .Include("Order.OrderDetails.Product")
                 .Include("Order.OrderDetails.ProductPrice")
-                .Include("Partner")
+                .Include("Order.Partner")
                 .Include("Invoice")
                 .Where(x => x.Id == id && x.CreatedBy == UserId).FirstOrDefault();
 
@@ -218,7 +220,11 @@ namespace Web.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Credit credit = db.Credits.Find(id);
+            Credit credit = db.Credits
+                .Include("Order")
+                .Include("Order.Partner")
+                .Where(x => x.Id ==id )
+                .First();
             if (credit == null)
             {
                 return HttpNotFound();
@@ -231,10 +237,8 @@ namespace Web.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(Guid id)
         {
-
-            Credit credit = db.Credits.Find(id);
-
-            
+            Credit credit = db.Credits.Find(id);      
+      
             try
             {
                 db.Credits.Remove(credit);
