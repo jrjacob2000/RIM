@@ -91,6 +91,9 @@ namespace Web.Controllers
             payment.DateCreated = DateTime.Now;
             payment.CreatedBy = UserId;
 
+            if(!(paymentDetail.Amount > 0))
+                ModelState.AddModelError("", "Amount is required");
+
             if (source == "Credits") 
             {
                 if (paymentDetail.Credit_Id == null)

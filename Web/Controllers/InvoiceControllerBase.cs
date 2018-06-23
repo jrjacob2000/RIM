@@ -46,12 +46,12 @@ namespace Web.Controllers
             ViewBag.PreviousBalance = invoiceList.Sum(x => x.Balance) - invoice.Amount;
             ViewBag.AmountDue = invoiceList.Sum(x => x.Balance);
 
-            var lastpayment = db.Payments
-                .Where(x => x.Partner_Id == invoice.Order.Partner_Id.Value && x.CreatedBy == UserId)
+            var lastpayment = db.Payments.Include("PaymentDetails")
+                .Where(x => x.Partner_Id == invoice.Order.Partner_Id.Value && x.PaymentDetails.Sum(s => s.Amount) > 0 && x.CreatedBy == UserId)
                 .OrderByDescending(o => o.Date).FirstOrDefault();
             if(lastpayment != null)
             {
-                var pdList = GetPaymentDetailList().Where(x => x.Payment_Id == lastpayment.Id && x.CreatedBy == UserId).ToList();
+                var pdList = GetPaymentDetailList().Where(x => x.Payment_Id == lastpayment.Id  && x.CreatedBy == UserId).ToList();
                 if (pdList != null)
                     ViewBag.LastPaymentReceived = pdList.Sum(x => x.Amount);
             }
