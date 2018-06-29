@@ -99,8 +99,8 @@ namespace Web.Controllers
                 inv.InvoiceNumber = string.Format("{0}-{1}", setting.BillPrefix, setting.BillNumber);
                 inv.Type = Helper.Constants.InvoiceType.BILL;
             }
-            else
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest,"unrecognized command");
+            //else
+            //    return new HttpStatusCodeResult(HttpStatusCode.BadRequest,"unrecognized command");
 
             return View(inv);
         }
