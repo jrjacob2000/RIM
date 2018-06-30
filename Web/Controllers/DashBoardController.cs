@@ -4,12 +4,15 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using Web.Models;
+using MvcBreadCrumbs;
+
 namespace Web.Controllers
 {
     [Authorize]
     public class DashBoardController : ControllerBase
     {
         // GET: DashBoard
+        [BreadCrumb(Clear =true,Label ="Dashboard")]
         public ActionResult Index()
         {
             Login obj = new Login();

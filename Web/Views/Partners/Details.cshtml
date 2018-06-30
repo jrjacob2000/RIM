@@ -167,7 +167,7 @@
 }
 
 <h5>Invoices</h5>
-@if (Model.UnpaidInvoices.Where(x => x.Type == Web.Controllers.Helper.Constants.InvoiceType.INVOICE).Count() > 0)
+@if (Model.UnpaidInvoices.Where(x => x.Type == Helper.Constants.InvoiceType.INVOICE).Count() > 0)
 {
     <table class="table table-striped" >
         <tr>
@@ -191,7 +191,7 @@
             </th>
         </tr>
 
-        @foreach (var item in Model.UnpaidInvoices.Where(x => x.Type == Web.Controllers.Helper.Constants.InvoiceType.INVOICE))
+        @foreach (var item in Model.UnpaidInvoices.Where(x => x.Type == Helper.Constants.InvoiceType.INVOICE))
         {
             <tr>
                 <td>
@@ -211,9 +211,9 @@
                 </td>
                 <td>
                     @{
-                        var status = Web.Controllers.Helper.StatusDisplay(item);
-                        var color = status == Web.Controllers.Helper.Constants.InvoiceStatus.PAID ? "green" :
-                        status == Web.Controllers.Helper.Constants.InvoiceStatus.OVERDUE ? "Orange" : "gray";
+                        var status = Helper.StatusDisplay(item);
+                        var color = status == Helper.Constants.InvoiceStatus.PAID ? "green" :
+                        status == Helper.Constants.InvoiceStatus.OVERDUE ? "Orange" : "gray";
                     }
                     <span style="color:@color">
                         @{
@@ -234,7 +234,7 @@ else
 
 
 <h5>Bills</h5>
-@if (Model.UnpaidInvoices.Where(x => x.Type == Web.Controllers.Helper.Constants.InvoiceType.BILL).Count() > 0)
+@if (Model.UnpaidInvoices.Where(x => x.Type == Helper.Constants.InvoiceType.BILL).Count() > 0)
 {
     <table class="table table-striped" >
         <tr>
@@ -258,7 +258,7 @@ else
             </th>
         </tr>
 
-        @foreach (var item in Model.UnpaidInvoices.Where(x => x.Type == Web.Controllers.Helper.Constants.InvoiceType.BILL))
+        @foreach (var item in Model.UnpaidInvoices.Where(x => x.Type == Helper.Constants.InvoiceType.BILL))
         {
             <tr>
                 <td>
@@ -278,9 +278,9 @@ else
                 </td>
                 <td>
                     @{
-            var status = Web.Controllers.Helper.StatusDisplay(item);
-            var color = status == Web.Controllers.Helper.Constants.InvoiceStatus.PAID ? "green" :
-            status == Web.Controllers.Helper.Constants.InvoiceStatus.OVERDUE ? "Orange" : "gray";
+            var status = Helper.StatusDisplay(item);
+            var color = status == Helper.Constants.InvoiceStatus.PAID ? "green" :
+            status == Helper.Constants.InvoiceStatus.OVERDUE ? "Orange" : "gray";
                     }
                     <span style="color:@color">
                         @{

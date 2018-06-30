@@ -118,6 +118,8 @@ namespace Web.Controllers
             invoice.CreatedBy = UserId;
             invoice.Status = Helper.Constants.InvoiceStatus.DRAFT;
 
+            var order = GetOrderById(invoice.Order_Id);
+
             if (type.ToUpper() == "INV")
             {
                 invoice.Type = Helper.Constants.InvoiceType.INVOICE;
@@ -141,6 +143,8 @@ namespace Web.Controllers
                     var newValue = int.Parse(setting.BillNumber) + 1;
                     setting.BillNumber = newValue.ToString().PadLeft(length, '0');
                 }
+
+                order.Status = Helper.OrderStatus.Received;
             }
             else
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "unrecognized command");
@@ -344,6 +348,8 @@ namespace Web.Controllers
                     return RedirectToAction("Details", new { id = invoice.Id });
                 }
 
+                var order = GetOrderById(invoice.Order_Id);
+                order.Status = Helper.OrderStatus.Issued;
 
                 credit.Invoice_Id = null;
                 credit.Status = Helper.Constants.CreditNotesStatus.DRAFT;

@@ -3,7 +3,7 @@
 @{
     ViewBag.Title = "Create";
     var ordType = "";
-    if (Model.Order.OrderType == Web.Controllers.Helper.Constants.OrderType.ADJUST)
+    if (Model.Order.OrderType == Helper.Constants.OrderType.ADJUST)
     {
         ordType = "adjusment";
     }
@@ -40,7 +40,7 @@
                 @Html.ValidationMessageFor(model => model.Quantity, "", new { @class = "text-danger" })
             </div>
         </div>
-        @if(Model.Order.OrderType != Web.Controllers.Helper.Constants.OrderType.ADJUST)
+        @if(Model.Order.OrderType != Helper.Constants.OrderType.ADJUST)
         { 
         <div class="form-group">
             @Html.LabelFor(model => model.UnitDiscount, htmlAttributes: new { @class = "control-label col-md-2" })
@@ -59,7 +59,7 @@
 }
 
 <div>
-    @if (Model.Order.OrderType == Web.Controllers.Helper.Constants.OrderType.ADJUST)
+    @if (Model.Order.OrderType == Helper.Constants.OrderType.ADJUST)
     {
         @Html.ActionLink("Back to List", "AdjustDetails", "Orders", new { Id = Model.Order.Id }, null)
     }

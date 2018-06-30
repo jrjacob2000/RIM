@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Web.Controllers;
 
 namespace Web.Models
 {
@@ -69,6 +70,8 @@ namespace Web.Models
 
         [Display(Name = "Invoice Number")]
         public string InvoiceNumber { get; set; }
+
+        public Helper.OrderStatus  Status { get; set; }
 
         public Guid CreatedBy { get; set; }
 

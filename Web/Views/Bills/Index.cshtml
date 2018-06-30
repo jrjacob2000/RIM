@@ -71,9 +71,9 @@
         </td>
         <td>
            @{
-                    var status = Web.Controllers.Helper.StatusDisplay(item);
-                    var color = status == Web.Controllers.Helper.Constants.InvoiceStatus.PAID ? "green" :
-                    status == Web.Controllers.Helper.Constants.InvoiceStatus.OVERDUE ? "Orange" : "gray";
+                    var status = Helper.StatusDisplay(item);
+                    var color = status == Helper.Constants.InvoiceStatus.PAID ? "green" :
+                    status == Helper.Constants.InvoiceStatus.OVERDUE ? "Orange" : "gray";
             }
         <span style="color:@color">
             @{

@@ -22,7 +22,7 @@
         <dd>
             @Html.DisplayFor(model => model.Quantity)
         </dd>
-        @if(Model.Order.OrderType != Web.Controllers.Helper.Constants.OrderType.ADJUST)
+        @if(Model.Order.OrderType != Helper.Constants.OrderType.ADJUST)
         { 
         <dt>
             @Html.DisplayNameFor(model => model.ProductPrice.SelesPrice)
@@ -44,7 +44,7 @@
 </div>
 <p>
     @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
-    @if (Model.Order.OrderType == Web.Controllers.Helper.Constants.OrderType.ADJUST)
+    @if (Model.Order.OrderType == Helper.Constants.OrderType.ADJUST)
     {
         @Html.ActionLink("Back to List", "AdjustDetails", "Orders", new { Id = Model.Order.Id }, null)
     }

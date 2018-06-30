@@ -40,7 +40,7 @@ namespace Web.Models
             get 
             {
                 if (ProductPrice != null)
-                    return (Quantity * ((Order.OrderType == Web.Controllers.Helper.Constants.OrderType.SALE
+                    return (Quantity * ((Order.OrderType == Helper.Constants.OrderType.SALE
                                         || Order.AdjustmentReason == "RETURN_CUSTOMER")
                                         ? ProductPrice.SelesPrice : ProductPrice.PurchasePrice) - UnitDiscount);
                 else

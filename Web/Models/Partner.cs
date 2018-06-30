@@ -26,7 +26,7 @@ namespace Web.Models
                     return 0;
                 else
                 {
-                    return UnpaidInvoices.Where(x => x.Type == Controllers.Helper.Constants.InvoiceType.INVOICE).Sum(x => x.Balance);
+                    return UnpaidInvoices.Where(x => x.Type == Helper.Constants.InvoiceType.INVOICE).Sum(x => x.Balance);
                 }
             }
         }
@@ -39,7 +39,7 @@ namespace Web.Models
                     return 0;
                 else
                 {
-                    return UnpaidInvoices.Where(x => x.Type == Controllers.Helper.Constants.InvoiceType.BILL).Sum(x => x.Balance);
+                    return UnpaidInvoices.Where(x => x.Type == Helper.Constants.InvoiceType.BILL).Sum(x => x.Balance);
                 }
             }
         }

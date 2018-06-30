@@ -2,47 +2,84 @@
 
 @{
     ViewBag.Title = "Create";
-}
-
-
-
-@if (Model.OrderType == Web.Controllers.Helper.Constants.OrderType.PURCHASE)
-{
-    <h2>Create New Purchase Order</h2>
-}
-else if (Model.OrderType == Web.Controllers.Helper.Constants.OrderType.SALE)
-{
-    <h2>Create New Sales Order</h2>
-}
-else if (Model.OrderType == Web.Controllers.Helper.Constants.OrderType.ADJUST)
-{
-    <h2>Create New Adjustment</h2>
+    List<SelectListItem> statusList = new List<SelectListItem>();
 }
 
 @using (Html.BeginForm())
-{    
+{
+    <div class="row">
+        <div class="col-md-6">
+
+            @if (Model.OrderType == Helper.Constants.OrderType.PURCHASE)
+            {
+                <h3>Create New Purchase Order</h3>
+                statusList = Enum.GetValues(typeof(Helper.OrderStatus))
+                    .Cast<Helper.OrderStatus>()
+                    .Where(x => x != Helper.OrderStatus.Confirmed && x != Helper.OrderStatus.Closed)
+                    .Select(x => new SelectListItem { Text = x.ToString(), Value = ((int)x).ToString() }).ToList();
+            }
+            else if (Model.OrderType == Helper.Constants.OrderType.SALE)
+            {
+                <h3>Create New Sales Order</h3>
+                statusList = Enum.GetValues(typeof(Helper.OrderStatus))
+                    .Cast<Helper.OrderStatus>()
+                    .Where(x => x != Helper.OrderStatus.Received && x != Helper.OrderStatus.Issued)
+                    .Select(x => new SelectListItem { Text = x.ToString(), Value = ((int)x).ToString() }).ToList();
+            }
+            else if (Model.OrderType == Helper.Constants.OrderType.ADJUST)
+            {
+                <h3>Create New Adjustment</h3>
+            }
+
+        </div>
+        <div class="col-md-6">
+            <h1>
+                <div class="pull-right">
+                    <button type="submit" class="btn btn-primary">
+                        <span class="glyphicon glyphicon-floppy-disk"></span>
+                        Save
+                    </button>
+                    @*<a href="@Url.Action("Index", new { orderType = @Model.OrderType })" class="btn  btn-primary" title="Back to detail view">
+                            <span class="glyphicon glyphicon-arrow-left"></span> Back
+                        </a>*@
+                </div>
+            </h1>
+        </div>
+
+    </div>
+
+
+
+
     @Html.AntiForgeryToken()
     @Html.HiddenFor(model => model.OrderType)
 
-    <div class="form-horizontal">     
-        <hr />             
-        
-        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-        @*<div class="form-group">
-            @Html.LabelFor(model => model.OrderType, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">                
-                @Html.DropDownListFor(model => model.OrderType, new SelectList(ViewBag.OrderTypes, "Value", "Text"), "- Please Select -", new { @class = "form-control", @onchange = "OrderTypeChange(this.value)" })
-                @Html.ValidationMessageFor(model => model.OrderType, "", new { @class = "text-danger" })
+    <div class="form-horizontal">
+        <hr />
+
+        @if (ViewData.ModelState[""] != null && ViewData.ModelState[""].Errors.Count() > 0)
+        {
+            <div class="alert alert-danger">
+                <button type="button" class="close" data-dismiss="alert">×</button>
+                @Html.ValidationSummary(false, "")
             </div>
-        </div>*@
+        }
+        @*@Html.ValidationSummary(true, "", new { @class = "text-danger" })*@
+        @*<div class="form-group">
+                @Html.LabelFor(model => model.OrderType, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.DropDownListFor(model => model.OrderType, new SelectList(ViewBag.OrderTypes, "Value", "Text"), "- Please Select -", new { @class = "form-control", @onchange = "OrderTypeChange(this.value)" })
+                    @Html.ValidationMessageFor(model => model.OrderType, "", new { @class = "text-danger" })
+                </div>
+            </div>*@
 
         <div class="form-group">
-            @if (Model.OrderType == Web.Controllers.Helper.Constants.OrderType.ADJUST)
-            { 
+            @if (Model.OrderType == Helper.Constants.OrderType.ADJUST)
+            {
                 @Html.Label("Adjust Number", htmlAttributes: new { @class = "control-label col-md-2" })
             }
             else
-            { 
+            {
                 @Html.LabelFor(model => model.OrderNumber, htmlAttributes: new { @class = "control-label col-md-2" })
             }
             <div class="col-md-10">
@@ -52,7 +89,7 @@ else if (Model.OrderType == Web.Controllers.Helper.Constants.OrderType.ADJUST)
         </div>
 
         <div class="form-group">
-            @if (Model.OrderType == Web.Controllers.Helper.Constants.OrderType.ADJUST)
+            @if (Model.OrderType == Helper.Constants.OrderType.ADJUST)
             {
                 @Html.Label("Adjust Date", htmlAttributes: new { @class = "control-label col-md-2" })
             }
@@ -60,14 +97,14 @@ else if (Model.OrderType == Web.Controllers.Helper.Constants.OrderType.ADJUST)
             {
                 @Html.LabelFor(model => model.OrderDate, htmlAttributes: new { @class = "control-label col-md-2" })
             }
-            
+
             <div class="col-md-10">
                 @Html.EditorFor(model => model.OrderDate, new { htmlAttributes = new { @class = "form-control" } })
                 @Html.ValidationMessageFor(model => model.OrderDate, "", new { @class = "text-danger" })
             </div>
         </div>
-        @if (Model.OrderType == Web.Controllers.Helper.Constants.OrderType.ADJUST)
-        { 
+        @if (Model.OrderType == Helper.Constants.OrderType.ADJUST)
+        {
             <div class="form-group">
                 @Html.LabelFor(model => model.AdjustmentReason, htmlAttributes: new { @class = "control-label col-md-2" })
                 <div class="col-md-10">
@@ -76,7 +113,7 @@ else if (Model.OrderType == Web.Controllers.Helper.Constants.OrderType.ADJUST)
                 </div>
             </div>
         }
-        
+
         <div class="form-group" id="divPartner">
             @Html.LabelFor(model => model.Partner, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
@@ -85,96 +122,102 @@ else if (Model.OrderType == Web.Controllers.Helper.Constants.OrderType.ADJUST)
             </div>
         </div>
 
-        @if (Model.OrderType != Web.Controllers.Helper.Constants.OrderType.ADJUST)
-        { 
-                <div class="form-group">
-                    @Html.LabelFor(model => model.ExpectedDate, htmlAttributes: new { @class = "control-label col-md-2" })
-                    <div class="col-md-10">
-                        @Html.EditorFor(model => model.ExpectedDate, new { htmlAttributes = new { @class = "form-control" } })
-                        @Html.ValidationMessageFor(model => model.ExpectedDate, "", new { @class = "text-danger" })
-                    </div>
+        @if (Model.OrderType != Helper.Constants.OrderType.ADJUST)
+        {
+            <div class="form-group">
+                @Html.LabelFor(model => model.ExpectedDate, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.ExpectedDate, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.ExpectedDate, "", new { @class = "text-danger" })
                 </div>
-            
-                <div class="form-group">
-                    @Html.LabelFor(model => model.OtherCharges, htmlAttributes: new { @class = "control-label col-md-2" })
-                    <div class="col-md-10">
-                        @Html.EditorFor(model => model.OtherCharges, new { htmlAttributes = new { @class = "form-control" } })
-                        @Html.ValidationMessageFor(model => model.OtherCharges, "", new { @class = "text-danger" })
-                    </div>
-                </div>
+            </div>
 
-                <div class="form-group">
-                    @Html.LabelFor(model => model.OrderDiscount, htmlAttributes: new { @class = "control-label col-md-2" })
-                    <div class="col-md-10">
-                        @Html.EditorFor(model => model.OrderDiscount, new { htmlAttributes = new { @class = "form-control" } })
-                        @Html.ValidationMessageFor(model => model.OrderDiscount, "", new { @class = "text-danger" })
-                    </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.OtherCharges, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.OtherCharges, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.OtherCharges, "", new { @class = "text-danger" })
                 </div>
+            </div>
 
-                <div class="form-group">
-                    @Html.LabelFor(model => model.TaxRate, htmlAttributes: new { @class = "control-label col-md-2" })
-                    <div class="col-md-10">
-                        @Html.EditorFor(model => model.TaxRate, new { htmlAttributes = new { @class = "form-control" } })
-                        @Html.ValidationMessageFor(model => model.TaxRate, "", new { @class = "text-danger" })
-                    </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.OrderDiscount, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.OrderDiscount, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.OrderDiscount, "", new { @class = "text-danger" })
                 </div>
-            
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.TaxRate, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.TaxRate, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.TaxRate, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.Status, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.DropDownListFor(model => model.Status, new SelectList(statusList, "Value", "Text"), "- Please Select -", new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.Status, "", new { @class = "text-danger" })
+
+                </div>
+            </div>
+
         }
-        
-        <div class="form-group">            
-            @Html.LabelFor(model => model.OrderNotes, htmlAttributes: new { @class = "control-label col-md-2" })           
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.OrderNotes, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
                 @Html.EditorFor(model => model.OrderNotes, new { htmlAttributes = new { @class = "form-control" } })
                 @Html.ValidationMessageFor(model => model.OrderNotes, "", new { @class = "text-danger" })
             </div>
         </div>
 
-        <div class="form-group">
-            <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-        </div>
     </div>
 }
 
-<div>
-    @Html.ActionLink("Back to List", "Index", new { orderType = @Model.OrderType })
-</div>
+
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
 }
 
 <script type="text/javascript">
-    $("#divPartner").hide();
+    if ($('#OrderType').val() != "ADJUST") {
+        $("#divPartner").show();
+    }
+    else {
+        $("#divPartner").hide();
+    }
 
-        function GetOrderType() {
-            if ($('#OrderType').val() != "") {
-                $.ajax({
-                    type: 'GET',
-                    url: "@Url.Action("Create", Url.RequestContext.RouteData.Values)" + "?orderType=" + $("#OrderType").val(),
-                    data: "{}",
-                    success: function (view) {
-                        $('#OrderNumber').val(view);
-                        alert('');
-                    },
-                    error: function () {
-                        alert("error");
-                    }
-                });
-            }
+    function GetOrderType() {
+        if ($('#OrderType').val() != "") {
+            $.ajax({
+                type: 'GET',
+                url: "@Url.Action("Create", Url.RequestContext.RouteData.Values)" + "?orderType=" + $("#OrderType").val(),
+                data: "{}",
+                success: function (view) {
+                    $('#OrderNumber').val(view);
+                    alert('');
+                },
+                error: function () {
+                    alert("error");
+                }
+            });
         }
+    }
 
-        function OrderTypeChange(value) {
-            var url = '/Orders/Create?IdToCopy=@ViewBag.IdToCopy&orderType='+ value;
-            document.location.href = url;
-        }
+    function OrderTypeChange(value) {
+        var url = '/Orders/Create?IdToCopy=@ViewBag.IdToCopy&orderType='+ value;
+        document.location.href = url;
+    }
 
     function reasonChange(value) {
-        
 
         if (value == "DAMAGE_LOST") {
-            $("#divPartner").hide();
+            $("#divPartner").hide();           
         }
         else {
             $("#divPartner").show();

@@ -1,4 +1,5 @@
-﻿<!DOCTYPE html>
+﻿
+<!DOCTYPE html>
 <html>
 <head>
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -33,17 +34,17 @@
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">Order<span class="caret"></span></a>
                         <ul class="dropdown-menu" role="menu">
                             @*<li class="dropdown-header">Order</li>*@
-                            <li >@Html.ActionLink("Purchase Orders", "Index", "Orders", new { OrderType = Web.Controllers.Helper.Constants.OrderType.PURCHASE }, null)</li>
-                            <li >@Html.ActionLink("Sales Orders", "Index", "Orders", new { OrderType = Web.Controllers.Helper.Constants.OrderType.SALE }, null)</li>
-                            <li >@Html.ActionLink("Adjustment", "Index", "Orders", new { OrderType = Web.Controllers.Helper.Constants.OrderType.ADJUST }, null)</li>
-                            @*<li style="padding-left:20px">@Html.ActionLink("Returns to Supplier", "Index", "Orders", new { OrderType = Web.Controllers.Helper.Constants.OrderType.SUPPLIER_RETURN }, null)</li>*@
+                            <li >@Html.ActionLink("Purchase Orders", "Index", "Orders", new { OrderType = Helper.Constants.OrderType.PURCHASE }, null)</li>
+                            <li >@Html.ActionLink("Sales Orders", "Index", "Orders", new { OrderType = Helper.Constants.OrderType.SALE }, null)</li>
+                            <li >@Html.ActionLink("Adjustment", "Index", "Orders", new { OrderType = Helper.Constants.OrderType.ADJUST }, null)</li>
+                            @*<li style="padding-left:20px">@Html.ActionLink("Returns to Supplier", "Index", "Orders", new { OrderType = Helper.Constants.OrderType.SUPPLIER_RETURN }, null)</li>*@
                         </ul>
                     </li>
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">Products<span class="caret"></span></a>
                         <ul class="dropdown-menu" role="menu">      
                             <li >@Html.ActionLink("Items", "Index", "Products", new { area = "" }, null)</li>
-                            @*<li style="padding-left:20px">@Html.ActionLink("Adjust Items", "Index", "Orders", new { OrderType = Web.Controllers.Helper.Constants.OrderType.ADJUST }, null)</li>*@
+                            @*<li style="padding-left:20px">@Html.ActionLink("Adjust Items", "Index", "Orders", new { OrderType = Helper.Constants.OrderType.ADJUST }, null)</li>*@
                             @*<li style="padding-left:20px">@Html.ActionLink("Price List", "Index", "ProductPrices", new { area = "" }, null)</li>*@
                             <li >@Html.ActionLink("Category", "Index", "Categories", new { area = "" }, null)</li>
                         </ul>
@@ -77,7 +78,10 @@
         </div>
     </div>
     <div class="container body-content">
-       
+        <!-- #region Breadcrumb -->
+        @Html.Raw(MvcBreadCrumbs.BreadCrumb.Display())
+
+        <!-- #endregion -->
         @RenderBody()
         <hr />
         <footer>

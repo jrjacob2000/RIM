@@ -13,7 +13,7 @@
     @Html.ValidationSummary(true, "", new { @class = "text-danger" })
     <dl class="dl-horizontal">
         <dt>
-            @if (Model.OrderType == Web.Controllers.Helper.Constants.OrderType.ADJUST)
+            @if (Model.OrderType == Helper.Constants.OrderType.ADJUST)
             {
                 @Html.Label("Adjust Number")
             }
@@ -29,7 +29,7 @@
         </dd>
 
         <dt>
-            @if (Model.OrderType == Web.Controllers.Helper.Constants.OrderType.ADJUST)
+            @if (Model.OrderType == Helper.Constants.OrderType.ADJUST)
             {
                 @Html.Label("Adjust Date")
             }
@@ -44,7 +44,7 @@
             @Html.DisplayFor(model => model.OrderDate)
         </dd>
 
-        @if (Model.OrderType != Web.Controllers.Helper.Constants.OrderType.ADJUST)
+        @if (Model.OrderType != Helper.Constants.OrderType.ADJUST)
         {
         <dt>
             @Html.DisplayNameFor(model => model.ExpectedDate)
@@ -87,7 +87,7 @@
         </dd>
         }
         <dt>
-            @if (Model.OrderType == Web.Controllers.Helper.Constants.OrderType.ADJUST)
+            @if (Model.OrderType == Helper.Constants.OrderType.ADJUST)
             {
                 @Html.Label("Reason")
             }

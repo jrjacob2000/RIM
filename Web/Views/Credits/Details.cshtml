@@ -105,11 +105,11 @@ else
         <div id="printarea">
             <div style="margin-left:10px; margin-right:10px">
                 <div style="text-align:center">
-                    @if (Model.Type == Web.Controllers.Helper.Constants.InvoiceType.CustomerCredit)
+                    @if (Model.Type == Helper.Constants.InvoiceType.CustomerCredit)
                     {
                         <h3>Customer Credits</h3>
                     }
-                    else if (Model.Type == Web.Controllers.Helper.Constants.InvoiceType.SupplierCredit)
+                    else if (Model.Type == Helper.Constants.InvoiceType.SupplierCredit)
                     {
                         <h3>Supplier Credits</h3>
                     }
@@ -125,11 +125,11 @@ else
                 <table style="width:100%">
                     <tr>
                         <td>
-                            @if (Model.Type == Web.Controllers.Helper.Constants.InvoiceType.CustomerCredit)
+                            @if (Model.Type == Helper.Constants.InvoiceType.CustomerCredit)
                             {
                                 <h4>Customer</h4>
                             }
-                            else if (Model.Type == Web.Controllers.Helper.Constants.InvoiceType.SupplierCredit)
+                            else if (Model.Type == Helper.Constants.InvoiceType.SupplierCredit)
                             {
                                 <h4>Supplier</h4>
                             }

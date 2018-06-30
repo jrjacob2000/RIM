@@ -13,17 +13,17 @@
 
 }
 
-@if (Model.Type == Web.Controllers.Helper.Constants.PaymentType.RECIEVE)
+@if (Model.Type == Helper.Constants.PaymentType.RECIEVE)
 {
     listTitle = "Unpaid Invoices";
     <h3 style="float:left">Receive Payment</h3>
 }
-else if (Model.Type == Web.Controllers.Helper.Constants.PaymentType.REFUND)
+else if (Model.Type == Helper.Constants.PaymentType.REFUND)
 {
     listTitle = "Unpaid Credit Notes";
     <h3 style="float:left">Refund Customer</h3>
 }
-else if (Model.Type == Web.Controllers.Helper.Constants.PaymentType.BILL)
+else if (Model.Type == Helper.Constants.PaymentType.BILL)
 {
     listTitle = "Unpaid Bills";
     <h3 style="float:left">Pay Bill</h3>

@@ -10,18 +10,32 @@ using System.Web.Mvc;
 using System.Data.SqlClient;
 using Web.Models;
 using PagedList;
+using MvcBreadCrumbs;
 
 namespace Web.Controllers
 {
     [Authorize]
     public class OrdersController : ControllerBase
     {
-        
+
         //private ApplicationDbContext db = new ApplicationDbContext();
 
         // GET: Orders
+        [BreadCrumb(Clear =true)]
         public ActionResult Index(string orderType,string sortOrder,  int page = 1, int pageSize = 10)
         {
+            switch(orderType)
+            {
+                case Helper.Constants.OrderType.PURCHASE:
+                    BreadCrumb.SetLabel("Purchase Orders");
+                    break;
+                case Helper.Constants.OrderType.SALE:
+                    BreadCrumb.SetLabel("Sales Orders");
+                    break;
+                case Helper.Constants.OrderType.ADJUST:
+                    BreadCrumb.SetLabel("Adjustments");
+                    break;
+            }
             ViewBag.OrderType = orderType;
             page = page > 0 ? page : 1;
             pageSize = pageSize > 0 ? pageSize : 10;
@@ -89,6 +103,7 @@ namespace Web.Controllers
         }
 
         // GET: Orders/Details/5
+        [BreadCrumb]
         public ActionResult Details(Guid? id)
         {
             if (id == null)
@@ -97,6 +112,8 @@ namespace Web.Controllers
             }
                       
             Order order = GetOrderById(id.Value);
+            BreadCrumb.SetLabel("View " + order.OrderNumber);
+
             order.Invoices = GetInvoiceByOrderId(order.Id).ToList();
             order.Credits = GetCreditByInvoiceId(order.Id).ToList();
                        
@@ -110,7 +127,7 @@ namespace Web.Controllers
             return View(order);
         }
 
-
+        [BreadCrumb(Clear =false)]
         public ActionResult AdjustDetails(Guid? id)
         {
             if (id == null)
@@ -121,6 +138,8 @@ namespace Web.Controllers
 
             var adjust = new Adjust();
             Order order = GetOrderById(id.Value);
+            BreadCrumb.SetLabel("View " + order.OrderNumber);
+
             adjust.Id = order.Id;
             adjust.OrderNumber = order.OrderNumber;
             adjust.OrderDate = order.OrderDate;
@@ -145,9 +164,22 @@ namespace Web.Controllers
         //{
         //    return Create(null, IdToCopy.ToString());
         //}
-
+        [BreadCrumb]
         public ActionResult Create(string OrderType, string IdToCopy)
         {
+            switch (OrderType)
+            {
+                case Helper.Constants.OrderType.PURCHASE:
+                    BreadCrumb.SetLabel("Create Purchase Order");
+                    break;
+                case Helper.Constants.OrderType.SALE:
+                    BreadCrumb.SetLabel("Create Sales Order");
+                    break;
+                case Helper.Constants.OrderType.ADJUST:
+                    BreadCrumb.SetLabel("Create Adjustment");
+                    break;
+            }
+
             ViewBag.IdToCopy = IdToCopy;
             ViewBag.OrderTypes = Helper.Constants.OrderTypeList();
             ViewBag.AdjustmentReasons = Helper.Constants.AdustmentReasonList();            
@@ -155,7 +187,8 @@ namespace Web.Controllers
 
             var setting = GetSetting();
             var order = new Order();
-            
+
+       
             if(setting != null) 
             {
                 if (!string.IsNullOrEmpty(setting.PurchaseNumber) && OrderType == Helper.Constants.OrderType.PURCHASE)
@@ -266,7 +299,11 @@ namespace Web.Controllers
                 if (order.OrderType == Helper.Constants.OrderType.ADJUST)
                 {
                     order.ExpectedDate = order.OrderDate;
-                }
+                    if(order.AdjustmentReason == null)
+                        ModelState.AddModelError("", "Adjustment reason is required");
+                    if(order.AdjustmentReason != "DAMAGE_LOST")
+                        ModelState.AddModelError("", "Partner is required");
+                } 
                 else
                 {
                     if (order.Partner_Id == null)
@@ -283,6 +320,7 @@ namespace Web.Controllers
                     
                     await db.SaveChangesAsync();
 
+                    TempData["SuccessMessage"] = "Saving Successful.";
                     return RedirectToAction(order.OrderType == Helper.Constants.OrderType.ADJUST ? "AdjustDetails":"Details", new { id = order.Id });
                 }
 
@@ -315,6 +353,7 @@ namespace Web.Controllers
         }
 
         // GET: Orders/Edit/5
+        [BreadCrumb(Clear = false)]
         public ActionResult Edit(Guid? id, string returnUrl)
         {
             if (id == null)
@@ -324,7 +363,7 @@ namespace Web.Controllers
             ViewBag.AdjustmentReasons = Helper.Constants.AdustmentReasonList();  
             //Order order = await db.Orders.FindAsync(id);
             Order order = GetOrderById(id.Value);
-
+            BreadCrumb.SetLabel("Edit " + order.OrderNumber);
 
             order.TaxRate = order.TaxRate * 100;
 
@@ -337,15 +376,16 @@ namespace Web.Controllers
             //ViewBag.Partners = db.Partners.Select(x => new SelectListItem() { Value = x.Id.ToString(), Text = x.Name }).ToList();
             ViewBag.Partners = GetPartnerList().Select(x => new SelectListItem() { Value = x.Id.ToString(), Text = x.Name }).ToList();
 
-            // If no return url supplied, use referrer url.
-            // Protect against endless loop by checking for empty referrer.
-            if (String.IsNullOrEmpty(returnUrl)
-                && Request.UrlReferrer != null
-                && Request.UrlReferrer.ToString().Length > 0)
-            {
-                return RedirectToAction("Edit",
-                    new { returnUrl = Request.UrlReferrer.ToString() });
-            }
+            //// If no return url supplied, use referrer url.
+            //// Protect against endless loop by checking for empty referrer.
+            //if (String.IsNullOrEmpty(returnUrl)
+            //    && Request.UrlReferrer != null
+            //    && Request.UrlReferrer.ToString().Length > 0)
+            //{
+            //    return RedirectToAction("Edit",
+            //        new { returnUrl = Request.UrlReferrer.ToString() });
+            //}
+            TempData["UrlReferrer"] = Request.UrlReferrer;
 
             return View(order);
         }
@@ -365,21 +405,13 @@ namespace Web.Controllers
             order.CreatedBy = dbOrder.CreatedBy;
             order.TaxRate = order.TaxRateToDecimal;
            
-
             var invoices = GetInvoiceByOrderId(order.Id).ToList();
-
-            foreach (Invoice inv in invoices)
-            {
-                var payments = GetPaymentDetailList().Where(x => x.Invoice_Id == inv.Id && !x.Payment.Deleted).ToList();
-                if (payments.Any())
-                {
-                    ModelState.AddModelError("", string.Format("Unable to edit an order that has {0} with payment/s made already.",order.OrderType == Helper.Constants.OrderType.SALE ? "Invoice" : "Bills"));
-                    break;
-                }
-            }
             
+            if(invoices.Any() || order.Status == Helper.OrderStatus.Received || order.Status == Helper.OrderStatus.Closed)
+            {
+                ModelState.AddModelError("", string.Format("Unable to edit an order that is {0} already.", order.OrderType == Helper.Constants.OrderType.SALE ? "Closed or Invoiced" : "Received or Billed"));
+            }
            
-
             if (order.OrderType == Helper.Constants.OrderType.ADJUST)
             {
                 order.ExpectedDate = order.OrderDate;
@@ -402,17 +434,25 @@ namespace Web.Controllers
                 db.Entry(order).State = EntityState.Modified;
                 await db.SaveChangesAsync();
 
+                TempData["SuccessMessage"] = "Saving Successful.";
                 // If redirect supplied, then do it, otherwise use a default
                 if (!String.IsNullOrEmpty(returnUrl))
+                {                     
                     return Redirect(returnUrl);
+                }
                 else
+                {
                     return RedirectToAction("Index", new { orderType = order.OrderType });
+                }
                 
             }
+
+            
             return View(order);
         }
 
         // GET: Orders/Delete/5
+        [BreadCrumb(Clear = false, Label = "Order Delete")]
         public ActionResult Delete(Guid? id)
         {
             if (id == null)
@@ -425,6 +465,7 @@ namespace Web.Controllers
             {
                 return HttpNotFound();
             }
+            
             return View(order);
         }
 
@@ -446,6 +487,7 @@ namespace Web.Controllers
             {                 
                 db.Orders.Remove(order);
                 db.SaveChanges();
+                TempData["SuccessMessage"] = "Deleted Successful.";
                 return RedirectToAction("Index", new { orderType = order.OrderType });
                 //return RedirectToAction(order.OrderType == Helper.Constants.OrderType.ADJUST ? "AdjustDetails" : "Details", new { id = order.Id });
             }

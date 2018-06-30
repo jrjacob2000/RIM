@@ -14,7 +14,7 @@ namespace Web.Controllers
     [Authorize]
     public class CashInjectionsController : ControllerBase
     {
-        private ApplicationDbContext db = new ApplicationDbContext();
+        //private ApplicationDbContext db = new ApplicationDbContext();
 
 
         // GET: CashInjections

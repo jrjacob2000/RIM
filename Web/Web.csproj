@@ -20,6 +20,8 @@
     <IISExpressAnonymousAuthentication />
     <IISExpressWindowsAuthentication />
     <IISExpressUseClassicPipelineMode />
+    <Use64BitIISExpress />
+    <UseGlobalApplicationHostFile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -48,6 +50,9 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="MvcBreadCrumbs, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MvcBreadCrumbs.0.69\lib\MvcBreadCrumbs.dll</HintPath>
+    </Reference>
     <Reference Include="PagedList, Version=1.17.0.0, Culture=neutral, PublicKeyToken=abbb863e9397c5e1, processorArchitecture=MSIL">
       <HintPath>..\packages\PagedList.1.17.0.0\lib\net40\PagedList.dll</HintPath>
       <Private>True</Private>
@@ -185,7 +190,6 @@
     <Compile Include="Controllers\CategoriesController.cs" />
     <Compile Include="Controllers\ControllerBase.cs" />
     <Compile Include="Controllers\DashBoardController.cs" />
-    <Compile Include="Controllers\Helper.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\InvoiceControllerBase.cs" />
     <Compile Include="Controllers\InvoicesController.cs" />
@@ -319,6 +323,10 @@
     <Compile Include="Migrations\201806230935092_madeChangeToCredits.cs" />
     <Compile Include="Migrations\201806230935092_madeChangeToCredits.Designer.cs">
       <DependentUpon>201806230935092_madeChangeToCredits.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201806300104503_addStatusToPO.cs" />
+    <Compile Include="Migrations\201806300104503_addStatusToPO.Designer.cs">
+      <DependentUpon>201806300104503_addStatusToPO.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
@@ -587,6 +595,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201806230935092_madeChangeToCredits.resx">
       <DependentUpon>201806230935092_madeChangeToCredits.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201806300104503_addStatusToPO.resx">
+      <DependentUpon>201806300104503_addStatusToPO.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

@@ -12,11 +12,11 @@
     }
 }
 
-@if(Request.QueryString["type"] == Web.Controllers.Helper.Constants.InvoiceType.CustomerCredit)
+@if(Request.QueryString["type"] == Helper.Constants.InvoiceType.CustomerCredit)
 { 
     <h4>All Customer Credit</h4>
 }
-else if (Request.QueryString["type"] == Web.Controllers.Helper.Constants.InvoiceType.SupplierCredit)
+else if (Request.QueryString["type"] == Helper.Constants.InvoiceType.SupplierCredit)
 {
     <h4>All Supplier Credit</h4>
 }
@@ -80,8 +80,8 @@ else
         </td>
         <td>
             @{
-                var color = item.Status == Web.Controllers.Helper.Constants.InvoiceStatus.PAID ? "green" : 
-                            item.Status == Web.Controllers.Helper.Constants.InvoiceStatus.OVERDUE? "Orange": "gray";
+                var color = item.Status == Helper.Constants.InvoiceStatus.PAID ? "green" : 
+                            item.Status == Helper.Constants.InvoiceStatus.OVERDUE? "Orange": "gray";
             }
             <span style="color:@color">
                 @Html.DisplayFor(modelItem => item.Status)

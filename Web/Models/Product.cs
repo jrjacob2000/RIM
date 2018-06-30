@@ -36,21 +36,21 @@ namespace Web.Models
                 if (OrderDetails != null)
                 {
                     var purchased = OrderDetails
-                                    .Where(x => x.Order.ExpectedDate <= DateTime.Now && x.Order.OrderType == Web.Controllers.Helper.Constants.OrderType.PURCHASE)
+                                    .Where(x => x.Order.ExpectedDate <= DateTime.Now && x.Order.OrderType == Helper.Constants.OrderType.PURCHASE)
                                     .Select(s => s.Quantity).Sum();
                     var sold = OrderDetails
-                                .Where(x => x.Order.ExpectedDate <= DateTime.Now && x.Order.OrderType == Web.Controllers.Helper.Constants.OrderType.SALE)
+                                .Where(x => x.Order.ExpectedDate <= DateTime.Now && x.Order.OrderType == Helper.Constants.OrderType.SALE)
                                 .Select(s => s.Quantity).Sum();
                     var damage = OrderDetails
-                                .Where(x => x.Order.ExpectedDate <= DateTime.Now && x.Order.OrderType == Web.Controllers.Helper.Constants.OrderType.ADJUST && x.Order.AdjustmentReason == "DAMAGE_LOST")
+                                .Where(x => x.Order.ExpectedDate <= DateTime.Now && x.Order.OrderType == Helper.Constants.OrderType.ADJUST && x.Order.AdjustmentReason == "DAMAGE_LOST")
                                 .Select(s => s.Quantity).Sum();
 
                     var custReturn = OrderDetails
-                                .Where(x => x.Order.ExpectedDate <= DateTime.Now && x.Order.OrderType == Web.Controllers.Helper.Constants.OrderType.ADJUST && x.Order.AdjustmentReason == "RETURN_CUSTOMER")
+                                .Where(x => x.Order.ExpectedDate <= DateTime.Now && x.Order.OrderType == Helper.Constants.OrderType.ADJUST && x.Order.AdjustmentReason == "RETURN_CUSTOMER")
                                 .Select(s => s.Quantity).Sum();
 
                     var suppReturn = OrderDetails
-                                .Where(x => x.Order.ExpectedDate <= DateTime.Now && x.Order.OrderType == Web.Controllers.Helper.Constants.OrderType.ADJUST && x.Order.AdjustmentReason == "RETURN_SUPPLIER")
+                                .Where(x => x.Order.ExpectedDate <= DateTime.Now && x.Order.OrderType == Helper.Constants.OrderType.ADJUST && x.Order.AdjustmentReason == "RETURN_SUPPLIER")
                                 .Select(s => s.Quantity).Sum();
 
                     return (StartingInventory + purchased + custReturn) - (sold + damage + suppReturn);
@@ -68,7 +68,7 @@ namespace Web.Models
                 if (OrderDetails != null)
                 {
                     var purchased = OrderDetails
-                                    .Where(x => x.Order.ExpectedDate > DateTime.Now && x.Order.OrderType == Web.Controllers.Helper.Constants.OrderType.PURCHASE)
+                                    .Where(x => x.Order.ExpectedDate > DateTime.Now && x.Order.OrderType == Helper.Constants.OrderType.PURCHASE)
                                     .Select(s => s.Quantity).Sum();                  
 
                     return  purchased;
@@ -86,7 +86,7 @@ namespace Web.Models
                 if (OrderDetails != null)
                 {   
                     var sold = OrderDetails
-                                .Where(x => x.Order.ExpectedDate > DateTime.Now && x.Order.OrderType == Web.Controllers.Helper.Constants.OrderType.SALE)
+                                .Where(x => x.Order.ExpectedDate > DateTime.Now && x.Order.OrderType == Helper.Constants.OrderType.SALE)
                                 .Select(s => s.Quantity).Sum();
                     return sold;
                 }

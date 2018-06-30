@@ -8,6 +8,7 @@ using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using Web.Models;
+using MvcBreadCrumbs;
 
 namespace Web.Controllers
 {
@@ -24,6 +25,7 @@ namespace Web.Controllers
         }
 
         // GET: OrderDetails/Details/5
+        [BreadCrumb]
         public ActionResult Details(Guid? id)
         {
             if (id == null)
@@ -31,8 +33,9 @@ namespace Web.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
             
-
             OrderDetail orderDetail = GetOrderDetailById(id.Value);
+            BreadCrumb.SetLabel("View item " + orderDetail.Product.Name);
+
             orderDetail.Order = GetOrderById(orderDetail.Order_Id, true);
             if (orderDetail == null)
             {
@@ -43,6 +46,7 @@ namespace Web.Controllers
         }
 
         // GET: OrderDetails/Create
+        [BreadCrumb(Clear =false,Label ="Create Item")]
         public ActionResult Create(Guid Order_Id)
         {
             var od = new OrderDetail();
@@ -116,6 +120,7 @@ namespace Web.Controllers
         }
 
         // GET: OrderDetails/Edit/5
+        [BreadCrumb]
         public ActionResult Edit(Guid? id)
         {
             if (id == null)
@@ -132,6 +137,7 @@ namespace Web.Controllers
             //    .FirstOrDefaultAsync(x => x.Id == id);
 
              OrderDetail orderDetail = GetOrderDetailById(id.Value);
+            BreadCrumb.SetLabel("Edit item "+ orderDetail.Product.Name);
              orderDetail.Order = GetOrderById(orderDetail.Order_Id, true);   
 
             if (orderDetail == null)
@@ -200,6 +206,7 @@ namespace Web.Controllers
         }
 
         // GET: OrderDetails/Delete/5
+        [BreadCrumb]
         public ActionResult Delete(Guid? id)
         {
             if (id == null)
@@ -212,6 +219,7 @@ namespace Web.Controllers
             //    .Include("ProductPrice").FirstOrDefault(x => x.Id == id);
 
             OrderDetail orderDetail = GetOrderDetailById(id.Value);
+            BreadCrumb.SetLabel("Delete item " + orderDetail.Product.Name);
 
             if (orderDetail == null)
             {

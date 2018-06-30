@@ -4,52 +4,78 @@
     ViewBag.Title = "Details";
 }
 
-<h2>Details - @Model.OrderNumber</h2>
+
 
 <div>
+
     <div class="row">
-        <div class="col-xs-6">
+        <div class="col-md-6">
+            <h3>Details - @Model.OrderNumber</h3>
         </div>
-        <div class="col-xs-6" style="text-align:right; margin-top:10px">   
-                @Html.ActionLink("Edit", "Edit", new { id = Model.Id, returnUrl = Request.Url }) |
-                @if (Model.OrderType == Web.Controllers.Helper.Constants.OrderType.PURCHASE)
-                { 
-                    @Html.ActionLink("Convert to Sales", "Create", new { IdToCopy = Model.Id, orderType = Web.Controllers.Helper.Constants.OrderType.SALE }, new { @title = "Promote this order into a new sales order" })
-                    <span> |</span>
-                }
-                @if(Model.OrderType == Web.Controllers.Helper.Constants.OrderType.SALE)
-                {
-                    @*@Html.ActionLink("Invoice", "Index", "Invoice", new { searchString = Model.OrderNumber, orderType = Model.OrderType }, null)*@
-                  if (Model.Invoices.FirstOrDefault() != null)
-                  { 
-                    @Html.ActionLink("Invoices", "Details", "Invoices", new { order_Id = Model.Id, Id = Model.Invoices.FirstOrDefault().Id }, null)
-                  }
-                    else
-                  { 
-                    @Html.ActionLink("Create Invoices", "Create", "Invoices", new { order_Id = Model.Id, type = "INV" }, null)
-                  }
-                    <span> |</span>
-                }
-                else if (Model.OrderType == Web.Controllers.Helper.Constants.OrderType.PURCHASE )
-                {
-                    if (Model.Invoices.FirstOrDefault() != null)
-                    {
-                        @Html.ActionLink("Bill", "Details", "Bills", new { order_Id = Model.Id, Id = Model.Invoices.FirstOrDefault().Id }, null)
-                    }
-                    else
-                    {
-                        @Html.ActionLink("Create Bill", "Create", "Bills", new { order_Id = Model.Id, TYPE ="BILL" }, null)
-                    }
-                    <span> |</span>
-                }
-                
-               
-                @Html.ActionLink("Back to List", "Index", new { orderType = Model.OrderType }, null)         
+        <div class="col-md-6">
+            <h1>
+                <span class="pull-right">
+                    <a href="@Url.Action("Edit", new { id = Model.Id, returnUrl = Request.Url })" class="btn  btn-primary">
+                        <span class="glyphicon glyphicon-pencil"></span> Edit
+                    </a>
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                            <span class="glyphicon glyphicon-menu-hamburger"></span>
+                        </button>
+                        <ul class="dropdown-menu" role="menu">
+                            <li>
+                                @if (Model.OrderType == Helper.Constants.OrderType.SALE)
+                                {
+                                    @*@Html.ActionLink("Invoice", "Index", "Invoice", new { searchString = Model.OrderNumber, orderType = Model.OrderType }, null)*@
+                                    if (Model.Invoices.FirstOrDefault() != null)
+                                    {
+                                        @Html.ActionLink("Invoices", "Details", "Invoices", new { order_Id = Model.Id, Id = Model.Invoices.FirstOrDefault().Id }, null)
+                                    }
+                                    else
+                                    {
+                                        @Html.ActionLink("Create Invoices", "Create", "Invoices", new { order_Id = Model.Id, type = "INV" }, null)
+                                    }
+
+                                }
+                                else if (Model.OrderType == Helper.Constants.OrderType.PURCHASE)
+                                {
+                                    if (Model.Invoices.FirstOrDefault() != null)
+                                    {
+                                        @Html.ActionLink("View Bill", "Details", "Bills", new { order_Id = Model.Id, Id = Model.Invoices.FirstOrDefault().Id }, null)
+                                    }
+                                    else
+                                    {
+                                        @Html.ActionLink("Convert to Bill", "Create", "Bills", new { order_Id = Model.Id, TYPE = "BILL" }, null)
+                                    }
+
+                                }
+                            </li>
+                            <li>
+                                @if (Model.OrderType == Helper.Constants.OrderType.PURCHASE)
+                                {
+                                    @Html.ActionLink("Convert to Sales", "Create", new { IdToCopy = Model.Id, orderType = Helper.Constants.OrderType.SALE }, new { @title = "Promote this order into a new sales order" })
+                                }
+                            </li>
+                            <li class="divider"></li>
+                            <li>@Html.ActionLink("Delete", "Delete", new { Id = Model.Id }, null)</li>
+                        </ul>
+                    </div>
+
+
+                </span>
+            </h1>
         </div>
     </div>
-   
-    <hr style="margin-top:0;margin-bottom:0" />
+
+    <hr />
     @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success">
+            <button type="button" class="close" data-dismiss="alert">×</button>
+            @TempData["SuccessMessage"]
+        </div>
+    }
     <table style="min-width:340px">
         <tr>
             <td>
@@ -77,7 +103,7 @@
                     <dd>
                         @Html.DisplayFor(model => model.ExpectedDate)
                     </dd>
-                    
+
                 </dl>
             </td>
             <td style="vertical-align:top">
@@ -98,24 +124,32 @@
                         @Html.DisplayFor(model => model.Partner.Name)
                     </dd>
 
+                    <dt>
+                        @Html.DisplayNameFor(model => model.Status)
+                    </dt>
+
+                    <dd>
+                        @Html.DisplayFor(model => model.Status)
+                    </dd>
 
                 </dl>
             </td>
         </tr>
     </table>
-        
+
 </div>
 
 
 <br />
-<h4>Products</h4>
+<h4>Items</h4>
 
-<div>
-    <p>
-        @Html.ActionLink("Add Item", "Create", "OrderDetails", new { Order_Id = Model.Id, orderType = Model.OrderType }, null) 
-    </p>    
-    
+<div style="margin-bottom:5px">
+
+    <a href="@Url.Action("Create","OrderDetails",new { Order_Id = Model.Id, orderType = Model.OrderType })" class="btn  btn-primary">
+        <span class="glyphicon glyphicon-plus"></span> Create new item
+    </a>
 </div>
+
 <div style="overflow:auto">
     <table class="table">
         <tr>
@@ -142,21 +176,21 @@
             </th>
 
             <th>
-            @if (Model.OrderType == Web.Controllers.Helper.Constants.OrderType.SALE )
-            {
-                @Html.DisplayNameFor(model => model.OrderDetails.First().ProductPrice.PurchasePrice)
-            }
-            else
-            {
-                @Html.DisplayNameFor(model => model.OrderDetails.First().ProductPrice.SelesPrice)
-            }
+                @if (Model.OrderType == Helper.Constants.OrderType.SALE)
+                {
+                    @Html.DisplayNameFor(model => model.OrderDetails.First().ProductPrice.PurchasePrice)
+                }
+                else
+                {
+                    @Html.DisplayNameFor(model => model.OrderDetails.First().ProductPrice.SelesPrice)
+                }
 
             </th>
             <th></th>
         </tr>
 
         @foreach (var item in Model.OrderDetails)
-    {
+        {
             <tr>
                 <td>
                     @Html.DisplayFor(modelItem => item.Product.Name)
@@ -168,14 +202,14 @@
                     @Html.DisplayFor(modelItem => item.UnitDiscount)
                 </td>
                 <td>
-                @if (item.Order.OrderType == Web.Controllers.Helper.Constants.OrderType.SALE )
-                {
-                        @Html.DisplayFor(modelItem => item.ProductPrice.SelesPrice )
-                }
-                else
-                {
+                    @if (item.Order.OrderType == Helper.Constants.OrderType.SALE)
+                    {
+                        @Html.DisplayFor(modelItem => item.ProductPrice.SelesPrice)
+                    }
+                    else
+                    {
                         @Html.DisplayFor(modelItem => item.ProductPrice.PurchasePrice)
-                }
+                    }
 
                 </td>
                 <td>
@@ -188,26 +222,27 @@
                     @Html.DisplayFor(modelItem => item.AmountAfterTax)
                 </td>
                 <td>
-                @if (item.Order.OrderType == Web.Controllers.Helper.Constants.OrderType.SALE )
-                {
+                    @if (item.Order.OrderType == Helper.Constants.OrderType.SALE)
+                    {
                         @Html.DisplayFor(modelItem => item.ProductPrice.PurchasePrice)
-                }
-                else
-                {
+                    }
+                    else
+                    {
                         @Html.DisplayFor(modelItem => item.ProductPrice.SelesPrice)
-                }
+                    }
                 </td>
                 <td>
                     <span style="white-space:nowrap">
-                        @Html.ActionLink("Edit", "Edit", "OrderDetails", new { id = item.Id }, null) |                 
+                        @Html.ActionLink("Edit", "Edit", "OrderDetails", new { id = item.Id }, null) |
                         @Html.ActionLink("Details", "Details", "OrderDetails", new { id = item.Id }, null) |
-                        @Html.ActionLink("Delete", "Delete", "OrderDetails", new { id = item.Id }, null)</span>
+                        @Html.ActionLink("Delete", "Delete", "OrderDetails", new { id = item.Id }, null)
+                    </span>
                 </td>
             </tr>
-    }
+        }
     </table>
 
-   
+
 </div>
 <div class="row">
     <div class="col-xs-12" style="text-align:end; align-items:flex-end ">
@@ -237,6 +272,6 @@
 <div class="row">
     <div class="col-xs-12" style="text-align:end; margin-top:40px">
         @Html.ActionLink("Edit", "Edit", new { id = Model.Id, returnUrl = Request.Url }) |
-        @Html.ActionLink("Back to List", "Index", new { orderType = Model.OrderType },null)
+        @Html.ActionLink("Back to List", "Index", new { orderType = Model.OrderType }, null)
     </div>
 </div>
