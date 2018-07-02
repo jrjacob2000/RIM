@@ -29,7 +29,7 @@
                                     @*@Html.ActionLink("Invoice", "Index", "Invoice", new { searchString = Model.OrderNumber, orderType = Model.OrderType }, null)*@
                                     if (Model.Invoices.FirstOrDefault() != null)
                                     {
-                                        @Html.ActionLink("Invoices", "Details", "Invoices", new { order_Id = Model.Id, Id = Model.Invoices.FirstOrDefault().Id }, null)
+                                        @Html.ActionLink("View Invoice", "Details", "Invoices", new { order_Id = Model.Id, Id = Model.Invoices.FirstOrDefault().Id }, null)
                                     }
                                     else
                                     {

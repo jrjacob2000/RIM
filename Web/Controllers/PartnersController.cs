@@ -8,6 +8,7 @@ using System.Web;
 using System.Web.Mvc;
 using System.Data.SqlClient;
 using Web.Models;
+using MvcBreadCrumbs;
 
 namespace Web.Controllers
 {
@@ -17,6 +18,7 @@ namespace Web.Controllers
         //private ApplicationDbContext db2 = new ApplicationDbContext();
 
         // GET: Partners
+        [BreadCrumb(Clear =true,Label ="Partners")]
         public ActionResult Index()
         {
             var partners = GetPartnerList()
@@ -36,6 +38,7 @@ namespace Web.Controllers
         }
 
         // GET: Partners/Details/5
+        [BreadCrumb]
         public ActionResult Details(Guid id)
         {
             if (id == null)
@@ -43,6 +46,8 @@ namespace Web.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
             Partner partner = GetPartnerById(id); //db.Partners.Find(id);
+            BreadCrumb.SetLabel("View " + partner.Name);
+
             partner.Payments = GetPaymentList().Where(x => x.Partner_Id == id).ToList();
             partner.UnpaidInvoices = GetInvoiceByPartnerId(id)
                                 .Where(x => x.Status != Helper.Constants.InvoiceStatus.PAID)
@@ -61,6 +66,7 @@ namespace Web.Controllers
         }
 
         // GET: Partners/Create
+        [BreadCrumb(Clear =false,Label ="Create Partner")]
         public ActionResult Create()
         {
             return View();
@@ -86,6 +92,7 @@ namespace Web.Controllers
         }
 
         // GET: Partners/Edit/5
+        [BreadCrumb]
         public ActionResult Edit(Guid? id)
         {
             if (id == null)
@@ -93,6 +100,8 @@ namespace Web.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
             Partner partner = GetPartnerById(id.Value); //db.Partners.Find(id);
+            BreadCrumb.SetLabel("Edit " + partner.Name);
+
             if (partner == null)
             {
                 return HttpNotFound();
@@ -120,6 +129,7 @@ namespace Web.Controllers
         }
 
         // GET: Partners/Delete/5
+        [BreadCrumb]
         public ActionResult Delete(Guid? id)
         {
             if (id == null)
@@ -127,6 +137,7 @@ namespace Web.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
             Partner partner = GetPartnerById(id.Value); //db.Partners.Find(id);
+            BreadCrumb.SetLabel("Delete "+ partner.Name);
             if (partner == null)
             {
                 return HttpNotFound();

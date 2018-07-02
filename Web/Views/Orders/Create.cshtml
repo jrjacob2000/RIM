@@ -185,12 +185,9 @@
 }
 
 <script type="text/javascript">
-    if ($('#OrderType').val() != "ADJUST") {
-        $("#divPartner").show();
-    }
-    else {
-        $("#divPartner").hide();
-    }
+          
+    reasonChange($('#AdjustmentReason').val());
+    
 
     function GetOrderType() {
         if ($('#OrderType').val() != "") {

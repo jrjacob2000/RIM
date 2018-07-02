@@ -1,15 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Data;
 using System.Data.Entity;
 using System.Linq;
 using System.Net;
-using System.Web;
 using System.Web.Mvc;
 using System.Data.SqlClient;
-using Microsoft.AspNet.Identity;
 using PagedList;
 using Web.Models;
+using MvcBreadCrumbs;
 
 namespace Web.Controllers
 {
@@ -20,6 +17,7 @@ namespace Web.Controllers
 
         
         // GET: Categories
+        [BreadCrumb(Clear =true,Label ="Categories")]
         public ActionResult Index(string sortOrder, int page = 1, int pageSize = 10)
         {
             var query = GetCategoryList();
@@ -28,6 +26,7 @@ namespace Web.Controllers
         }
 
         // GET: Categories/Details/5
+        [BreadCrumb]
         public ActionResult Details(Guid? id)
         {
             if (id == null)
@@ -35,6 +34,7 @@ namespace Web.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
             Category category = GetCategoryById(id.Value); //db.CategoryItems.Where(x => x.CreatedBy == UserId && x.Id == id).FirstOrDefault();
+            BreadCrumb.SetLabel("View " + category.Name);
             if (category == null)
             {
                 return HttpNotFound();
@@ -43,6 +43,7 @@ namespace Web.Controllers
         }
 
         // GET: Categories/Create
+        [BreadCrumb(Clear = false, Label = "Create Category")]
         public ActionResult Create()
         {
             return View();
@@ -52,7 +53,7 @@ namespace Web.Controllers
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
-        [ValidateAntiForgeryToken]
+        [ValidateAntiForgeryToken]        
         public ActionResult Create([Bind(Include = "Id,Name")] Category category)
         {
             if (ModelState.IsValid)
@@ -68,6 +69,7 @@ namespace Web.Controllers
         }
 
         // GET: Categories/Edit/5
+        [BreadCrumb]
         public ActionResult Edit(Guid? id)
         {
             if (id == null)
@@ -75,6 +77,7 @@ namespace Web.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
             Category category = GetCategoryById(id.Value); //db.CategoryItems.Where(x => x.CreatedBy == UserId && x.Id == id).FirstOrDefault();
+            BreadCrumb.SetLabel("Edit " + category.Name);
             if (category == null)
             {
                 return HttpNotFound();
@@ -103,6 +106,7 @@ namespace Web.Controllers
         }
 
         // GET: Categories/Delete/5
+        [BreadCrumb]
         public ActionResult Delete(Guid? id)
         {
             if (id == null)
@@ -110,6 +114,7 @@ namespace Web.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
             Category category = GetCategoryById(id.Value);//db.CategoryItems.Where(x => x.CreatedBy == UserId && x.Id == id).FirstOrDefault();
+            BreadCrumb.SetLabel("Delete " + category.Name);
             if (category == null)
             {
                 return HttpNotFound();

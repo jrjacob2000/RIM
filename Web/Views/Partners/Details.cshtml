@@ -155,7 +155,11 @@
                     </td>
                     <td>
                         @{
-                            var type = item.Invoice != null ? item.Invoice.Type : item.Credit.Order.AdjustmentReason == "RETURN_CUSTOMER" ? "GIVE REFUND": "RECEIVED REFUND";
+                            var type = "";
+                            if (item.Invoice != null || item.Credit != null)
+                            {
+                                type = item.Invoice != null ? item.Invoice.Type : item.Credit.Order.AdjustmentReason == "RETURN_CUSTOMER" ? "GIVE REFUND" : "RECEIVED REFUND";
+                            }
                         }
                        @type
                     </td>

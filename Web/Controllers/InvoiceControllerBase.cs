@@ -4,10 +4,10 @@ using System.Data;
 using System.Data.Entity;
 using System.Linq;
 using System.Net;
-using System.Web;
 using System.Web.Mvc;
 using System.Data.SqlClient;
 using Web.Models;
+using MvcBreadCrumbs;
 
 
 namespace Web.Controllers
@@ -16,6 +16,7 @@ namespace Web.Controllers
     {
        
         // GET: Invoices/Details/5
+        [BreadCrumb]
         public ActionResult Details(Guid? id)
         {
             if (id == null)
@@ -32,9 +33,13 @@ namespace Web.Controllers
                 //.Include("Partner").
                 .Where(x => x.Id == id && x.CreatedBy == UserId).FirstOrDefault();
 
+            BreadCrumb.SetLabel("View " + invoice.InvoiceNumber);
+
             var credits = new List<Credit>();
-            if(invoice.Type == Helper.Constants.InvoiceType.INVOICE)
+            if (invoice.Type == Helper.Constants.InvoiceType.INVOICE)
+            {                
                 credits = GetCreditByPartnerId(invoice.Order.Partner_Id.Value).Where(x => x.Order.AdjustmentReason == "RETURN_CUSTOMER").ToList();
+            }
             else if (invoice.Type == Helper.Constants.InvoiceType.INVOICE)
                 credits = GetCreditByPartnerId(invoice.Order.Partner_Id.Value).Where(x => x.Order.AdjustmentReason == "RETURN_SUPPLIER").ToList();
 
@@ -67,6 +72,7 @@ namespace Web.Controllers
         }
 
         // GET: Invoices/Create
+        [BreadCrumb]
         public ActionResult Create(Guid? Order_Id,string type)
         {
             ViewBag.Orders = GetOrderList().Where(x => x.OrderType == (type.ToUpper() == "INV" ? Helper.Constants.OrderType.SALE : Helper.Constants.OrderType.PURCHASE)
@@ -91,11 +97,13 @@ namespace Web.Controllers
             var setting = GetSetting();
             if (type.ToUpper() == "INV" && setting != null && !string.IsNullOrEmpty(setting.InvoiceNumber))
             {
+                BreadCrumb.SetLabel("Create Invoice");
                 inv.InvoiceNumber = string.Format("{0}-{1}", setting.InvoicePrefix, setting.InvoiceNumber);
                 inv.Type = Helper.Constants.InvoiceType.INVOICE;
             }
             else if (type.ToUpper() == "BILL" && setting != null && !string.IsNullOrEmpty(setting.BillNumber))
             {
+                BreadCrumb.SetLabel("Create Bill");
                 inv.InvoiceNumber = string.Format("{0}-{1}", setting.BillPrefix, setting.BillNumber);
                 inv.Type = Helper.Constants.InvoiceType.BILL;
             }
@@ -171,6 +179,7 @@ namespace Web.Controllers
         }
 
         // GET: Invoices/Edit/5
+        [BreadCrumb]
         public ActionResult Edit(Guid? id)
         {
             if (id == null)
@@ -186,6 +195,7 @@ namespace Web.Controllers
                 //.Include("Partner").
                 .Where(x => x.Id == id && x.CreatedBy == UserId).FirstOrDefault();
 
+            BreadCrumb.SetLabel("Edit " + invoice.InvoiceNumber);
 
             if (invoice == null)
             {
@@ -226,6 +236,7 @@ namespace Web.Controllers
         }
 
         // GET: Invoices/Delete/5
+        [BreadCrumb]
         public ActionResult Delete(Guid? id)
         {
             if (id == null)
@@ -233,6 +244,9 @@ namespace Web.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
             Invoice invoice = db.Invoices.Find(id);
+
+            BreadCrumb.SetLabel("Delete "+invoice.InvoiceNumber);
+
             if (invoice == null)
             {
                 return HttpNotFound();

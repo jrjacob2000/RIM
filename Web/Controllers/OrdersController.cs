@@ -301,7 +301,7 @@ namespace Web.Controllers
                     order.ExpectedDate = order.OrderDate;
                     if(order.AdjustmentReason == null)
                         ModelState.AddModelError("", "Adjustment reason is required");
-                    if(order.AdjustmentReason != "DAMAGE_LOST")
+                    if(order.AdjustmentReason != "DAMAGE_LOST" && order.Partner_Id == null)
                         ModelState.AddModelError("", "Partner is required");
                 } 
                 else

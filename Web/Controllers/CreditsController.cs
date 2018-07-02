@@ -1,14 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
 using System.Linq;
 using System.Net;
-using System.Web;
 using System.Web.Mvc;
 using System.Data.SqlClient;
 using PagedList;
 using Web.Models;
+using MvcBreadCrumbs;
 
 namespace Web.Controllers
 {
@@ -16,6 +15,7 @@ namespace Web.Controllers
     {
 
         //Get: Bills
+        [BreadCrumb(Clear =true,Label ="Credits")]
         public ActionResult Index(string sortOrder, int page = 1, int pageSize = 10)
         {
             var query = db.Credits
@@ -40,6 +40,7 @@ namespace Web.Controllers
 
       
         // GET: Invoices/Create
+        [BreadCrumb(Clear =false,Label ="Create credit notes")]
         public ActionResult Create(Guid? Order_Id, string OrderType)
         {
             var orderlist = GetOrderList().Where(x => x.OrderType == OrderType);
@@ -130,6 +131,7 @@ namespace Web.Controllers
 
 
         // GET: Invoices/EditBill/5
+        [BreadCrumb]
         public ActionResult Edit(Guid? id)
         {
             if (id == null)
@@ -145,6 +147,7 @@ namespace Web.Controllers
                 .Include("Order.Partner").
                 Where(x => x.Id == id && x.CreatedBy == UserId).FirstOrDefault();
 
+            BreadCrumb.SetLabel("Edit "+ credit.CreditNumber);
 
             if (credit == null)
             {
@@ -187,6 +190,7 @@ namespace Web.Controllers
 
 
         // GET: Invoices/Details/5
+        [BreadCrumb]
         public ActionResult Details(Guid? id)
         {
             if (id == null)
@@ -202,6 +206,8 @@ namespace Web.Controllers
                 .Include("Invoice")
                 .Where(x => x.Id == id && x.CreatedBy == UserId).FirstOrDefault();
 
+            BreadCrumb.SetLabel("View " + credit.CreditNumber);
+
             credit.PaymentDetails = GetPaymentDetailList().Where(x => x.Credit_Id == id && !x.Payment.Deleted).ToList();
             ViewBag.Total = credit.Order.OrderDetails.Sum(x => x.AmountAfterTax);
 
@@ -214,6 +220,7 @@ namespace Web.Controllers
 
 
         // GET: Invoices/Delete/5
+        [BreadCrumb]
         public ActionResult Delete(Guid? id)
         {
             if (id == null)
@@ -229,6 +236,7 @@ namespace Web.Controllers
             {
                 return HttpNotFound();
             }
+            BreadCrumb.SetLabel("Delete " + credit.CreditNumber);
             return View(credit);
         }
 

@@ -7,15 +7,17 @@ using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using Web.Models;
+using MvcBreadCrumbs;
 
 namespace Web.Controllers
 {
-    [Authorize]
+    [Authorize]    
     public class PaymentDetailsController : ControllerBase
     {
        // private ApplicationDbContext db = new ApplicationDbContext();
 
         // GET: PaymentDetails
+        [BreadCrumb(Clear =true,Label ="Payments")]
         public ActionResult Index()
         {
             var paymentDetails = GetPaymentDetailList(); //db.PaymentDetails.Include(p => p.Order);
@@ -23,6 +25,7 @@ namespace Web.Controllers
         }
 
         // GET: PaymentDetails/Details/5
+        [BreadCrumb]
         public ActionResult Details(Guid? id)
         {
             if (id == null)
@@ -30,6 +33,7 @@ namespace Web.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
             PaymentDetail paymentDetail = GetPaymentDetailById(id.Value); //db.PaymentDetails.Find(id);
+            BreadCrumb.SetLabel("View payment from " + paymentDetail.Date.ToShortDateString() + " (" + paymentDetail.Amount +")");
             if (paymentDetail == null)
             {
                 return HttpNotFound();
@@ -38,6 +42,7 @@ namespace Web.Controllers
         }
 
         // GET: PaymentDetails/Create
+        [BreadCrumb(Clear =false,Label ="Record Payment")]
         public ActionResult Create(Guid id, string source)
         {
             if (id == null)
@@ -189,6 +194,7 @@ namespace Web.Controllers
         }
 
         // GET: PaymentDetails/Edit/5
+        [BreadCrumb]
         public ActionResult Edit(Guid id)
         {
             if (id == null)
@@ -197,6 +203,8 @@ namespace Web.Controllers
             }
 
             var payment = GetPaymentDetailById(id);
+            BreadCrumb.SetLabel("Edit payment from " + payment.Date.ToShortDateString() + " (" + payment.Amount + ")");
+
             var invoice = GetInvoiceById(payment.Invoice_Id.Value);
             
             payment.Date = DateTime.Now;

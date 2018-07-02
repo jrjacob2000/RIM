@@ -1,14 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Data.Entity;
 using System.Linq;
-using System.Net;
-using System.Web;
 using System.Web.Mvc;
-using System.Data.SqlClient;
 using PagedList;
-using Web.Models;
+using MvcBreadCrumbs;
 
 namespace Web.Controllers
 {
@@ -16,6 +11,7 @@ namespace Web.Controllers
     public class BillsController : InvoiceControllerBase
     {
         //Get: Bills
+        [BreadCrumb(Clear =true, Label ="Bills")]
         public ActionResult Index(string sortOrder, int page = 1, int pageSize = 10)
         {
             var query = db.Invoices
