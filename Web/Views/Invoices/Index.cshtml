@@ -12,12 +12,18 @@
         currentSort = "OrderDate_desc";
     }
 }
+<div class="custom-header">
+    <h3>Invoices</h3>
+    <hr />
+</div>
 
-<h4>All Invoices</h4>
-<hr />
-<p>
-    @Html.ActionLink("Create New", "Create", new {type="INV" })
-</p>
+
+<div style="margin-bottom:5px">
+    <a href="@Url.Action("Create",new {type="INV" })" class="btn  btn-primary">
+        <span class="glyphicon glyphicon-plus"></span> Create New
+    </a>
+</div>
+
 <table class="table">
     <tr>
         <th>

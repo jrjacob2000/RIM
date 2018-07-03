@@ -17,17 +17,38 @@
     
         
 }
-
-<h2>Detail - @Model.CreditNumber</h2>
-<div class="row">
-    <div class="custom-header-div">
-        <input type="button" value="Print" onclick="printdiv()" class="btn btn-primary " />
-        @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
-        @Html.ActionLink(@refundType + " Refund", "Create", "PaymentDetails", new { Id = Model.Id, source = "Credits" }, new { Title = @refundtooltip }) |
-        @Html.ActionLink("Back to List", "Index", new { Type = Model.Type })
+<div class="custom-header">
+    <div class="row">
+        <div class="col-md-6">
+            <h3>View - @Model.CreditNumber</h3>
+        </div>
+        <div class="col-md-6">
+            <span class="pull-right">
+                <button type="button" value="Print" onclick="printdiv()" class="btn btn-primary ">
+                    <span class="glyphicon glyphicon-print"></span> Print
+                </button>
+                <div class="btn-group">
+                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                        <span class="glyphicon glyphicon-menu-hamburger"></span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-right" role="menu">
+                        <li>
+                            @Html.ActionLink("Edit", "Edit", new { id = Model.Id })
+                        </li>
+                        <li>
+                            @Html.ActionLink(@refundType + " Refund", "Create", "PaymentDetails", new { Id = Model.Id, source = "Credits" }, new { Title = @refundtooltip })
+                        </li>
+                        <li class="divider"></li>
+                        <li>@Html.ActionLink("Delete", "Delete", new { Id = Model.Id }, null)</li>
+                    </ul>
+                </div>
+            </span>
+        </div>
     </div>
+    <hr />
 </div>
-<hr class="custom-header-hr"/>
+
+
 @if(Model.PaymentDetails.Count() > 0)
 { 
     <h4>Refunds</h4>
@@ -105,15 +126,8 @@ else
         <div id="printarea">
             <div style="margin-left:10px; margin-right:10px">
                 <div style="text-align:center">
-                    @if (Model.Type == Helper.Constants.InvoiceType.CustomerCredit)
-                    {
-                        <h3>Customer Credits</h3>
-                    }
-                    else if (Model.Type == Helper.Constants.InvoiceType.SupplierCredit)
-                    {
-                        <h3>Supplier Credits</h3>
-                    }
-
+                   
+                    <h3>Credit Notes</h3>
                     <h4>@ViewBag.BusinessName</h4>
                     <h6>@ViewBag.BillingAddress</h6>
                     @if (@ViewBag.ContactNumber != null)

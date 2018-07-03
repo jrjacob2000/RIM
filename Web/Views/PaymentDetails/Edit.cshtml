@@ -67,15 +67,19 @@
 
             <div class="form-group">
                 <div class="col-md-offset-2 col-md-10">
-                    <input type="submit" value="Save" class="btn btn-primary" />
+                    <button type="submit" class="btn btn-primary">
+                        <span class="glyphicon glyphicon-floppy-disk"></span>
+                        Save
+                    </button>
+                    <a href="@Request.UrlReferrer" id="cancel" name="cancel" class="btn btn-default">
+                        <span class="glyphicon glyphicon-ban-circle"></span>
+                        Cancel
+                    </a>
                 </div>
             </div>
         </div>
 }
 
-<div>
-    @Html.ActionLink("Back to Invoice", "Details","Invoices")
-</div>
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")

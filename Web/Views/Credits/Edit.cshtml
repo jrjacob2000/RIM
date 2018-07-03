@@ -4,29 +4,25 @@
     ViewBag.Title = "Edit"; 
 }
 
-<h2>Edit Bill- @Model.CreditNumber </h2>
+<div class="custom-header">
+    <h3>Edit Credit Notes- @Model.CreditNumber </h3>
+    <hr />
+</div>
 
 
 @using (Html.BeginForm())
 {
     @Html.AntiForgeryToken()
-    <div class="row">
-        <div class="custom-header-div">
-            <input type="submit" value="Save" class="btn btn-primary" /> |
-            @Html.ActionLink("Details", "Details", new { id = Model.Id }) |
-            @Html.ActionLink("Back to List", "Index")
-        </div>
-    </div>
-    
+        
     <div class="form-horizontal">
-        <hr class="custom-header-hr" />
-     
+        
+
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
         @Html.HiddenFor(model => model.Id)
         @Html.HiddenFor(model => model.Order_Id)
 
         <div class="form-group">
-            @Html.LabelFor(model => model.Order.Partner.Name, "Vendor", htmlAttributes: new { @class = "control-label col-md-2"})
+            @Html.LabelFor(model => model.Order.Partner.Name, "Vendor", htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
                 @Html.EditorFor(model => model.Order.Partner.Name, new { htmlAttributes = new { @class = "form-control", @disabled = "disabled" } })
                 @Html.ValidationMessageFor(model => model.Order.Partner.Id, "", new { @class = "text-danger" })
@@ -44,7 +40,7 @@
 
         <div class="form-group">
             @*@Html.LabelFor(model => model.Order_Id, "Order Number", htmlAttributes: new { @class = "control-label col-md-2" })*@
-             @Html.LabelFor(model => model.Order_Id, "Reference #", htmlAttributes: new { @class = "control-label col-md-2" })       
+            @Html.LabelFor(model => model.Order_Id, "Reference #", htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
                 @Html.EditorFor(model => model.Order.OrderNumber, new { htmlAttributes = new { @class = "form-control", @disabled = "disabled" } })
                 @Html.ValidationMessageFor(model => model.Order_Id, "", new { @class = "text-danger" })
@@ -66,9 +62,20 @@
                 @Html.ValidationMessageFor(model => model.DueDate, "", new { @class = "text-danger" })
             </div>
         </div>
-            
 
-       
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <button type="submit" class="btn btn-primary">
+                    <span class="glyphicon glyphicon-floppy-disk"></span>
+                    Save
+                </button>
+                <a href="@Request.UrlReferrer" id="cancel" name="cancel" class="btn btn-default">
+                    <span class="glyphicon glyphicon-ban-circle"></span>
+                    Cancel
+                </a>
+            </div>
+        </div>
+
     </div>
 }
 

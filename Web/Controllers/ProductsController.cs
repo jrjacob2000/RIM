@@ -9,6 +9,7 @@ using System.Web.Mvc;
 using System.Data.SqlClient;
 using Web.Models;
 using PagedList;
+using MvcBreadCrumbs;
 
 namespace Web.Controllers
 {
@@ -18,6 +19,7 @@ namespace Web.Controllers
         //private ApplicationDbContext db = new ApplicationDbContext();
 
         // GET: ProductItems
+        [BreadCrumb(Clear =true,Label ="Products")]
         public ActionResult Index(string product, Guid? category, string sortOrder, int page = 1, int pageSize = 10)
         {
             ViewBag.ProductFilter = product;
@@ -39,13 +41,15 @@ namespace Web.Controllers
         }
 
         // GET: ProductItems/Details/5
+        [BreadCrumb]
         public ActionResult Details(Guid? id)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Product productItem = GetProductById(id.Value); 
+            Product productItem = GetProductById(id.Value);
+            BreadCrumb.SetLabel("View "+productItem.Name);
             productItem.ProductPrices = db.ProductPrices.Where(x => x.Product_Id == id && x.CreatedBy == UserId).ToList();
 
             if (productItem == null)
@@ -57,6 +61,7 @@ namespace Web.Controllers
         }
 
         // GET: ProductItems/Create
+        [BreadCrumb(Label ="Create New Product")]
         public ActionResult Create()
         {
             var prices = new List<ProductPrice>();
@@ -113,6 +118,7 @@ namespace Web.Controllers
         }
 
         // GET: ProductItems/Edit/5
+        [BreadCrumb]
         public ActionResult Edit(Guid? id)
         {
             if (id == null)
@@ -124,6 +130,7 @@ namespace Web.Controllers
             {
                 return HttpNotFound();
             }
+            BreadCrumb.SetLabel("Edit " + productItem.Name);
             
             ViewBag.CategoryItems =GetCategoryList().ToList().Select(x => new SelectListItem() { Value = x.Id.ToString(), Text = x.Name }).ToList(); 
             ViewBag.Units = Helper.Constants.UnitList();
@@ -156,6 +163,7 @@ namespace Web.Controllers
         }
 
         // GET: ProductItems/Delete/5
+        [BreadCrumb]
         public ActionResult Delete(Guid? id)
         {
             if (id == null)
@@ -163,6 +171,7 @@ namespace Web.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
             Product productItem = GetProductById(id.Value);
+            BreadCrumb.SetLabel("Delete "+productItem.Name);
             if (productItem == null)
             {
                 return HttpNotFound();

@@ -7,55 +7,45 @@
 
 @using (Html.BeginForm())
 {
-    <div class="row">
-        <div class="col-md-6">
+    <div class="custom-header">
+        <div class="row">
+            <div class="col-md-6">
 
-            @if (Model.OrderType == Helper.Constants.OrderType.PURCHASE)
-            {
-                <h3>Create New Purchase Order</h3>
-                statusList = Enum.GetValues(typeof(Helper.OrderStatus))
-                    .Cast<Helper.OrderStatus>()
-                    .Where(x => x != Helper.OrderStatus.Confirmed && x != Helper.OrderStatus.Closed)
-                    .Select(x => new SelectListItem { Text = x.ToString(), Value = ((int)x).ToString() }).ToList();
-            }
-            else if (Model.OrderType == Helper.Constants.OrderType.SALE)
-            {
-                <h3>Create New Sales Order</h3>
-                statusList = Enum.GetValues(typeof(Helper.OrderStatus))
-                    .Cast<Helper.OrderStatus>()
-                    .Where(x => x != Helper.OrderStatus.Received && x != Helper.OrderStatus.Issued)
-                    .Select(x => new SelectListItem { Text = x.ToString(), Value = ((int)x).ToString() }).ToList();
-            }
-            else if (Model.OrderType == Helper.Constants.OrderType.ADJUST)
-            {
-                <h3>Create New Adjustment</h3>
-            }
+                @if (Model.OrderType == Helper.Constants.OrderType.PURCHASE)
+                {
+                    <h3>Create New Purchase Order</h3>
+                    statusList = Enum.GetValues(typeof(Helper.OrderStatus))
+                        .Cast<Helper.OrderStatus>()
+                        .Where(x => x != Helper.OrderStatus.Confirmed && x != Helper.OrderStatus.Closed)
+                        .Select(x => new SelectListItem { Text = x.ToString(), Value = ((int)x).ToString() }).ToList();
+                }
+                else if (Model.OrderType == Helper.Constants.OrderType.SALE)
+                {
+                    <h3>Create New Sales Order</h3>
+                    statusList = Enum.GetValues(typeof(Helper.OrderStatus))
+                        .Cast<Helper.OrderStatus>()
+                        .Where(x => x != Helper.OrderStatus.Received && x != Helper.OrderStatus.Issued)
+                        .Select(x => new SelectListItem { Text = x.ToString(), Value = ((int)x).ToString() }).ToList();
+                }
+                else if (Model.OrderType == Helper.Constants.OrderType.ADJUST)
+                {
+                    <h3>Create New Adjustment</h3>
+                }
+
+            </div>
+            <div class="col-md-6">
+                
+            </div>
 
         </div>
-        <div class="col-md-6">
-            <h1>
-                <div class="pull-right">
-                    <button type="submit" class="btn btn-primary">
-                        <span class="glyphicon glyphicon-floppy-disk"></span>
-                        Save
-                    </button>
-                    @*<a href="@Url.Action("Index", new { orderType = @Model.OrderType })" class="btn  btn-primary" title="Back to detail view">
-                            <span class="glyphicon glyphicon-arrow-left"></span> Back
-                        </a>*@
-                </div>
-            </h1>
-        </div>
-
+        <hr />
     </div>
-
-
-
 
     @Html.AntiForgeryToken()
     @Html.HiddenFor(model => model.OrderType)
 
     <div class="form-horizontal">
-        <hr />
+
 
         @if (ViewData.ModelState[""] != null && ViewData.ModelState[""].Errors.Count() > 0)
         {
@@ -66,12 +56,12 @@
         }
         @*@Html.ValidationSummary(true, "", new { @class = "text-danger" })*@
         @*<div class="form-group">
-                @Html.LabelFor(model => model.OrderType, htmlAttributes: new { @class = "control-label col-md-2" })
-                <div class="col-md-10">
-                    @Html.DropDownListFor(model => model.OrderType, new SelectList(ViewBag.OrderTypes, "Value", "Text"), "- Please Select -", new { @class = "form-control", @onchange = "OrderTypeChange(this.value)" })
-                    @Html.ValidationMessageFor(model => model.OrderType, "", new { @class = "text-danger" })
-                </div>
-            </div>*@
+            @Html.LabelFor(model => model.OrderType, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.DropDownListFor(model => model.OrderType, new SelectList(ViewBag.OrderTypes, "Value", "Text"), "- Please Select -", new { @class = "form-control", @onchange = "OrderTypeChange(this.value)" })
+                @Html.ValidationMessageFor(model => model.OrderType, "", new { @class = "text-danger" })
+            </div>
+        </div>*@
 
         <div class="form-group">
             @if (Model.OrderType == Helper.Constants.OrderType.ADJUST)
@@ -174,7 +164,18 @@
                 @Html.ValidationMessageFor(model => model.OrderNotes, "", new { @class = "text-danger" })
             </div>
         </div>
-
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <button type="submit" class="btn btn-primary">
+                    <span class="glyphicon glyphicon-floppy-disk"></span>
+                    Save
+                </button>
+                <a href="@Request.UrlReferrer" id="cancel" name="cancel" class="btn btn-default">
+                    <span class="glyphicon glyphicon-ban-circle"></span>
+                    Cancel
+                </a>
+            </div>
+        </div>
     </div>
 }
 
@@ -185,9 +186,9 @@
 }
 
 <script type="text/javascript">
-          
+
     reasonChange($('#AdjustmentReason').val());
-    
+
 
     function GetOrderType() {
         if ($('#OrderType').val() != "") {
@@ -214,7 +215,7 @@
     function reasonChange(value) {
 
         if (value == "DAMAGE_LOST") {
-            $("#divPartner").hide();           
+            $("#divPartner").hide();
         }
         else {
             $("#divPartner").show();

@@ -146,7 +146,7 @@ namespace Web.Controllers
             adjust.OrderDetails = order.OrderDetails;
             adjust.OrderNotes = order.OrderNotes;
             adjust.OrderType = order.OrderType;
-            adjust.AdjustReason = Helper.Constants.AdustmentReasonList().Where( x => x.Value == order.AdjustmentReason).First().Text;
+            adjust.AdjustReason = order.AdjustmentReason; //Helper.Constants.AdustmentReasonList().Where( x => x.Value == order.AdjustmentReason).First().Text;
             adjust.Credits = db.Credits.Where(x => x.Order_Id == id.Value && x.CreatedBy == UserId).ToList();
 
 

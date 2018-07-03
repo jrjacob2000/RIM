@@ -12,14 +12,11 @@
         ordType = "order";
     }
 }
-
-<h2>Add Item for @ordType  @Model.Order.OrderNumber</h2>
-
-
-@using (Html.BeginForm()) 
+@using (Html.BeginForm())
 {
     @Html.AntiForgeryToken()
-    
+    <h3>Add Item for @ordType  @Model.Order.OrderNumber</h3>
+  
     <div class="form-horizontal">
         <hr />
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
@@ -32,44 +29,40 @@
                 @Html.ValidationMessageFor(model => model.Product_Id, "", new { @class = "text-danger" })
             </div>
         </div>
-       
+
         <div class="form-group">
             @Html.LabelFor(model => model.Quantity, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.EditorFor(model => model.Quantity, new { htmlAttributes = new { @class = "form-control" } })                            
+                @Html.EditorFor(model => model.Quantity, new { htmlAttributes = new { @class = "form-control" } })
                 @Html.ValidationMessageFor(model => model.Quantity, "", new { @class = "text-danger" })
             </div>
         </div>
-        @if(Model.Order.OrderType != Helper.Constants.OrderType.ADJUST)
-        { 
-        <div class="form-group">
-            @Html.LabelFor(model => model.UnitDiscount, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.UnitDiscount, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.UnitDiscount, "", new { @class = "text-danger" })
+        @if (Model.Order.OrderType != Helper.Constants.OrderType.ADJUST)
+        {
+            <div class="form-group">
+                @Html.LabelFor(model => model.UnitDiscount, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.UnitDiscount, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.UnitDiscount, "", new { @class = "text-danger" })
+                </div>
             </div>
-        </div>
         }
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Save" class="btn btn-primary" />
+                <button type="submit" class="btn btn-primary">
+                    <span class="glyphicon glyphicon-floppy-disk"></span>
+                    Save
+                </button>
+                <a href="@Url.Action("Details", "Orders",new {Id=Model.Order_Id })" id="cancel" name="cancel" class="btn btn-default">
+                    <span class="glyphicon glyphicon-ban-circle"></span> 
+                    Cancel
+                </a>
             </div>
         </div>
     </div>
 }
 
-<div>
-    @if (Model.Order.OrderType == Helper.Constants.OrderType.ADJUST)
-    {
-        @Html.ActionLink("Back to List", "AdjustDetails", "Orders", new { Id = Model.Order.Id }, null)
-    }
-    else
-    {
-       @Html.ActionLink("Back to List", "Details", "Orders", new { Id = Model.Order_Id }, null)
-    }
 
-    
-</div>
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
@@ -78,14 +71,14 @@
 
 <script type="text/javascript">
     $(document).ready(function () {
-       
+
 
         $('#Product_Id').attr('data-live-search', true);
 
         $('.custom-bootstrap-select').selectpicker(
-        {
-            title: '- [Please Select] -'
-        });
+            {
+                title: '- [Please Select] -'
+            });
 
     });
 </script>

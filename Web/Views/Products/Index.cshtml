@@ -12,9 +12,11 @@
     }
 }
 
+<div class="custom-header">
+    <h3>All Items</h3>
+    <hr />
+</div>
 
-<h3>All Items</h3>
-<hr />
 <form asp-action="Index" method="get">
 
     <div class="row">
@@ -27,15 +29,19 @@
             @Html.DropDownList("category", new SelectList(ViewBag.CategoryItems, "Value", "Text"), "- Please Select -", new { @class = "form-control" })
         </div>
         <div class="col-sm-5" style="margin-top:20px">
-            <input type="submit" value="search" class="btn btn-default" />
+            <button type="submit" value="search" class="btn btn-primary">
+                <span class="glyphicon glyphicon-search"></span> Search
+            </button>
         </div>
     </div>
 </form>
 <hr />
 
-<p>
-    @Html.ActionLink("Create New", "Create")
-</p>
+<div style="margin-bottom:5px">
+    <a href="@Url.Action("Create")" class="btn  btn-primary">
+        <span class="glyphicon glyphicon-plus"></span> Create New
+    </a>
+</div>
 <div style="overflow:auto">
 
 

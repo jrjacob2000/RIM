@@ -4,11 +4,10 @@
     ViewBag.Title = "Delete";
 }
 
-<h2>Delete</h2>
+<h3>Delete</h3>
 
 <h3>Are you sure you want to delete this?</h3>
 <div>
-    
     <hr />
     @Html.ValidationSummary(true, "", new { @class = "text-danger" })
     <dl class="dl-horizontal">
@@ -21,7 +20,7 @@
             {
                 @Html.DisplayNameFor(model => model.OrderNumber)
             }
-            
+
         </dt>
 
         <dd>
@@ -35,9 +34,9 @@
             }
             else
             {
-               @Html.DisplayNameFor(model => model.OrderDate)
+                @Html.DisplayNameFor(model => model.OrderDate)
             }
-            
+
         </dt>
 
         <dd>
@@ -46,45 +45,45 @@
 
         @if (Model.OrderType != Helper.Constants.OrderType.ADJUST)
         {
-        <dt>
-            @Html.DisplayNameFor(model => model.ExpectedDate)
-        </dt>
+            <dt>
+                @Html.DisplayNameFor(model => model.ExpectedDate)
+            </dt>
 
-        <dd>
-            @Html.DisplayFor(model => model.ExpectedDate)
-        </dd>
+            <dd>
+                @Html.DisplayFor(model => model.ExpectedDate)
+            </dd>
 
-        <dt>
-            @Html.DisplayNameFor(model => model.OrderType)
-        </dt>
+            <dt>
+                @Html.DisplayNameFor(model => model.OrderType)
+            </dt>
 
-        <dd>
-            @Html.DisplayFor(model => model.OrderType)
-        </dd>
+            <dd>
+                @Html.DisplayFor(model => model.OrderType)
+            </dd>
 
-        <dt>
-            @Html.DisplayNameFor(model => model.OtherCharges)
-        </dt>
+            <dt>
+                @Html.DisplayNameFor(model => model.OtherCharges)
+            </dt>
 
-        <dd>
-            @Html.DisplayFor(model => model.OtherCharges)
-        </dd>
+            <dd>
+                @Html.DisplayFor(model => model.OtherCharges)
+            </dd>
 
-        <dt>
-            @Html.DisplayNameFor(model => model.OrderDiscount)
-        </dt>
+            <dt>
+                @Html.DisplayNameFor(model => model.OrderDiscount)
+            </dt>
 
-        <dd>
-            @Html.DisplayFor(model => model.OrderDiscount)
-        </dd>
+            <dd>
+                @Html.DisplayFor(model => model.OrderDiscount)
+            </dd>
 
-        <dt>
-            @Html.DisplayNameFor(model => model.TaxRate)
-        </dt>
+            <dt>
+                @Html.DisplayNameFor(model => model.TaxRate)
+            </dt>
 
-        <dd>
-            @Html.DisplayFor(model => model.TaxRate)
-        </dd>
+            <dd>
+                @Html.DisplayFor(model => model.TaxRate)
+            </dd>
         }
         <dt>
             @if (Model.OrderType == Helper.Constants.OrderType.ADJUST)
@@ -95,7 +94,7 @@
             {
                 @Html.DisplayNameFor(model => model.OrderNotes)
             }
-           
+
         </dt>
 
         <dd>
@@ -104,12 +103,21 @@
 
     </dl>
 
-    @using (Html.BeginForm()) {
+    @using (Html.BeginForm())
+    {
         @Html.AntiForgeryToken()
 
         <div class="form-actions no-color">
-            <input type="submit" value="Delete" class="btn btn-primary" /> |
-            @Html.ActionLink("Back to List", "Index", new { orderType = @Model.OrderType })
+      
+                <button type="submit" class="btn btn-danger">
+                    <span class="glyphicon glyphicon-remove"></span>
+                    Delete
+                </button>
+                <a href="@Request.UrlReferrer" id="cancel" name="cancel" class="btn btn-default">
+                    <span class="glyphicon glyphicon-ban-circle"></span>
+                    Cancel
+                </a>
+            
         </div>
     }
 </div>

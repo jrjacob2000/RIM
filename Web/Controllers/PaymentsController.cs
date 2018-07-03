@@ -4,10 +4,10 @@ using System.Data;
 using System.Data.Entity;
 using System.Linq;
 using System.Net;
-using System.Web;
 using System.Web.Mvc;
 using System.Data.SqlClient;
 using Web.Models;
+using MvcBreadCrumbs;
 
 namespace Web.Controllers
 {
@@ -17,6 +17,7 @@ namespace Web.Controllers
         //private ApplicationDbContext db = new ApplicationDbContext();
         
         // GET: Payments
+        [BreadCrumb(Clear =true,Label ="Payments")]
         public ActionResult Index()
         {
             //return View(db.Payments.Include("Partner").Where(x => !x.Deleted).ToList());
@@ -48,6 +49,7 @@ namespace Web.Controllers
             return View(payment);
         }
 
+        [BreadCrumb(Label ="Record Payment")]
         public ActionResult Create(Guid? Partner_Id, string type)
         {
             ViewBag.Partners = GetPartnerList().Select(x => new SelectListItem() { Value = x.Id.ToString(), Text = x.Name }).ToList();
@@ -78,6 +80,8 @@ namespace Web.Controllers
             payment.PaymentDetails = paymentDetails.OrderBy(o => o.Invoice.InvoiceDate).ToList();
             payment.Date = DateTime.Now;
             payment.Type = type;
+            
+
 
             if (paymentDetails.Count == 0 && Partner_Id != null)
             {

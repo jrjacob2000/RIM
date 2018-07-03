@@ -22,34 +22,35 @@
         <dd>
             @Html.DisplayFor(model => model.Quantity)
         </dd>
-        @if(Model.Order.OrderType != Helper.Constants.OrderType.ADJUST)
-        { 
-        <dt>
-            @Html.DisplayNameFor(model => model.ProductPrice.SelesPrice)
-        </dt>
+        @if (Model.Order.OrderType != Helper.Constants.OrderType.ADJUST)
+        {
+            <dt>
+                @Html.DisplayNameFor(model => model.ProductPrice.SelesPrice)
+            </dt>
 
-        <dd>
-            @Html.DisplayFor(model => model.ProductPrice.SelesPrice)
-        </dd>
+            <dd>
+                @Html.DisplayFor(model => model.ProductPrice.SelesPrice)
+            </dd>
 
-        <dt>
-            @Html.DisplayNameFor(model => model.UnitDiscount)
-        </dt>
+            <dt>
+                @Html.DisplayNameFor(model => model.UnitDiscount)
+            </dt>
 
-        <dd>
-            @Html.DisplayFor(model => model.UnitDiscount)
-        </dd>
+            <dd>
+                @Html.DisplayFor(model => model.UnitDiscount)
+            </dd>
         }
     </dl>
+
 </div>
+
+
 <p>
-    @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
-    @if (Model.Order.OrderType == Helper.Constants.OrderType.ADJUST)
-    {
-        @Html.ActionLink("Back to List", "AdjustDetails", "Orders", new { Id = Model.Order.Id }, null)
-    }
-    else
-    {
-        @Html.ActionLink("Back to List", "Details","Orders", new { Id = Model.Order.Id }, null)
-    }
+    <a href="@Url.Action("Edit", new { id = Model.Id, returnUrl = Request.Url })" class="btn  btn-primary">
+        <span class="glyphicon glyphicon-pencil"></span> Edit
+    </a>
+    <a href="@Request.UrlReferrer" id="cancel" name="cancel" class="btn btn-default">
+        <span class="glyphicon glyphicon-ban-circle"></span>
+        Cancel
+    </a>
 </p>

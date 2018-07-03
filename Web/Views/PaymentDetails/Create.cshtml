@@ -4,16 +4,17 @@
     ViewBag.Title = "Create";
 }
 
-@if (@Model.Credit != null)
-{
-    <h3>Refund for @Model.Credit.CreditNumber</h3>
-}
-else
-{
-    <h3>Payment for @Model.Invoice.InvoiceNumber</h3>
-}
-
-
+<div class="custom-header">
+    @if (@Model.Credit != null)
+    {
+        <h3>Refund for @Model.Credit.CreditNumber</h3>
+    }
+    else
+    {
+        <h3>Payment for @Model.Invoice.InvoiceNumber</h3>
+    }
+    <hr />
+</div>
 
 @using (Html.BeginForm()) 
 {
@@ -24,7 +25,7 @@ else
 
 
     <div class="form-horizontal">
-        <hr />
+        
         @if (ViewData.ModelState[""] != null && ViewData.ModelState[""].Errors.Count() > 0)
         {
             <div class="alert alert-danger">
@@ -85,15 +86,19 @@ else
 
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Create" class="btn btn-primary" />
+                <button type="submit" class="btn btn-primary">
+                    <span class="glyphicon glyphicon-floppy-disk"></span>
+                    Save
+                </button>
+                <a href="@Request.UrlReferrer" id="cancel" name="cancel" class="btn btn-default">
+                    <span class="glyphicon glyphicon-ban-circle"></span>
+                    Cancel
+                </a>
             </div>
         </div>
     </div>
 }
 
-<div>
-    @Html.ActionLink("Back to List", "Index")
-</div>
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")

@@ -12,12 +12,15 @@
         currentSort = "OrderDate_desc";
     }
 }
-
-<h3>All Categories</h3>
-<hr />
-<p>
-    @Html.ActionLink("Create New", "Create")
-</p>
+<div class="custom-header">
+    <h3>All Categories</h3>
+    <hr />
+</div>
+<div style="margin-bottom:5px">
+    <a href="@Url.Action("Create")" class="btn  btn-primary">
+        <span class="glyphicon glyphicon-plus"></span> Create New
+    </a>
+</div>
 <table class="table">
     <tr>
         <th>

@@ -12,22 +12,22 @@
     }
 }
 
-@if(Request.QueryString["type"] == Helper.Constants.InvoiceType.CustomerCredit)
-{ 
-    <h4>All Customer Credit</h4>
-}
-else if (Request.QueryString["type"] == Helper.Constants.InvoiceType.SupplierCredit)
-{
-    <h4>All Supplier Credit</h4>
-}
-else
-{
-    <h4>Credit Notes</h4>
-}
-<hr />
-@*<p>
-    @Html.ActionLink("Create New", "Create")
-</p>*@
+<div class="custom-header">
+    @if (Request.QueryString["type"] == Helper.Constants.InvoiceType.CustomerCredit)
+    {
+        <h3>All Customer Credit</h3>
+    }
+    else if (Request.QueryString["type"] == Helper.Constants.InvoiceType.SupplierCredit)
+    {
+        <h3>All Supplier Credit</h3>
+    }
+    else
+    {
+        <h3>Credit Notes</h3>
+    }
+    <hr />
+</div>
+
 <table class="table">
     <tr>
         <th>

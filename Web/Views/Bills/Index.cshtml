@@ -12,13 +12,15 @@
     }
 }
 
-
-
-<h4>All Bills</h4>
-<hr />
-<p>
-    @Html.ActionLink("Create New", "Create",new {type="Bill" })
-</p>
+<div class="custom-header">
+    <h3>Bills</h3>
+    <hr />
+</div>
+<div style="margin-bottom:5px">
+    <a href="@Url.Action("Create",new {type="Bill" })" class="btn  btn-primary">
+        <span class="glyphicon glyphicon-plus"></span> Create New
+    </a>
+</div>
 <table class="table">
     <tr>
         <th>
@@ -32,10 +34,10 @@
             <span>Customer</span>
             @*@Html.DisplayNameFor(model => model.Partner.Name)*@
         </th>
-       
+
         <th>
             @Html.DisplayNameFor(model => model.First().InvoiceDate)
-        </th>        
+        </th>
         <th>
             @Html.DisplayNameFor(model => model.First().DueDate)
         </th>
@@ -46,57 +48,58 @@
             Amount
         </th>
         <th>Balance</th>
-       
+
 
         <th></th>
     </tr>
 
-@foreach (var item in Model) {
-    <tr>
-        <td>
-            @Html.DisplayFor(modelItem => item.InvoiceNumber)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Order.OrderNumber)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Order.Partner.Name)
-        </td>
-        
-        <td>
-            @Html.DisplayFor(modelItem => item.InvoiceDate)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.DueDate)
-        </td>
-        <td>
-           @{
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.InvoiceNumber)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Order.OrderNumber)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Order.Partner.Name)
+            </td>
+
+            <td>
+                @Html.DisplayFor(modelItem => item.InvoiceDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DueDate)
+            </td>
+            <td>
+                @{
                     var status = Helper.StatusDisplay(item);
                     var color = status == Helper.Constants.InvoiceStatus.PAID ? "green" :
                     status == Helper.Constants.InvoiceStatus.OVERDUE ? "Orange" : "gray";
-            }
-        <span style="color:@color">
-            @{
-                @status
-            }
-        </span>
-           
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Amount)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Balance)
-        </td>
-        
+                }
+                <span style="color:@color">
+                    @{
+                        @status
+                    }
+                </span>
 
-        <td>
-            @Html.ActionLink("Edit", "Edit", new { id=item.Id }) |
-            @Html.ActionLink("Details", "Details", new { id=item.Id }) |
-            @Html.ActionLink("Delete", "Delete", new { id=item.Id })
-        </td>
-    </tr>
-}
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Amount)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Balance)
+            </td>
+
+
+            <td>
+                @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
+                @Html.ActionLink("Details", "Details", new { id = item.Id }) |
+                @Html.ActionLink("Delete", "Delete", new { id = item.Id })
+            </td>
+        </tr>
+    }
 </table>
 <div class="pager">
     @Html.PagedListPager(Model, page => Url.Action("Index", new
