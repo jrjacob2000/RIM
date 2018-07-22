@@ -21,8 +21,9 @@ namespace Web.Models
 
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
+        static string connectionString = System.Environment.GetEnvironmentVariable("APPSETTING_DefaultConnection");
         public ApplicationDbContext()
-            : base("DefaultConnection", throwIfV1Schema: false)
+            : base(connectionString, throwIfV1Schema: false)
         {
         }
 
