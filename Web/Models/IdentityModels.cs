@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using System.Data.Entity.ModelConfiguration.Conventions;
+using System.Configuration;
 
 namespace Web.Models
 {
@@ -21,7 +22,8 @@ namespace Web.Models
 
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
-        static string connectionString = System.Environment.GetEnvironmentVariable("APPSETTING_DefaultConnection");
+        //static string connectionString = System.Environment.GetEnvironmentVariable("APPSETTING_DefaultConnection");
+        static string connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
         public ApplicationDbContext()
             : base(connectionString, throwIfV1Schema: false)
         {
